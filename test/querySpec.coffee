@@ -61,3 +61,7 @@ describe "test params builder", ->
 
     expect(subject(subject: {$type: 'Patient', name: 'maud', birthDate: {$gt: '1970'}}))
       .toBe('subject:Patient.name=maud&subject:Patient.birthDate=>1970')
+
+    expect(subject('uri': 'http://test'))
+      .toBe('uri=http%3A%2F%2Ftest')
+ 

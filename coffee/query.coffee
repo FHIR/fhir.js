@@ -93,7 +93,7 @@ identity = (x)-> x
 
 buildSearchParams = (query)->
   ps = for p in linearizeParams(query)
-   [p.param,p.modifier,'=', p.operator, p.value].filter(identity).join('')
+   [p.param,p.modifier,'=', p.operator, encodeURIComponent p.value].filter(identity).join('')
   ps.join "&"
 
 window.fhir ||= {}
