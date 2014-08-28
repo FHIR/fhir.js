@@ -28,7 +28,7 @@ npm install
 `npm bin`/bower install
 
 # buld fhir.js
-`npm bin`/grunt build
+`npm bin`/grunt
 
 # run all tests
 node_modules/karma/bin/karma start --single-run
