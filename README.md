@@ -1,6 +1,8 @@
 fhir.js
 =======
 
+[![Build Status](https://travis-ci.org/FHIR/fhir.js.svg)](https://travis-ci.org/FHIR/fhir.js)
+
 JavaScript client for FHIR
 
 ## Goals:
@@ -11,17 +13,45 @@ JavaScript client for FHIR
  - Support for access control (HTTP basic, OAuth2)
  - ...
 
+## Development
+
+`nodejs` is required for build.
+
+We recommend install it using [nvm](https://github.com/creationix/nvm/blob/master/README.markdown)
+
+Build & test:
+
+```
+git clone https://github.com/FHIR/fhir.js
+cd fhir.js
+npm install
+`npm bin`/bower install
+
+# buld fhir.js
+`npm bin`/grunt build
+
+# run all tests
+node_modules/karma/bin/karma start --single-run
+
+# watch tests while development
+node_modules/karma/bin/karma start
+
+# run concrete test
+node_modules/karma/bin/karma start
+
+```
+
 ## API
 
 ### Conformance & Profiles
 
 ### Resource's CRUD
 
-### Tags
+### Tags Operations
 
 ### Search
 
-`$fhir.search()` function is used for [FHIR resource's search](http://www.hl7.org/implement/standards/fhir/search.html)
+`fhir.search()` function is used for [FHIR resource's search](http://www.hl7.org/implement/standards/fhir/search.html)
 
 ```javascript
 fhir.search('Patient', queryObject)
@@ -50,3 +80,7 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 ```
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
+
+## Contribute
+
+Join us by [github issues](https://github.com/FHIR/fhir.js/issues) or pull-requests

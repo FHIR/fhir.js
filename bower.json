@@ -8,9 +8,7 @@
   ],
   "description": "FHIR javascript API",
   "keywords": ["fhir"],
-  "main": [
-    "ng-fhir.js"
-  ],
+  "main": [ "fhir.js" ],
   "ignore": [
     "coffee",
     ".gitignore",
