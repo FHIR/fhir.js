@@ -1,0 +1,23 @@
+{
+  "name": "fhir.js",
+  "version": "0.0.1",
+  "authors": [
+    "Maksym Bodnarchuk <bodnarchuk@gmail.com>",
+    "Nikolay Ryzhikov <niquola@gmail.com>",
+    "Josh Mandel <joshua.mandel@childrens.harvard.edu>"
+  ],
+  "description": "FHIR javascript API",
+  "keywords": ["fhir"],
+  "main": [
+    "ng-fhir.js"
+  ],
+  "ignore": [
+    "coffee",
+    ".gitignore",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "license": "MIT",
+  "dependencies": { },
+  "devDependencies" : { }
+}
