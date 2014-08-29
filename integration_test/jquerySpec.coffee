@@ -9,5 +9,4 @@ describe "jqFhir", ->
     fhir.configure(auth: {user: 'client', pass: 'secret'})
     fhir.search('Patient', {name: 'maud'})
     .then (d)->
-       console.log('Search by patients', d)
        done()
