@@ -1,4 +1,4 @@
-fhir = require('./fhir.js')
+fhir = require('../fhir.js')
 
 implementXhr = ($http)->
   (q)->

@@ -13,12 +13,25 @@ module.exports = function (grunt) {
         module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
       },
       ngfhir: {
-        entry: "./coffee/ngFhir.js",
+        entry: "./coffee/adapters/ngFhir.js",
         output: {
           path: __dirname + "/dist",
           filename: "ngFhir.js",
           library: "ng-fhir",
           libraryTarget: "umd"
+        },
+        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
+      },
+      jqfhir: {
+        entry: "./coffee/adapters/jqFhir.js",
+        output: {
+          path: __dirname + "/dist",
+          filename: "jqFhir.js",
+          library: "jqFhir",
+          libraryTarget: "umd"
+        },
+        externals: {
+          "jquery": "jQuery"
         },
         module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
       }
