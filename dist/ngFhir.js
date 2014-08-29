@@ -83,22 +83,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	angular.module('ng-fhir', []);
+	angular.module('ng-fhir', ['ng']);
 
 	angular.module('ng-fhir').provider('$fhir', function() {
-	  return {
-	    $get: function($http) {
-	      fhir.setAdapter({
-	        http: implementXhr($http)
-	      });
-	      return {
-	        fhir: fhir,
-	        search: fhir.search,
-	        conformance: fhir.conformance,
-	        profile: fhir.profile
-	      };
-	    }
+	  var constructor, prov;
+	  prov = {};
+	  constructor = function($http) {
+	    fhir.configure({
+	      baseUrl: prov.baseUrl
+	    });
+	    fhir.setAdapter({
+	      http: implementXhr($http)
+	    });
+	    return {
+	      search: fhir.search,
+	      conformance: fhir.conformance,
+	      profile: fhir.profile
+	    };
 	  };
+	  prov.$get = constructor;
+	  return prov;
 	});
 
 	exports.ngInit = function() {

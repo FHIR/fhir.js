@@ -7,18 +7,19 @@ implementXhr = ($http)->
     p.error(q.error) if q.error
     p
 
-# TODO: configure by angular.config
-# search return promises
-
-angular.module('ng-fhir', [])
+angular.module('ng-fhir', ['ng'])
 angular.module('ng-fhir').provider '$fhir', ()->
-  $get: ($http)->
+  prov = {}
+  constructor = ($http)->
+    fhir.configure(baseUrl: prov.baseUrl)
     fhir.setAdapter
       http: implementXhr($http)
 
-    fhir: fhir
     search: fhir.search
     conformance: fhir.conformance
     profile: fhir.profile
+
+  prov.$get = constructor
+  prov
 
 exports.ngInit = ()-> console.log('ng initialized')
