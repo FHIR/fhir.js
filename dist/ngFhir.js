@@ -87,21 +87,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	angular.module('ng-fhir', ['ng']);
 
 	angular.module('ng-fhir').provider('$fhir', function() {
-<<<<<<< HEAD
-	  return {
-	    $get: function($http) {
-	      fhir.setAdapter({
-	        http: implementXhr($http)
-	      });
-	      return {
-	        fhir: fhir,
-	        search: fhir.search,
-	        conformance: fhir.conformance,
-	        profile: fhir.profile,
-	        transaction: fhir.transaction
-	      };
-	    }
-=======
 	  var constructor, prov;
 	  prov = {};
 	  constructor = function($http) {
@@ -114,9 +99,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return {
 	      search: fhir.search,
 	      conformance: fhir.conformance,
-	      profile: fhir.profile
+	      profile: fhir.profile,
+	      transaction: fhir.transaction
 	    };
->>>>>>> 81336413c28f979caf657101c0691a377357c45e
 	  };
 	  prov.$get = constructor;
 	  return prov;

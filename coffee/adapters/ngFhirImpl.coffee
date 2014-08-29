@@ -20,11 +20,7 @@ angular.module('ng-fhir').provider '$fhir', ()->
     profile: fhir.profile
     transaction: fhir.transaction
 
-<<<<<<< HEAD:coffee/ngFhirImpl.coffee
-exports.ngInit = ()-> console.log('ng initialized')
-=======
   prov.$get = constructor
   prov
 
 exports.ngInit = ()-> console.log('ng initialized')
->>>>>>> 81336413c28f979caf657101c0691a377357c45e:coffee/adapters/ngFhirImpl.coffee

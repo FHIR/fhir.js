@@ -1,0 +1,1090 @@
+[1mdiff --git a/coffee/adapters/ngFhirImpl.coffee b/coffee/adapters/ngFhirImpl.coffee[m
+[1mindex 158e269..bab3110 100644[m
+[1m--- a/coffee/adapters/ngFhirImpl.coffee[m
+[1m+++ b/coffee/adapters/ngFhirImpl.coffee[m
+[36m@@ -20,11 +20,7 @@[m [mangular.module('ng-fhir').provider '$fhir', ()->[m
+     profile: fhir.profile[m
+     transaction: fhir.transaction[m
+ [m
+[31m-<<<<<<< HEAD:coffee/ngFhirImpl.coffee[m
+[31m-exports.ngInit = ()-> console.log('ng initialized')[m
+[31m-=======[m
+   prov.$get = constructor[m
+   prov[m
+ [m
+[31m-exports.ngInit = ()-> console.log('ng initialized')[m
+[31m->>>>>>> 81336413c28f979caf657101c0691a377357c45e:coffee/adapters/ngFhirImpl.coffee[m
+[32m+[m[32mexports.ngInit = ()-> console.log('ng initialized')[m
+\ No newline at end of file[m
+[1mdiff --git a/dist/jqFhir.js b/dist/jqFhir.js[m
+[1mdeleted file mode 100644[m
+[1mindex e4d754f..0000000[m
+[1m--- a/dist/jqFhir.js[m
+[1m+++ /dev/null[m
+[36m@@ -1,531 +0,0 @@[m
+[31m-(function webpackUniversalModuleDefinition(root, factory) {[m
+[31m-	if(typeof exports === 'object' && typeof module === 'object')[m
+[31m-		module.exports = factory(require("jQuery"));[m
+[31m-	else if(typeof define === 'function' && define.amd)[m
+[31m-		define(["jQuery"], factory);[m
+[31m-	else if(typeof exports === 'object')[m
+[31m-		exports["jqFhir"] = factory(require("jQuery"));[m
+[31m-	else[m
+[31m-		root["jqFhir"] = factory(root["jQuery"]);[m
+[31m-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {[m
+[31m-return /******/ (function(modules) { // webpackBootstrap[m
+[31m-/******/ 	// The module cache[m
+[31m-/******/ 	var installedModules = {};[m
+[31m-/******/[m
+[31m-/******/ 	// The require function[m
+[31m-/******/ 	function __webpack_require__(moduleId) {[m
+[31m-/******/[m
+[31m-/******/ 		// Check if module is in cache[m
+[31m-/******/ 		if(installedModules[moduleId])[m
+[31m-/******/ 			return installedModules[moduleId].exports;[m
+[31m-/******/[m
+[31m-/******/ 		// Create a new module (and put it into the cache)[m
+[31m-/******/ 		var module = installedModules[moduleId] = {[m
+[31m-/******/ 			exports: {},[m
+[31m-/******/ 			id: moduleId,[m
+[31m-/******/ 			loaded: false[m
+[31m-/******/ 		};[m
+[31m-/******/[m
+[31m-/******/ 		// Execute the module function[m
+[31m-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);[m
+[31m-/******/[m
+[31m-/******/ 		// Flag the module as loaded[m
+[31m-/******/ 		module.loaded = true;[m
+[31m-/******/[m
+[31m-/******/ 		// Return the exports of the module[m
+[31m-/******/ 		return module.exports;[m
+[31m-/******/ 	}[m
+[31m-/******/[m
+[31m-/******/[m
+[31m-/******/ 	// expose the modules object (__webpack_modules__)[m
+[31m-/******/ 	__webpack_require__.m = modules;[m
+[31m-/******/[m
+[31m-/******/ 	// expose the module cache[m
+[31m-/******/ 	__webpack_require__.c = installedModules;[m
+[31m-/******/[m
+[31m-/******/ 	// __webpack_public_path__[m
+[31m-/******/ 	__webpack_require__.p = "";[m
+[31m-/******/[m
+[31m-/******/ 	// Load entry module and return exports[m
+[31m-/******/ 	return __webpack_require__(0);[m
+[31m-/******/ })[m
+[31m-/************************************************************************/[m
+[31m-/******/ ([[m
+[31m-/* 0 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	module.exports = __webpack_require__(1);[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 1 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var $, adapter, fhir;[m
+[31m-[m
+[31m-	fhir = __webpack_require__(3);[m
+[31m-[m
+[31m-	$ = __webpack_require__(2);[m
+[31m-[m
+[31m-	adapter = {[m
+[31m-	  "http": function(q) {[m
+[31m-	    var a;[m
+[31m-	    a = $.ajax({[m
+[31m-	      type: q.method,[m
+[31m-	      url: q.url[m
+[31m-	    });[m
+[31m-	    if (q.success) {[m
+[31m-	      a.done(q.success);[m
+[31m-	    }[m
+[31m-	    if (q.error) {[m
+[31m-	      return a.fail(q.error);[m
+[31m-	    }[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	fhir.setAdapter(adapter);[m
+[31m-[m
+[31m-	exports.fhir = fhir;[m
+[31m-[m
+[31m-	exports.configure = fhir.configure;[m
+[31m-[m
+[31m-	exports.search = function(type, query) {[m
+[31m-	  var ret;[m
+[31m-	  ret = $.Deferred();[m
+[31m-	  fhir.search(type, query, ret.resolve, ret.reject);[m
+[31m-	  return ret;[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 2 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 3 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter = __webpack_require__(4);[m
+[31m-	var cfg = __webpack_require__(5);[m
+[31m-[m
+[31m-	var search = __webpack_require__(6);[m
+[31m-	var conf = __webpack_require__(7);[m
+[31m-	var tags = __webpack_require__(8);[m
+[31m-[m
+[31m-	exports.setAdapter = adapter.setAdapter[m
+[31m-	exports.configure = cfg.configure[m
+[31m-	exports.config = cfg.config[m
+[31m-[m
+[31m-	exports.search = search.search;[m
+[31m-	exports.conformance = conf.conformance;[m
+[31m-	exports.profile = conf.profile;[m
+[31m-[m
+[31m-	exports.tags = tags.tags;[m
+[31m-	exports.affixTags = tags.affixTags;[m
+[31m-	exports.removeTags = tags.removeTags;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 4 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter;[m
+[31m-[m
+[31m-	adapter = null;[m
+[31m-[m
+[31m-	exports.setAdapter = function(x) {[m
+[31m-	  return adapter = x;[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.getAdapter = function() {[m
+[31m-	  return adapter;[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 5 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var config;[m
+[31m-[m
+[31m-	config = {};[m
+[31m-[m
+[31m-	exports.config = config;[m
+[31m-[m
+[31m-	exports.configure = function(m) {[m
+[31m-	  var k, v, _results;[m
+[31m-	  _results = [];[m
+[31m-	  for (k in m) {[m
+[31m-	    v = m[k];[m
+[31m-	    _results.push(config[k] = v);[m
+[31m-	  }[m
+[31m-	  return _results;[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 6 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, base, cfg, queryBuider, searchResource;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(4);[m
+[31m-[m
+[31m-	queryBuider = __webpack_require__(9);[m
+[31m-[m
+[31m-	cfg = __webpack_require__(5);[m
+[31m-[m
+[31m-	base = function() {[m
+[31m-	  return adapter.getAdapter();[m
+[31m-	};[m
+[31m-[m
+[31m-	searchResource = function(type, query, cb, err) {[m
+[31m-	  var queryStr, uri;[m
+[31m-	  queryStr = queryBuider.query(query);[m
+[31m-	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: uri,[m
+[31m-	    success: function(data) {[m
+[31m-	      if (cb) {[m
+[31m-	        return cb(data);[m
+[31m-	      }[m
+[31m-	    },[m
+[31m-	    error: function(e) {[m
+[31m-	      if (err) {[m
+[31m-	        return err(e);[m
+[31m-	      }[m
+[31m-	    }[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.search = searchResource;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 7 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, base, conf;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(4);[m
+[31m-[m
+[31m-	conf = __webpack_require__(5);[m
+[31m-[m
+[31m-	base = function() {[m
+[31m-	  return adapter.getAdapter();[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.conformance = function(cb, err) {[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: "" + conf.config.baseUrl + "/metadata",[m
+[31m-	    success: cb,[m
+[31m-	    error: err[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.profile = function(type, cb, err) {[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: "" + conf.config.baseUrl + "/Profile/" + type,[m
+[31m-	    success: cb,[m
+[31m-	    error: err[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 8 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(4);[m
+[31m-[m
+[31m-	tagsAll = function() {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResourceType = function(type) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResource = function(type, id) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResourceVersion = function(type, id, vid) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 0:[m
+[31m-	      return tagsAll();[m
+[31m-	    case 1:[m
+[31m-	      return tagsResourceType.apply(null, arguments);[m
+[31m-	    case 2:[m
+[31m-	      return tagsResource.apply(null, arguments);[m
+[31m-	    case 3:[m
+[31m-	      return tagsResourceVersion.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTagsToResource = function(type, id, tags) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTagsToResourceVersion = function(type, id, vid, tags) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 3:[m
+[31m-	      return affixTagsToResource.apply(null, arguments);[m
+[31m-	    case 4:[m
+[31m-	      return affixTagsToResourceVersion.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTagsFromResource = function(type, id) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTagsFromResourceVerson = function(type, id, vid) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 2:[m
+[31m-	      return removeTagsFromResource.apply(null, arguments);[m
+[31m-	    case 3:[m
+[31m-	      return removeTagsFromResourceVerson.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity: expected (type,id) or (type,id,vid)";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.tags = tags;[m
+[31m-[m
+[31m-	exports.affixTags = affixTags;[m
+[31m-[m
+[31m-	exports.removeTags = removeTags;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 9 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;[m
+[31m-[m
+[31m-	type = function(obj) {[m
+[31m-	  var classToType;[m
+[31m-	  if (obj === void 0 || obj === null) {[m
+[31m-	    return String(obj);[m
+[31m-	  }[m
+[31m-	  classToType = {[m
+[31m-	    '[object Boolean]': 'boolean',[m
+[31m-	    '[object Number]': 'number',[m
+[31m-	    '[object String]': 'string',[m
+[31m-	    '[object Function]': 'function',[m
+[31m-	    '[object Array]': 'array',[m
+[31m-	    '[object Date]': 'date',[m
+[31m-	    '[object RegExp]': 'regexp',[m
+[31m-	    '[object Object]': 'object'[m
+[31m-	  };[m
+[31m-	  return classToType[Object.prototype.toString.call(obj)];[m
+[31m-	};[m
+[31m-[m
+[31m-	assertArray = function(a) {[m
+[31m-	  if (type(a) !== 'array') {[m
+[31m-	    throw 'not array';[m
+[31m-	  }[m
+[31m-	  return a;[m
+[31m-	};[m
+[31m-[m
+[31m-	assertObject = function(a) {[m
+[31m-	  if (type(a) !== 'object') {[m
+[31m-	    throw 'not object';[m
+[31m-	  }[m
+[31m-	  return a;[m
+[31m-	};[m
+[31m-[m
+[31m-	reduceMap = function(m, fn, acc) {[m
+[31m-	  var k, v;[m
+[31m-	  acc || (acc = []);[m
+[31m-	  assertObject(m);[m
+[31m-	  return ((function() {[m
+[31m-	    var _results;[m
+[31m-	    _results = [];[m
+[31m-	    for (k in m) {[m
+[31m-	      v = m[k];[m
+[31m-	      _results.push([k, v]);[m
+[31m-	    }[m
+[31m-	    return _results;[m
+[31m-	  })()).reduce(fn, acc);[m
+[31m-	};[m
+[31m-[m
+[31m-	identity = function(x) {[m
+[31m-	  return x;[m
+[31m-	};[m
+[31m-[m
+[31m-	OPERATORS = {[m
+[31m-	  $gt: '>',[m
+[31m-	  $lt: '<',[m
+[31m-	  $lte: '<=',[m
+[31m-	  $gte: '>='[m
+[31m-	};[m
+[31m-[m
+[31m-	MODIFIERS = {[m
+[31m-	  $asc: ':asc',[m
+[31m-	  $desc: ':desc',[m
+[31m-	  $exact: ':exact',[m
+[31m-	  $missing: ':missing',[m
+[31m-	  $null: ':missing',[m
+[31m-	  $text: ':text'[m
+[31m-	};[m
+[31m-[m
+[31m-	isOperator = function(v) {[m
+[31m-	  return v.indexOf('$') === 0;[m
+[31m-	};[m
+[31m-[m
+[31m-	expandParam = function(k, v) {[m
+[31m-	  return reduceMap(v, function(acc, _arg) {[m
+[31m-	    var kk, o, res, vv;[m
+[31m-	    kk = _arg[0], vv = _arg[1];[m
+[31m-	    return acc.concat(kk === '$and' ? assertArray(vv).reduce((function(a, vvv) {[m
+[31m-	      return a.concat(linearizeOne(k, vvv));[m
+[31m-	    }), []) : kk === '$type' ? [] : isOperator(kk) ? (o = {[m
+[31m-	      param: k[m
+[31m-	    }, kk === '$or' ? o.value = vv : (OPERATORS[kk] ? o.operator = OPERATORS[kk] : void 0, MODIFIERS[kk] ? o.modifier = MODIFIERS[kk] : void 0, type(vv) === 'object' && vv.$or ? o.value = vv.$or : o.value = [vv]), [o]) : (v.$type ? res = ":" + v.$type : void 0, linearizeOne("" + k + (res || '') + "." + kk, vv)));[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	handleSort = function(xs) {[m
+[31m-	  var x, _i, _len, _results;[m
+[31m-	  assertArray(xs);[m
+[31m-	  _results = [];[m
+[31m-	  for (_i = 0, _len = xs.length; _i < _len; _i++) {[m
+[31m-	    x = xs[_i];[m
+[31m-	    switch (type(x)) {[m
+[31m-	      case 'array':[m
+[31m-	        _results.push({[m
+[31m-	          param: '_sort',[m
+[31m-	          value: x[0],[m
+[31m-	          modifier: ":" + x[1][m
+[31m-	        });[m
+[31m-	        break;[m
+[31m-	      case 'string':[m
+[31m-	        _results.push({[m
+[31m-	          param: '_sort',[m
+[31m-	          value: x[m
+[31m-	        });[m
+[31m-	        break;[m
+[31m-	      default:[m
+[31m-	        _results.push(void 0);[m
+[31m-	    }[m
+[31m-	  }[m
+[31m-	  return _results;[m
+[31m-	};[m
+[31m-[m
+[31m-	handleInclude = function(includes) {[m
+[31m-	  return reduceMap(includes, function(acc, _arg) {[m
+[31m-	    var k, v;[m
+[31m-	    k = _arg[0], v = _arg[1];[m
+[31m-	    return acc.concat((function() {[m
+[31m-	      switch (type(v)) {[m
+[31m-	        case 'array':[m
+[31m-	          return v.map(function(x) {[m
+[31m-	            return {[m
+[31m-	              param: '_include',[m
+[31m-	              value: "" + k + "." + x[m
+[31m-	            };[m
+[31m-	          });[m
+[31m-	        case 'string':[m
+[31m-	          return [[m
+[31m-	            {[m
+[31m-	              param: '_include',[m
+[31m-	              value: "" + k + "." + v[m
+[31m-	            }[m
+[31m-	          ];[m
+[31m-	      }[m
+[31m-	    })());[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	linearizeOne = function(k, v) {[m
+[31m-	  if (k === '$sort') {[m
+[31m-	    return handleSort(v);[m
+[31m-	  } else if (k === '$include') {[m
+[31m-	    return handleInclude(v);[m
+[31m-	  } else {[m
+[31m-	    switch (type(v)) {[m
+[31m-	      case 'object':[m
+[31m-	        return expandParam(k, v);[m
+[31m-	      case 'string':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      case 'number':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      case 'array':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v.join("|")][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      default:[m
+[31m-	        throw "could not linearizeParams " + (type(v));[m
+[31m-	    }[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	linearizeParams = function(query) {[m
+[31m-	  return reduceMap(query, function(acc, _arg) {[m
+[31m-	    var k, v;[m
+[31m-	    k = _arg[0], v = _arg[1];[m
+[31m-	    return acc.concat(linearizeOne(k, v));[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	buildSearchParams = function(query) {[m
+[31m-	  var p, ps;[m
+[31m-	  ps = (function() {[m
+[31m-	    var _i, _len, _ref, _results;[m
+[31m-	    _ref = linearizeParams(query);[m
+[31m-	    _results = [];[m
+[31m-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {[m
+[31m-	      p = _ref[_i];[m
+[31m-	      _results.push([p.param, p.modifier, '=', p.operator, encodeURIComponent(p.value)].filter(identity).join(''));[m
+[31m-	    }[m
+[31m-	    return _results;[m
+[31m-	  })();[m
+[31m-	  return ps.join("&");[m
+[31m-	};[m
+[31m-[m
+[31m-	exports._query = linearizeParams;[m
+[31m-[m
+[31m-	exports.query = buildSearchParams;[m
+[31m-[m
+[31m-[m
+[31m-/***/ }[m
+[31m-/******/ ])[m
+[31m-});[m
+[1mdiff --git a/dist/ngFhir.js b/dist/ngFhir.js[m
+[1mindex 6c40c13..e6262cc 100644[m
+[1m--- a/dist/ngFhir.js[m
+[1m+++ b/dist/ngFhir.js[m
+[36m@@ -54,529 +54,10 @@[m [mreturn /******/ (function(modules) { // webpackBootstrap[m
+ /* 0 */[m
+ /***/ function(module, exports, __webpack_require__) {[m
+ [m
+[31m-	var ng = __webpack_require__(1)[m
+[32m+[m	[32mvar ng = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./ngFhirImpl.coffee\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))[m
+ 	ng.ngInit()[m
+ [m
+ [m
+[31m-/***/ },[m
+[31m-/* 1 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var fhir, implementXhr;[m
+[31m-[m
+[31m-	fhir = __webpack_require__(2);[m
+[31m-[m
+[31m-	implementXhr = function($http) {[m
+[31m-	  return function(q) {[m
+[31m-	    var p;[m
+[31m-	    p = $http({[m
+[31m-	      method: q.method,[m
+[31m-	      url: q.url,[m
+[31m-	      data: q.data[m
+[31m-	    });[m
+[31m-	    if (q.success) {[m
+[31m-	      p.success(q.success);[m
+[31m-	    }[m
+[31m-	    if (q.error) {[m
+[31m-	      p.error(q.error);[m
+[31m-	    }[m
+[31m-	    return p;[m
+[31m-	  };[m
+[31m-	};[m
+[31m-[m
+[31m-	angular.module('ng-fhir', ['ng']);[m
+[31m-[m
+[31m-	angular.module('ng-fhir').provider('$fhir', function() {[m
+[31m-<<<<<<< HEAD[m
+[31m-	  return {[m
+[31m-	    $get: function($http) {[m
+[31m-	      fhir.setAdapter({[m
+[31m-	        http: implementXhr($http)[m
+[31m-	      });[m
+[31m-	      return {[m
+[31m-	        fhir: fhir,[m
+[31m-	        search: fhir.search,[m
+[31m-	        conformance: fhir.conformance,[m
+[31m-	        profile: fhir.profile,[m
+[31m-	        transaction: fhir.transaction[m
+[31m-	      };[m
+[31m-	    }[m
+[31m-=======[m
+[31m-	  var constructor, prov;[m
+[31m-	  prov = {};[m
+[31m-	  constructor = function($http) {[m
+[31m-	    fhir.configure({[m
+[31m-	      baseUrl: prov.baseUrl[m
+[31m-	    });[m
+[31m-	    fhir.setAdapter({[m
+[31m-	      http: implementXhr($http)[m
+[31m-	    });[m
+[31m-	    return {[m
+[31m-	      search: fhir.search,[m
+[31m-	      conformance: fhir.conformance,[m
+[31m-	      profile: fhir.profile[m
+[31m-	    };[m
+[31m->>>>>>> 81336413c28f979caf657101c0691a377357c45e[m
+[31m-	  };[m
+[31m-	  prov.$get = constructor;[m
+[31m-	  return prov;[m
+[31m-	});[m
+[31m-[m
+[31m-	exports.ngInit = function() {[m
+[31m-	  return console.log('ng initialized');[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 2 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter = __webpack_require__(3);[m
+[31m-	var cfg = __webpack_require__(4);[m
+[31m-[m
+[31m-	var search = __webpack_require__(5);[m
+[31m-	var conf = __webpack_require__(6);[m
+[31m-	var tran = __webpack_require__(7);[m
+[31m-	var tags = __webpack_require__(8);[m
+[31m-[m
+[31m-	exports.setAdapter = adapter.setAdapter[m
+[31m-	exports.configure = cfg.configure[m
+[31m-	exports.config = cfg.config[m
+[31m-[m
+[31m-	exports.search = search.search;[m
+[31m-	exports.conformance = conf.conformance;[m
+[31m-	exports.profile = conf.profile;[m
+[31m-	exports.transaction = tran.transaction;[m
+[31m-[m
+[31m-	exports.tags = tags.tags;[m
+[31m-	exports.affixTags = tags.affixTags;[m
+[31m-	exports.removeTags = tags.removeTags;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 3 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter;[m
+[31m-[m
+[31m-	adapter = null;[m
+[31m-[m
+[31m-	exports.setAdapter = function(x) {[m
+[31m-	  return adapter = x;[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.getAdapter = function() {[m
+[31m-	  return adapter;[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 4 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var config;[m
+[31m-[m
+[31m-	config = {};[m
+[31m-[m
+[31m-	exports.config = config;[m
+[31m-[m
+[31m-	exports.configure = function(m) {[m
+[31m-	  var k, v, _results;[m
+[31m-	  _results = [];[m
+[31m-	  for (k in m) {[m
+[31m-	    v = m[k];[m
+[31m-	    _results.push(config[k] = v);[m
+[31m-	  }[m
+[31m-	  return _results;[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 5 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, base, cfg, queryBuider, searchResource;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(3);[m
+[31m-[m
+[31m-	queryBuider = __webpack_require__(9);[m
+[31m-[m
+[31m-	cfg = __webpack_require__(4);[m
+[31m-[m
+[31m-	base = function() {[m
+[31m-	  return adapter.getAdapter();[m
+[31m-	};[m
+[31m-[m
+[31m-	searchResource = function(type, query, cb, err) {[m
+[31m-	  var queryStr, uri;[m
+[31m-	  queryStr = queryBuider.query(query);[m
+[31m-	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: uri,[m
+[31m-	    success: function(data) {[m
+[31m-	      if (cb) {[m
+[31m-	        return cb(data);[m
+[31m-	      }[m
+[31m-	    },[m
+[31m-	    error: function(e) {[m
+[31m-	      if (err) {[m
+[31m-	        return err(e);[m
+[31m-	      }[m
+[31m-	    }[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.search = searchResource;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 6 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, base, conf;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(3);[m
+[31m-[m
+[31m-	conf = __webpack_require__(4);[m
+[31m-[m
+[31m-	base = function() {[m
+[31m-	  return adapter.getAdapter();[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.conformance = function(cb, err) {[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: "" + conf.config.baseUrl + "/metadata",[m
+[31m-	    success: cb,[m
+[31m-	    error: err[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.profile = function(type, cb, err) {[m
+[31m-	  return base().http({[m
+[31m-	    method: 'GET',[m
+[31m-	    url: "" + conf.config.baseUrl + "/Profile/" + type,[m
+[31m-	    success: cb,[m
+[31m-	    error: err[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 7 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, base, conf;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(3);[m
+[31m-[m
+[31m-	conf = __webpack_require__(4);[m
+[31m-[m
+[31m-	base = function() {[m
+[31m-	  return adapter.getAdapter();[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.transaction = function(bundle, cb, err) {[m
+[31m-	  return base().http({[m
+[31m-	    method: 'POST',[m
+[31m-	    url: conf.config.baseUrl,[m
+[31m-	    data: bundle,[m
+[31m-	    success: cb,[m
+[31m-	    error: err[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 8 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;[m
+[31m-[m
+[31m-	adapter = __webpack_require__(3);[m
+[31m-[m
+[31m-	tagsAll = function() {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResourceType = function(type) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResource = function(type, id) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tagsResourceVersion = function(type, id, vid) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	tags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 0:[m
+[31m-	      return tagsAll();[m
+[31m-	    case 1:[m
+[31m-	      return tagsResourceType.apply(null, arguments);[m
+[31m-	    case 2:[m
+[31m-	      return tagsResource.apply(null, arguments);[m
+[31m-	    case 3:[m
+[31m-	      return tagsResourceVersion.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTagsToResource = function(type, id, tags) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTagsToResourceVersion = function(type, id, vid, tags) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	affixTags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 3:[m
+[31m-	      return affixTagsToResource.apply(null, arguments);[m
+[31m-	    case 4:[m
+[31m-	      return affixTagsToResourceVersion.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTagsFromResource = function(type, id) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTagsFromResourceVerson = function(type, id, vid) {[m
+[31m-	  return console.log('impl me');[m
+[31m-	};[m
+[31m-[m
+[31m-	removeTags = function() {[m
+[31m-	  switch (arguments.length) {[m
+[31m-	    case 2:[m
+[31m-	      return removeTagsFromResource.apply(null, arguments);[m
+[31m-	    case 3:[m
+[31m-	      return removeTagsFromResourceVerson.apply(null, arguments);[m
+[31m-	    default:[m
+[31m-	      throw "wrong arity: expected (type,id) or (type,id,vid)";[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	exports.tags = tags;[m
+[31m-[m
+[31m-	exports.affixTags = affixTags;[m
+[31m-[m
+[31m-	exports.removeTags = removeTags;[m
+[31m-[m
+[31m-[m
+[31m-/***/ },[m
+[31m-/* 9 */[m
+[31m-/***/ function(module, exports, __webpack_require__) {[m
+[31m-[m
+[31m-	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;[m
+[31m-[m
+[31m-	type = function(obj) {[m
+[31m-	  var classToType;[m
+[31m-	  if (obj === void 0 || obj === null) {[m
+[31m-	    return String(obj);[m
+[31m-	  }[m
+[31m-	  classToType = {[m
+[31m-	    '[object Boolean]': 'boolean',[m
+[31m-	    '[object Number]': 'number',[m
+[31m-	    '[object String]': 'string',[m
+[31m-	    '[object Function]': 'function',[m
+[31m-	    '[object Array]': 'array',[m
+[31m-	    '[object Date]': 'date',[m
+[31m-	    '[object RegExp]': 'regexp',[m
+[31m-	    '[object Object]': 'object'[m
+[31m-	  };[m
+[31m-	  return classToType[Object.prototype.toString.call(obj)];[m
+[31m-	};[m
+[31m-[m
+[31m-	assertArray = function(a) {[m
+[31m-	  if (type(a) !== 'array') {[m
+[31m-	    throw 'not array';[m
+[31m-	  }[m
+[31m-	  return a;[m
+[31m-	};[m
+[31m-[m
+[31m-	assertObject = function(a) {[m
+[31m-	  if (type(a) !== 'object') {[m
+[31m-	    throw 'not object';[m
+[31m-	  }[m
+[31m-	  return a;[m
+[31m-	};[m
+[31m-[m
+[31m-	reduceMap = function(m, fn, acc) {[m
+[31m-	  var k, v;[m
+[31m-	  acc || (acc = []);[m
+[31m-	  assertObject(m);[m
+[31m-	  return ((function() {[m
+[31m-	    var _results;[m
+[31m-	    _results = [];[m
+[31m-	    for (k in m) {[m
+[31m-	      v = m[k];[m
+[31m-	      _results.push([k, v]);[m
+[31m-	    }[m
+[31m-	    return _results;[m
+[31m-	  })()).reduce(fn, acc);[m
+[31m-	};[m
+[31m-[m
+[31m-	identity = function(x) {[m
+[31m-	  return x;[m
+[31m-	};[m
+[31m-[m
+[31m-	OPERATORS = {[m
+[31m-	  $gt: '>',[m
+[31m-	  $lt: '<',[m
+[31m-	  $lte: '<=',[m
+[31m-	  $gte: '>='[m
+[31m-	};[m
+[31m-[m
+[31m-	MODIFIERS = {[m
+[31m-	  $asc: ':asc',[m
+[31m-	  $desc: ':desc',[m
+[31m-	  $exact: ':exact',[m
+[31m-	  $missing: ':missing',[m
+[31m-	  $null: ':missing',[m
+[31m-	  $text: ':text'[m
+[31m-	};[m
+[31m-[m
+[31m-	isOperator = function(v) {[m
+[31m-	  return v.indexOf('$') === 0;[m
+[31m-	};[m
+[31m-[m
+[31m-	expandParam = function(k, v) {[m
+[31m-	  return reduceMap(v, function(acc, _arg) {[m
+[31m-	    var kk, o, res, vv;[m
+[31m-	    kk = _arg[0], vv = _arg[1];[m
+[31m-	    return acc.concat(kk === '$and' ? assertArray(vv).reduce((function(a, vvv) {[m
+[31m-	      return a.concat(linearizeOne(k, vvv));[m
+[31m-	    }), []) : kk === '$type' ? [] : isOperator(kk) ? (o = {[m
+[31m-	      param: k[m
+[31m-	    }, kk === '$or' ? o.value = vv : (OPERATORS[kk] ? o.operator = OPERATORS[kk] : void 0, MODIFIERS[kk] ? o.modifier = MODIFIERS[kk] : void 0, type(vv) === 'object' && vv.$or ? o.value = vv.$or : o.value = [vv]), [o]) : (v.$type ? res = ":" + v.$type : void 0, linearizeOne("" + k + (res || '') + "." + kk, vv)));[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	handleSort = function(xs) {[m
+[31m-	  var x, _i, _len, _results;[m
+[31m-	  assertArray(xs);[m
+[31m-	  _results = [];[m
+[31m-	  for (_i = 0, _len = xs.length; _i < _len; _i++) {[m
+[31m-	    x = xs[_i];[m
+[31m-	    switch (type(x)) {[m
+[31m-	      case 'array':[m
+[31m-	        _results.push({[m
+[31m-	          param: '_sort',[m
+[31m-	          value: x[0],[m
+[31m-	          modifier: ":" + x[1][m
+[31m-	        });[m
+[31m-	        break;[m
+[31m-	      case 'string':[m
+[31m-	        _results.push({[m
+[31m-	          param: '_sort',[m
+[31m-	          value: x[m
+[31m-	        });[m
+[31m-	        break;[m
+[31m-	      default:[m
+[31m-	        _results.push(void 0);[m
+[31m-	    }[m
+[31m-	  }[m
+[31m-	  return _results;[m
+[31m-	};[m
+[31m-[m
+[31m-	handleInclude = function(includes) {[m
+[31m-	  return reduceMap(includes, function(acc, _arg) {[m
+[31m-	    var k, v;[m
+[31m-	    k = _arg[0], v = _arg[1];[m
+[31m-	    return acc.concat((function() {[m
+[31m-	      switch (type(v)) {[m
+[31m-	        case 'array':[m
+[31m-	          return v.map(function(x) {[m
+[31m-	            return {[m
+[31m-	              param: '_include',[m
+[31m-	              value: "" + k + "." + x[m
+[31m-	            };[m
+[31m-	          });[m
+[31m-	        case 'string':[m
+[31m-	          return [[m
+[31m-	            {[m
+[31m-	              param: '_include',[m
+[31m-	              value: "" + k + "." + v[m
+[31m-	            }[m
+[31m-	          ];[m
+[31m-	      }[m
+[31m-	    })());[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	linearizeOne = function(k, v) {[m
+[31m-	  if (k === '$sort') {[m
+[31m-	    return handleSort(v);[m
+[31m-	  } else if (k === '$include') {[m
+[31m-	    return handleInclude(v);[m
+[31m-	  } else {[m
+[31m-	    switch (type(v)) {[m
+[31m-	      case 'object':[m
+[31m-	        return expandParam(k, v);[m
+[31m-	      case 'string':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      case 'number':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      case 'array':[m
+[31m-	        return [[m
+[31m-	          {[m
+[31m-	            param: k,[m
+[31m-	            value: [v.join("|")][m
+[31m-	          }[m
+[31m-	        ];[m
+[31m-	      default:[m
+[31m-	        throw "could not linearizeParams " + (type(v));[m
+[31m-	    }[m
+[31m-	  }[m
+[31m-	};[m
+[31m-[m
+[31m-	linearizeParams = function(query) {[m
+[31m-	  return reduceMap(query, function(acc, _arg) {[m
+[31m-	    var k, v;[m
+[31m-	    k = _arg[0], v = _arg[1];[m
+[31m-	    return acc.concat(linearizeOne(k, v));[m
+[31m-	  });[m
+[31m-	};[m
+[31m-[m
+[31m-	buildSearchParams = function(query) {[m
+[31m-	  var p, ps;[m
+[31m-	  ps = (function() {[m
+[31m-	    var _i, _len, _ref, _results;[m
+[31m-	    _ref = linearizeParams(query);[m
+[31m-	    _results = [];[m
+[31m-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {[m
+[31m-	      p = _ref[_i];[m
+[31m-	      _results.push([p.param, p.modifier, '=', p.operator, encodeURIComponent(p.value)].filter(identity).join(''));[m
+[31m-	    }[m
+[31m-	    return _results;[m
+[31m-	  })();[m
+[31m-	  return ps.join("&");[m
+[31m-	};[m
+[31m-[m
+[31m-	exports._query = linearizeParams;[m
+[31m-[m
+[31m-	exports.query = buildSearchParams;[m
+[31m-[m
+[31m-[m
+ /***/ }[m
+ /******/ ])[m
+ });[m
