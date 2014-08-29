@@ -12,6 +12,21 @@ type = (obj) ->
       '[object Object]': 'object'
     return classToType[Object.prototype.toString.call(obj)]
 
+assertArray = (a)->
+  throw 'not array' unless type(a) == 'array'
+  a
+assertObject = (a)->
+  throw 'not object' unless type(a) == 'object'
+  a
+
+reduceMap = (m, fn, acc)->
+  acc ||= []
+  assertObject(m)
+  ([k,v] for k,v of m).reduce(fn, acc)
+
+
+identity = (x)-> x
+
 OPERATORS =
   $gt: '>'
   $lt: '<'
@@ -29,23 +44,8 @@ MODIFIERS=
 isOperator = (v)->
   v.indexOf('$') == 0
 
-evalObjectValue = (o)->
-  ("#{OPERATORS[k]}#{v}" for k,v of o).join("???")
-
-evalValue = (v)->
-  switch type(v)
-    when 'object' then evalObjectValue(v)
-    when 'string' then v
-    else throw 'could not evalValue'
-
-tap = (o, cb)-> cb(o); o
-
-assertArray = (a)->
-  throw 'not array' unless type(a) == 'array'
-  a
-
 expandParam = (k,v)->
-  reduceFn = (acc, [kk,vv])->
+  reduceMap v,  (acc, [kk,vv])->
     acc.concat if kk == '$and'
       assertArray(vv)
         .reduce(((a,vvv)-> a.concat(linearizeOne(k,vvv))), [])
@@ -67,33 +67,47 @@ expandParam = (k,v)->
       res = ":#{v.$type}" if v.$type
       linearizeOne("#{k}#{res || ''}.#{kk}", vv)
 
-  ([x,y] for x,y of v).reduce(reduceFn, [])
+handleSort = (xs)->
+  assertArray(xs)
+  for x in xs
+    switch type(x)
+      when 'array'
+        param: '_sort', value: x[0], modifier: ":#{x[1]}"
+      when 'string'
+        param: '_sort', value: x
 
+handleInclude = (includes)->
+  reduceMap includes, (acc, [k,v])->
+    acc.concat switch type(v)
+      when 'array'
+        v.map (x)-> {param: '_include', value: "#{k}.#{x}"}
+      when 'string'
+        [{param: '_include', value: "#{k}.#{v}"}]
 
 linearizeOne = (k,v)->
-  switch type(v)
-    when 'object'
-      expandParam(k,v)
-    when 'string'
-      [{param: k, value: [v]}]
-    when 'number'
-      [{param: k, value: [v]}]
-    when 'array'
-      [{param: k, value: [v.join("|")]}]
-    else throw "could not linearizeParams #{type(v)}"
+  if k == '$sort'
+    handleSort(v)
+  else if k == '$include'
+    handleInclude(v)
+  else
+    switch type(v)
+      when 'object'
+        expandParam(k,v)
+      when 'string'
+        [{param: k, value: [v]}]
+      when 'number'
+        [{param: k, value: [v]}]
+      when 'array'
+        [{param: k, value: [v.join("|")]}]
+      else throw "could not linearizeParams #{type(v)}"
 
 linearizeParams = (query)->
-  reduceFn = (acc, [k,v])-> acc.concat(linearizeOne(k,v))
-  ([k,v] for k,v of query).reduce(reduceFn, [])
-
-buildPair = (k,v)->
-  "#{k}=#{evalValue(v)}"
-
-identity = (x)-> x
+  reduceMap query, (acc, [k,v])-> acc.concat(linearizeOne(k,v))
 
 buildSearchParams = (query)->
   ps = for p in linearizeParams(query)
-   [p.param,p.modifier,'=', p.operator, encodeURIComponent p.value].filter(identity).join('')
+   [p.param, p.modifier, '=', p.operator, encodeURIComponent(p.value)]
+     .filter(identity).join('')
   ps.join "&"
 
 exports._query = linearizeParams

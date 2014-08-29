@@ -53,9 +53,6 @@ describe "test params builder", ->
     expect(subject(birthDate: {$gt: '2011', $lt: '2014'}))
       .toBe('birthDate=>2011&birthDate=<2014')
 
-    expect(subject(
-      sort: {$and: [{$asc: 'name'},{$desc: 'birthDate'}, 'vip']}))
-      .toBe('sort:asc=name&sort:desc=birthDate&sort=vip')
 
     expect(subject('subject.name': {$exact: 'maud'}))
       .toBe('subject.name:exact=maud')
@@ -66,3 +63,11 @@ describe "test params builder", ->
     expect(subject('uri': 'http://test'))
       .toBe('uri=http%3A%2F%2Ftest')
 
+  it "sort", ->
+    expect(subject(
+      $sort: [['name','asc'],['birthDate','desc'], 'vip']))
+      .toBe('_sort:asc=name&_sort:desc=birthDate&_sort=vip')
+
+  it "include", ->
+    expect(subject($include: {Observation: "related.component", Patient: ["link.other", "careProvider"]}))
+      .toBe('_include=Observation.related.component&_include=Patient.link.other&_include=Patient.careProvider')
