@@ -1,20 +1,22 @@
-a = require('../coffee/adapter.coffee')
-conf = require('../coffee/configuration.coffee')
-mod = require('../coffee/search.coffee')
+fhir = require('../coffee/fhir.js')
+instance = new fhir()
+conf = instance.config
 
-conf.configure
+a = instance._.adapter
+
+conf.set
   baseUrl: 'BASE'
 
 nop = ()->
 
 describe "search:", ->
-  subject = mod
+  subject = instance._.search
 
   it "api", ->
     expect(subject.search).not.toBe(null)
 
   it "search success", (done)->
-    a.setAdapter
+    a.set
       http: (q)->
         expect(q.method).toBe('GET')
         expect(q.url).toBe('BASE/Patient/_search?name=maud')
@@ -28,7 +30,7 @@ describe "search:", ->
       expect(e).toBe('error')
       done()
 
-    a.setAdapter
+    a.set
       http: (q)-> q.error('error')
 
     subject.search('Patient', {name: 'maud'}, nop, err)

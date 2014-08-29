@@ -1,5 +1,3 @@
-adapter = require('./adapter.coffee')
-
 # READ OPERATIONS
 # =============================================================
 
