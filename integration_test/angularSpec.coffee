@@ -9,7 +9,6 @@ describe "ngFhir", ->
 
   it "search", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
-       $fhir.fhir.configure(baseUrl: 'http://try-fhirplace.hospital-systems.com')
        $fhir.search('Patient', {name: 'maud'})
          .then (d)->
            console.log('Search by patients', d)
@@ -20,8 +19,6 @@ describe "ngFhir", ->
 
   it "transaction", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
-       console.log('FHIR provider', $fhir)
-       $fhir.fhir.configure(baseUrl: 'http://try-fhirplace.hospital-systems.com')
        $fhir.transaction(bundle)
          .then (d)->
            console.log('Transaction', d)
