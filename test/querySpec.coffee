@@ -1,5 +1,6 @@
+fhir = require('../coffee/query.coffee');
 describe "linearizeParams:", ->
-  subject = window.fhir._query
+  subject = fhir._query
 
   it "simplest", ->
     expect(subject(a:1,b:2))
@@ -37,7 +38,7 @@ describe "linearizeParams:", ->
       ])
 
 describe "test params builder", ->
-  subject = window.fhir.query
+  subject = fhir.query
 
   it "simple cases", ->
     expect(subject(name: 'buka'))

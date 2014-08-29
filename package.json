@@ -12,10 +12,12 @@
     "karma": "latest",
     "karma-phantomjs-launcher": "~0.1",
     "karma-chrome-launcher": "latest",
-    "karma-jasmine": "latest",
-    "phantomjs": "~1.9.7",
     "karma-jasmine": "~0.2.0",
-    "karma-coffee-preprocessor": "latest"
+    "phantomjs": "~1.9.7",
+    "karma-coffee-preprocessor": "latest",
+    "webpack-dev-server": "~1.5.0",
+    "karma-webpack": "~1.2.2",
+    "grunt-webpack": "~1.0.8"
   },
   "description": "FHIR javascript client",
   "repository": {
@@ -23,16 +25,22 @@
     "url": "git@github.com:FHIR/fhir.js.git"
   },
   "keywords": [
-    "fhir", "FHIR"
+    "fhir",
+    "FHIR"
   ],
   "author": [
     "Maksym Bodnarchuk <bodnarchuk@gmail.com>",
     "Nikolay Ryzhikov <niquola@gmail.com>",
     "Josh Mandel <joshua.mandel@childrens.harvard.edu>"
-    ],
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/FHIR/fhir.js/issues"
   },
-  "homepage":  "https://github.com/FHIR/fhir.js"
+  "homepage": "https://github.com/FHIR/fhir.js",
+  "dependencies": {
+    "coffee-script": "~1.8.0",
+    "coffee-loader": "~0.7.2",
+    "webpack": "~1.4.0-beta1"
+  }
 }

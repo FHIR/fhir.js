@@ -1,19 +1,25 @@
 module.exports = function (grunt) {
   grunt.initConfig({
-    clean: ['fhir.js'],
-    coffee: {
-      main: {
-        options: {
-          join: true
+    clean: ['dist/*.js'],
+    webpack: {
+      fhir: {
+        entry: "./entry.js",
+        output: {
+          path: __dirname + "/dist",
+          filename: "fhir.js",
+          library: "fhir",
+          libraryTarget: "umd"
         },
-        files: {
-          'fhir.js': 'coffee/**/*.coffee'
+        module: {
+          loaders: [
+            { test: /\.coffee$/, loader: "coffee-loader" }
+          ]
         }
       }
     }
   });
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-coffee');
 
-  grunt.registerTask('default', ['clean', 'coffee']);
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-webpack');
+  grunt.registerTask('default', ['clean', 'webpack']);
 };
