@@ -17,5 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": { },
-  "devDependencies" : { }
+  "devDependencies" : {
+    "angular":"~1.2.0"
+  }
 }

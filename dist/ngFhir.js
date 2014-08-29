@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(factory);
 	else if(typeof exports === 'object')
-		exports["fhir"] = factory();
+		exports["ng-fhir"] = factory();
 	else
-		root["fhir"] = factory();
+		root["ng-fhir"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -54,11 +54,58 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var query = __webpack_require__(1);
-	var tags = __webpack_require__(2);
-	var search = __webpack_require__(3);
-	var adapter = __webpack_require__(4);
-	var cfg = __webpack_require__(5);
+	var ng = __webpack_require__(1)
+	ng.ngInit()
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var fhir, implementXhr;
+
+	fhir = __webpack_require__(2);
+
+	implementXhr = function($http) {
+	  return function(q) {
+	    console.log('ng-xhr', q);
+	    return $http({
+	      method: q.method,
+	      url: q.url
+	    }).success(q.success).error(q.error);
+	  };
+	};
+
+	angular.module('ng-fhir', []);
+
+	angular.module('ng-fhir').provider('$fhir', function() {
+	  return {
+	    $get: function($http) {
+	      fhir.setAdapter({
+	        xhr: implementXhr($http)
+	      });
+	      return {
+	        fhir: fhir,
+	        search: fhir.search
+	      };
+	    }
+	  };
+	});
+
+	exports.ngInit = function() {
+	  return console.log('ng initialized');
+	};
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var query = __webpack_require__(3);
+	var tags = __webpack_require__(4);
+	var search = __webpack_require__(5);
+	var adapter = __webpack_require__(6);
+	var cfg = __webpack_require__(7);
 
 	// exports.query = query.query;
 	// exports._query = query._query;
@@ -74,7 +121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 1 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -279,12 +326,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
 
-	adapter = __webpack_require__(4);
+	adapter = __webpack_require__(6);
 
 	tagsAll = function() {
 	  return console.log('impl me');
@@ -363,16 +410,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, base, cfg, queryBuider, search, searchResource;
 
-	adapter = __webpack_require__(4);
+	adapter = __webpack_require__(6);
 
-	queryBuider = __webpack_require__(1);
+	queryBuider = __webpack_require__(3);
 
-	cfg = __webpack_require__(5);
+	cfg = __webpack_require__(7);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -409,7 +456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter;
@@ -426,7 +473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var config;

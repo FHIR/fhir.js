@@ -1,28 +1,50 @@
 f = require('../coffee/conformance.coffee')
 a = require('../coffee/adapter.coffee')
-c = require('../coffee/configuration.coffee')
+conf = require('../coffee/configuration.coffee')
+
+conf.configure
+  baseUrl: 'BASE'
+
+nop = (x)-> x
 
 describe 'conformance', ->
-  c.fhir.base = 'BASE'
-
-  it 'simple', (done)->
-    a.adapter.xhr = (method, url, cb)->
-      expect(method).toBe('GET')
-      expect(url).toBe('BASE/metadata')
-      cb('ok')
+  it 'success', (done)->
+    a.setAdapter
+      xhr: (q)->
+        expect(q.method).toBe('GET')
+        expect(q.url).toBe('BASE/metadata')
+        q.success('ok')
 
     f.conformance (data)->
       expect(data).toBe('ok')
       done()
 
+  it 'error', (done)->
+    a.setAdapter
+      xhr: (q)->
+        q.error('ok')
+
+    f.conformance nop, (data)->
+      expect(data).toBe('ok')
+      done()
+
 describe 'profile', ->
 
-  it 'simple', (done)->
-    a.adapter.xhr = (method, url, cb)->
-      expect(method).toBe('GET')
-      expect(url).toBe('BASE/Profile/Alert')
-      cb('ok')
+  it 'success', (done)->
+    a.setAdapter
+      xhr: (q)->
+        expect(q.method).toBe('GET')
+        expect(q.url).toBe('BASE/Profile/Alert')
+        q.success('ok')
 
     f.profile 'Alert', (data)->
+      expect(data).toBe('ok')
+      done()
+  it 'error', (done)->
+    a.setAdapter
+      xhr: (q)->
+        q.error('ok')
+
+    f.profile 'Alert', nop, (data)->
       expect(data).toBe('ok')
       done()

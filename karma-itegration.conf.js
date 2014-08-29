@@ -13,7 +13,11 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [ 'dist/fhir.js', 'integration_test/**/*.coffee' ],
+    files: [
+      'bower_components/angular/angular.min.js',
+      'dist/ngFhir.js',
+      'integration_test/**/*.coffee'
+    ],
 
    // list of files to exclude
     exclude: [ '**/*.swp' ],

@@ -1,21 +1,27 @@
 adapter = require('./adapter.coffee')
 queryBuider = require('./query.coffee')
+cfg = require('./configuration.coffee')
 
 base = ()-> adapter.getAdapter()
 
 searchResource = (type, query, cb, err)->
-  cfg = {baseUrl: 'baseurl'}
   queryStr = queryBuider.query(query)
-  uri = "#{cfg.baseUrl}/#{type}/_search?#{queryStr}"
-  base().xhr(method: 'GET', url: uri)
+  uri = "#{cfg.config.baseUrl}/#{type}/_search?#{queryStr}"
+  base().xhr
+    method: 'GET',
+    url: uri,
+    success: (data)->
+      cb(data)
+    error: (e)->
+      err(e)
 
 # search(type, query, cb, err)
 # search resource
 #
-# * type - resource type string or profile object, if profile additional query validation will be done
-# * query - query object, see example and tests for syntax
-# * cb - callback function(bundle), bundle will be passed as first argument
-# * err - errback function(error), this callback will be called if some error occurs
+# * `type` - resource type string or profile object, if profile additional query validation will be done
+# * `query` - query object, see example and tests for syntax
+# * `cb` - callback function(bundle), bundle will be passed as first argument
+# * `err` - error callback function(error), this callback will be called if some error occurs
 #
 #
 # ```

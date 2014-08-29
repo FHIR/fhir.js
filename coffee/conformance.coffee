@@ -1,8 +1,20 @@
-a = require('./adapter.coffee')
-c = require('./configuration.coffee')
+adapter = require('./adapter.coffee')
+conf = require('./configuration.coffee')
 
-exports.conformance = (cb)->
-  a.adapter.xhr('GET', "#{c.fhir.base}/metadata", cb)
+base = ()-> adapter.getAdapter()
 
-exports.profile = (rt, cb)->
-  a.adapter.xhr('GET', "#{c.fhir.base}/Profile/#{rt}", cb)
+# TODO: cache if configured
+
+exports.conformance = (cb, err)->
+  base().xhr
+    method: 'GET'
+    url: "#{conf.config.baseUrl}/metadata"
+    success: cb
+    error: err
+
+exports.profile = (type, cb, err)->
+  base().xhr
+    method: 'GET'
+    url: "#{conf.config.baseUrl}/Profile/#{type}"
+    success: cb
+    error: err
