@@ -4,4 +4,5 @@ before_script:
 - 'npm install'
 - '`npm bin`/bower install'
 script:
-- 'node_modules/karma/bin/karma start --single-run'
+- 'node_modules/karma/bin/karma start karma.conf.js --single-run'
+- 'node_modules/karma/bin/karma start karma-itegration.conf.js --single-run'
