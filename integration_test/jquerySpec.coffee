@@ -5,7 +5,8 @@ fhir = jqFhir
 describe "jqFhir", ->
 
   it "simplest", (done) ->
-    fhir.configure(baseUrl: 'http://try-fhirplace.hospital-systems.com')
+    fhir.configure(baseUrl: 'https://ci-api.fhir.me')
+    fhir.configure(auth: {user: 'client', pass: 'secret'})
     fhir.search('Patient', {name: 'maud'})
     .then (d)->
        console.log('Search by patients', d)

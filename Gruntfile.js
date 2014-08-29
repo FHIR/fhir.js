@@ -4,6 +4,12 @@ module.exports = function (grunt) {
     webpack: {
       fhir: {
         entry: "./coffee/fhir.js",
+        node: {
+          buffer: "mock"
+        },
+        externals: {
+          "jquery": "jQuery"
+        },
         output: {
           path: __dirname + "/dist",
           filename: "fhir.js",
@@ -24,6 +30,9 @@ module.exports = function (grunt) {
       },
       jqfhir: {
         entry: "./coffee/adapters/jqFhir.js",
+        node: {
+          buffer: "mock"
+        },
         output: {
           path: __dirname + "/dist",
           filename: "jqFhir.js",
