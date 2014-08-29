@@ -11,9 +11,9 @@ searchResource = (type, query, cb, err)->
     method: 'GET',
     url: uri,
     success: (data)->
-      cb(data)
+      cb(data) if cb
     error: (e)->
-      err(e)
+      err(e) if err
 
 # search(type, query, cb, err)
 # search resource
@@ -28,10 +28,4 @@ searchResource = (type, query, cb, err)->
 # search('Patient', {name: {$exact: 'maud'}}, cb, err)
 # ```
 #
-search = ()->
-  switch arguments.length
-    when 3 then searchResource.apply(null, arguments)
-    when 4 then searchResource.apply(null, arguments)
-    else throw "wrong arity: expected (type,query,cb,err)"
-
-exports.search = search
+exports.search = searchResource

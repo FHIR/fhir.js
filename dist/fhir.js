@@ -54,27 +54,222 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var query = __webpack_require__(1);
-	var tags = __webpack_require__(2);
-	var search = __webpack_require__(3);
-	var adapter = __webpack_require__(4);
-	var cfg = __webpack_require__(5);
+	var adapter = __webpack_require__(1);
+	var cfg = __webpack_require__(2);
 
-	// exports.query = query.query;
-	// exports._query = query._query;
+	var search = __webpack_require__(3);
+	var conf = __webpack_require__(4);
+	var tags = __webpack_require__(5);
+
 	exports.setAdapter = adapter.setAdapter
 	exports.configure = cfg.configure
 	exports.config = cfg.config
-	// exports.getAdapter = adapter.getAdapter
+
+	exports.search = search.search;
+	exports.conformance = conf.conformance;
+	exports.profile = conf.profile;
 
 	exports.tags = tags.tags;
 	exports.affixTags = tags.affixTags;
 	exports.removeTags = tags.removeTags;
-	exports.search = search.search;
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter;
+
+	adapter = null;
+
+	exports.setAdapter = function(x) {
+	  return adapter = x;
+	};
+
+	exports.getAdapter = function() {
+	  return adapter;
+	};
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var config;
+
+	config = {};
+
+	exports.config = config;
+
+	exports.configure = function(m) {
+	  var k, v, _results;
+	  _results = [];
+	  for (k in m) {
+	    v = m[k];
+	    _results.push(config[k] = v);
+	  }
+	  return _results;
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, base, cfg, queryBuider, searchResource;
+
+	adapter = __webpack_require__(1);
+
+	queryBuider = __webpack_require__(6);
+
+	cfg = __webpack_require__(2);
+
+	base = function() {
+	  return adapter.getAdapter();
+	};
+
+	searchResource = function(type, query, cb, err) {
+	  var queryStr, uri;
+	  queryStr = queryBuider.query(query);
+	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;
+	  return base().xhr({
+	    method: 'GET',
+	    url: uri,
+	    success: function(data) {
+	      if (cb) {
+	        return cb(data);
+	      }
+	    },
+	    error: function(e) {
+	      if (err) {
+	        return err(e);
+	      }
+	    }
+	  });
+	};
+
+	exports.search = searchResource;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, base, conf;
+
+	adapter = __webpack_require__(1);
+
+	conf = __webpack_require__(2);
+
+	base = function() {
+	  return adapter.getAdapter();
+	};
+
+	exports.conformance = function(cb, err) {
+	  return base().xhr({
+	    method: 'GET',
+	    url: "" + conf.config.baseUrl + "/metadata",
+	    success: cb,
+	    error: err
+	  });
+	};
+
+	exports.profile = function(type, cb, err) {
+	  return base().xhr({
+	    method: 'GET',
+	    url: "" + conf.config.baseUrl + "/Profile/" + type,
+	    success: cb,
+	    error: err
+	  });
+	};
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
+
+	adapter = __webpack_require__(1);
+
+	tagsAll = function() {
+	  return console.log('impl me');
+	};
+
+	tagsResourceType = function(type) {
+	  return console.log('impl me');
+	};
+
+	tagsResource = function(type, id) {
+	  return console.log('impl me');
+	};
+
+	tagsResourceVersion = function(type, id, vid) {
+	  return console.log('impl me');
+	};
+
+	tags = function() {
+	  switch (arguments.length) {
+	    case 0:
+	      return tagsAll();
+	    case 1:
+	      return tagsResourceType.apply(null, arguments);
+	    case 2:
+	      return tagsResource.apply(null, arguments);
+	    case 3:
+	      return tagsResourceVersion.apply(null, arguments);
+	    default:
+	      throw "wrong arity";
+	  }
+	};
+
+	affixTagsToResource = function(type, id, tags) {
+	  return console.log('impl me');
+	};
+
+	affixTagsToResourceVersion = function(type, id, vid, tags) {
+	  return console.log('impl me');
+	};
+
+	affixTags = function() {
+	  switch (arguments.length) {
+	    case 3:
+	      return affixTagsToResource.apply(null, arguments);
+	    case 4:
+	      return affixTagsToResourceVersion.apply(null, arguments);
+	    default:
+	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";
+	  }
+	};
+
+	removeTagsFromResource = function(type, id) {
+	  return console.log('impl me');
+	};
+
+	removeTagsFromResourceVerson = function(type, id, vid) {
+	  return console.log('impl me');
+	};
+
+	removeTags = function() {
+	  switch (arguments.length) {
+	    case 2:
+	      return removeTagsFromResource.apply(null, arguments);
+	    case 3:
+	      return removeTagsFromResourceVerson.apply(null, arguments);
+	    default:
+	      throw "wrong arity: expected (type,id) or (type,id,vid)";
+	  }
+	};
+
+	exports.tags = tags;
+
+	exports.affixTags = affixTags;
+
+	exports.removeTags = removeTags;
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -276,174 +471,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._query = linearizeParams;
 
 	exports.query = buildSearchParams;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
-
-	adapter = __webpack_require__(4);
-
-	tagsAll = function() {
-	  return console.log('impl me');
-	};
-
-	tagsResourceType = function(type) {
-	  return console.log('impl me');
-	};
-
-	tagsResource = function(type, id) {
-	  return console.log('impl me');
-	};
-
-	tagsResourceVersion = function(type, id, vid) {
-	  return console.log('impl me');
-	};
-
-	tags = function() {
-	  switch (arguments.length) {
-	    case 0:
-	      return tagsAll();
-	    case 1:
-	      return tagsResourceType.apply(null, arguments);
-	    case 2:
-	      return tagsResource.apply(null, arguments);
-	    case 3:
-	      return tagsResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity";
-	  }
-	};
-
-	affixTagsToResource = function(type, id, tags) {
-	  return console.log('impl me');
-	};
-
-	affixTagsToResourceVersion = function(type, id, vid, tags) {
-	  return console.log('impl me');
-	};
-
-	affixTags = function() {
-	  switch (arguments.length) {
-	    case 3:
-	      return affixTagsToResource.apply(null, arguments);
-	    case 4:
-	      return affixTagsToResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";
-	  }
-	};
-
-	removeTagsFromResource = function(type, id) {
-	  return console.log('impl me');
-	};
-
-	removeTagsFromResourceVerson = function(type, id, vid) {
-	  return console.log('impl me');
-	};
-
-	removeTags = function() {
-	  switch (arguments.length) {
-	    case 2:
-	      return removeTagsFromResource.apply(null, arguments);
-	    case 3:
-	      return removeTagsFromResourceVerson.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id) or (type,id,vid)";
-	  }
-	};
-
-	exports.tags = tags;
-
-	exports.affixTags = affixTags;
-
-	exports.removeTags = removeTags;
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter, base, cfg, queryBuider, search, searchResource;
-
-	adapter = __webpack_require__(4);
-
-	queryBuider = __webpack_require__(1);
-
-	cfg = __webpack_require__(5);
-
-	base = function() {
-	  return adapter.getAdapter();
-	};
-
-	searchResource = function(type, query, cb, err) {
-	  var queryStr, uri;
-	  queryStr = queryBuider.query(query);
-	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;
-	  return base().xhr({
-	    method: 'GET',
-	    url: uri,
-	    success: function(data) {
-	      return cb(data);
-	    },
-	    error: function(e) {
-	      return err(e);
-	    }
-	  });
-	};
-
-	search = function() {
-	  switch (arguments.length) {
-	    case 3:
-	      return searchResource.apply(null, arguments);
-	    case 4:
-	      return searchResource.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,query,cb,err)";
-	  }
-	};
-
-	exports.search = search;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter;
-
-	adapter = null;
-
-	exports.setAdapter = function(x) {
-	  return adapter = x;
-	};
-
-	exports.getAdapter = function() {
-	  return adapter;
-	};
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var config;
-
-	config = {};
-
-	exports.config = config;
-
-	exports.configure = function(m) {
-	  var k, v, _results;
-	  _results = [];
-	  for (k in m) {
-	    v = m[k];
-	    _results.push(config[k] = v);
-	  }
-	  return _results;
-	};
 
 
 /***/ }

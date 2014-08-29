@@ -7,8 +7,8 @@ describe "ngFhir", ->
     $injector.invoke ['$fhir', ($fhir)->
        console.log('FHIR provider', $fhir)
        $fhir.fhir.configure(baseUrl: 'http://try-fhirplace.hospital-systems.com')
-       success = (d)->
-           console.log(d)
+       $fhir.search('Patient', {name: 'maud'})
+         .then (d)->
+           console.log('Search by patients', d)
            done()
-       $fhir.search('Patient', {name: 'maud'}, success, success)
      ]
