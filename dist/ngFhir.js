@@ -71,7 +71,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var p;
 	    p = $http({
 	      method: q.method,
-	      url: q.url
+	      url: q.url,
+	      data: q.data
 	    });
 	    if (q.success) {
 	      p.success(q.success);
@@ -95,7 +96,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        fhir: fhir,
 	        search: fhir.search,
 	        conformance: fhir.conformance,
-	        profile: fhir.profile
+	        profile: fhir.profile,
+	        transaction: fhir.transaction
 	      };
 	    }
 	  };
@@ -115,7 +117,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var search = __webpack_require__(5);
 	var conf = __webpack_require__(6);
-	var tags = __webpack_require__(7);
+	var tran = __webpack_require__(7);
+	var tags = __webpack_require__(8);
 
 	exports.setAdapter = adapter.setAdapter
 	exports.configure = cfg.configure
@@ -124,6 +127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.search = search.search;
 	exports.conformance = conf.conformance;
 	exports.profile = conf.profile;
+	exports.transaction = tran.transaction;
 
 	exports.tags = tags.tags;
 	exports.affixTags = tags.affixTags;
@@ -176,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	adapter = __webpack_require__(3);
 
-	queryBuider = __webpack_require__(8);
+	queryBuider = __webpack_require__(9);
 
 	cfg = __webpack_require__(4);
 
@@ -242,6 +246,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, base, conf;
+
+	adapter = __webpack_require__(3);
+
+	conf = __webpack_require__(4);
+
+	base = function() {
+	  return adapter.getAdapter();
+	};
+
+	exports.transaction = function(bundle, cb, err) {
+	  return base().http({
+	    method: 'POST',
+	    url: conf.config.baseUrl,
+	    data: bundle,
+	    success: cb,
+	    error: err
+	  });
+	};
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -325,7 +354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;

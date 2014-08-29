@@ -3,6 +3,7 @@ var cfg = require('./configuration.coffee');
 
 var search = require('./search.coffee');
 var conf = require('./conformance.coffee');
+var tran = require('./transaction.coffee');
 var tags = require('./tags.coffee');
 
 exports.setAdapter = adapter.setAdapter
@@ -12,6 +13,7 @@ exports.config = cfg.config
 exports.search = search.search;
 exports.conformance = conf.conformance;
 exports.profile = conf.profile;
+exports.transaction = tran.transaction;
 
 exports.tags = tags.tags;
 exports.affixTags = tags.affixTags;
