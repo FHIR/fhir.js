@@ -96,6 +96,5 @@ buildSearchParams = (query)->
    [p.param,p.modifier,'=', p.operator, encodeURIComponent p.value].filter(identity).join('')
   ps.join "&"
 
-window.fhir ||= {}
-window.fhir._query = linearizeParams
-window.fhir.query = buildSearchParams
+exports._query = linearizeParams
+exports.query = buildSearchParams
