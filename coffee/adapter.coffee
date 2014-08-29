@@ -1,0 +1,1 @@
+exports.adapter = { xhr: 'xhr' }

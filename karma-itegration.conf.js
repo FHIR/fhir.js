@@ -13,31 +13,31 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [
-            'bower_components/angular/angular.min.js',
-            'coffee/*.coffee',
-            'integration_test/*.coffee' ],
+    files: [ 'dist/fhir.js', 'integration_test/**/*.coffee' ],
 
-
-    // list of files to exclude
+   // list of files to exclude
     exclude: [ '**/*.swp' ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 
-    preprocessors: { '**/*.coffee': ['coffee'] },
+    preprocessors: { 'integration_test/**/*.coffee': ['webpack'] },
 
-    coffeePreprocessor: {
-      options: {
-        bare: true,
-        sourceMap: false
-      },
-      transformPath: function(path) {
-        return path.replace(/\.coffee$/, '.js');
+    webpack: {
+      cache: true,
+      module: {
+        loaders: [
+          { test: /\.coffee$/, loader: "coffee-loader" }
+        ]
       }
     },
 
+    webpackServer: {
+      stats: {
+        colors: true
+      }
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

@@ -1,4 +1,4 @@
-fhir = require('../coffee/query.coffee');
+fhir = require('../coffee/query.coffee')
 describe "linearizeParams:", ->
   subject = fhir._query
 
@@ -65,4 +65,4 @@ describe "test params builder", ->
 
     expect(subject('uri': 'http://test'))
       .toBe('uri=http%3A%2F%2Ftest')
- 
+
