@@ -132,7 +132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var queryStr, uri;
 	  queryStr = queryBuider.query(query);
 	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;
-	  return base().xhr({
+	  return base().http({
 	    method: 'GET',
 	    url: uri,
 	    success: function(data) {
@@ -166,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.conformance = function(cb, err) {
-	  return base().xhr({
+	  return base().http({
 	    method: 'GET',
 	    url: "" + conf.config.baseUrl + "/metadata",
 	    success: cb,
@@ -175,7 +175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.profile = function(type, cb, err) {
-	  return base().xhr({
+	  return base().http({
 	    method: 'GET',
 	    url: "" + conf.config.baseUrl + "/Profile/" + type,
 	    success: cb,

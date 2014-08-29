@@ -4,10 +4,12 @@ cfg = require('./configuration.coffee')
 
 base = ()-> adapter.getAdapter()
 
+# TODO: suport passing profile as type and query validation
+
 searchResource = (type, query, cb, err)->
   queryStr = queryBuider.query(query)
   uri = "#{cfg.config.baseUrl}/#{type}/_search?#{queryStr}"
-  base().xhr
+  base().http
     method: 'GET',
     url: uri,
     success: (data)->

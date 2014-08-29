@@ -6,14 +6,14 @@ base = ()-> adapter.getAdapter()
 # TODO: cache if configured
 
 exports.conformance = (cb, err)->
-  base().xhr
+  base().http
     method: 'GET'
     url: "#{conf.config.baseUrl}/metadata"
     success: cb
     error: err
 
 exports.profile = (type, cb, err)->
-  base().xhr
+  base().http
     method: 'GET'
     url: "#{conf.config.baseUrl}/Profile/#{type}"
     success: cb

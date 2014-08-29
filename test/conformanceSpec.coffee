@@ -10,7 +10,7 @@ nop = (x)-> x
 describe 'conformance', ->
   it 'success', (done)->
     a.setAdapter
-      xhr: (q)->
+      http: (q)->
         expect(q.method).toBe('GET')
         expect(q.url).toBe('BASE/metadata')
         q.success('ok')
@@ -21,7 +21,7 @@ describe 'conformance', ->
 
   it 'error', (done)->
     a.setAdapter
-      xhr: (q)->
+      http: (q)->
         q.error('ok')
 
     f.conformance nop, (data)->
@@ -32,7 +32,7 @@ describe 'profile', ->
 
   it 'success', (done)->
     a.setAdapter
-      xhr: (q)->
+      http: (q)->
         expect(q.method).toBe('GET')
         expect(q.url).toBe('BASE/Profile/Alert')
         q.success('ok')
@@ -42,7 +42,7 @@ describe 'profile', ->
       done()
   it 'error', (done)->
     a.setAdapter
-      xhr: (q)->
+      http: (q)->
         q.error('ok')
 
     f.profile 'Alert', nop, (data)->

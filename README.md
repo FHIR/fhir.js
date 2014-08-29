@@ -39,6 +39,9 @@ node_modules/karma/bin/karma start
 # run concrete test
 node_modules/karma/bin/karma start
 
+# run integration tests
+`npm bin`/bower install
+node_modules/karma/bin/karma start karma-itegration.conf.js --single-run
 ```
 
 ## API
@@ -54,8 +57,7 @@ node_modules/karma/bin/karma start
 `fhir.search()` function is used for [FHIR resource's search](http://www.hl7.org/implement/standards/fhir/search.html)
 
 ```javascript
-fhir.search('Patient', queryObject)
-.then(function(bundle){...})
+fhir.search('Patient', queryObject, cb, err)
 ```
 
 For queryObject syntax `fhir.js` adopts
@@ -77,6 +79,8 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 //=> subject:Patient.name=maud&subject:Patient.birthDate=>1970
 {'subject.name': {$exact: 'maud'}}
 //=> subject.name:exact=maud
+
+
 ```
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
