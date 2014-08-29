@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("jQuery"));
 	else if(typeof define === 'function' && define.amd)
-		define(factory);
+		define(["jQuery"], factory);
 	else if(typeof exports === 'object')
-		exports["ng-fhir"] = factory();
+		exports["jqFhir"] = factory(require("jQuery"));
 	else
-		root["ng-fhir"] = factory();
-})(this, function() {
+		root["jqFhir"] = factory(root["jQuery"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,76 +54,46 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ng = __webpack_require__(1)
-	ng.ngInit()
+	module.exports = __webpack_require__(1);
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var fhir, implementXhr;
+	var $, adapter, fhir;
 
-	fhir = __webpack_require__(2);
+	fhir = __webpack_require__(3);
 
-	implementXhr = function($http) {
-	  return function(q) {
-	    var p;
-	    p = $http({
-	      method: q.method,
-	      url: q.url,
-	      data: q.data
+	$ = __webpack_require__(2);
+
+	adapter = {
+	  "http": function(q) {
+	    var a;
+	    a = $.ajax({
+	      type: q.method,
+	      url: q.url
 	    });
 	    if (q.success) {
-	      p.success(q.success);
+	      a.done(q.success);
 	    }
 	    if (q.error) {
-	      p.error(q.error);
+	      return a.fail(q.error);
 	    }
-	    return p;
-	  };
+	  }
 	};
 
-	angular.module('ng-fhir', ['ng']);
+	fhir.setAdapter(adapter);
 
-	angular.module('ng-fhir').provider('$fhir', function() {
-<<<<<<< HEAD
-	  return {
-	    $get: function($http) {
-	      fhir.setAdapter({
-	        http: implementXhr($http)
-	      });
-	      return {
-	        fhir: fhir,
-	        search: fhir.search,
-	        conformance: fhir.conformance,
-	        profile: fhir.profile,
-	        transaction: fhir.transaction
-	      };
-	    }
-=======
-	  var constructor, prov;
-	  prov = {};
-	  constructor = function($http) {
-	    fhir.configure({
-	      baseUrl: prov.baseUrl
-	    });
-	    fhir.setAdapter({
-	      http: implementXhr($http)
-	    });
-	    return {
-	      search: fhir.search,
-	      conformance: fhir.conformance,
-	      profile: fhir.profile
-	    };
->>>>>>> 81336413c28f979caf657101c0691a377357c45e
-	  };
-	  prov.$get = constructor;
-	  return prov;
-	});
+	exports.fhir = fhir;
 
-	exports.ngInit = function() {
-	  return console.log('ng initialized');
+	exports.configure = fhir.configure;
+
+	exports.search = function(type, query) {
+	  var ret;
+	  ret = $.Deferred();
+	  fhir.search(type, query, ret.resolve, ret.reject);
+	  return ret;
 	};
 
 
@@ -131,12 +101,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter = __webpack_require__(3);
-	var cfg = __webpack_require__(4);
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-	var search = __webpack_require__(5);
-	var conf = __webpack_require__(6);
-	var tran = __webpack_require__(7);
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter = __webpack_require__(4);
+	var cfg = __webpack_require__(5);
+
+	var search = __webpack_require__(6);
+	var conf = __webpack_require__(7);
 	var tags = __webpack_require__(8);
 
 	exports.setAdapter = adapter.setAdapter
@@ -146,7 +121,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.search = search.search;
 	exports.conformance = conf.conformance;
 	exports.profile = conf.profile;
-	exports.transaction = tran.transaction;
 
 	exports.tags = tags.tags;
 	exports.affixTags = tags.affixTags;
@@ -154,7 +128,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter;
@@ -171,7 +145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var config;
@@ -192,16 +166,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, base, cfg, queryBuider, searchResource;
 
-	adapter = __webpack_require__(3);
+	adapter = __webpack_require__(4);
 
 	queryBuider = __webpack_require__(9);
 
-	cfg = __webpack_require__(4);
+	cfg = __webpack_require__(5);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -231,14 +205,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, base, conf;
 
-	adapter = __webpack_require__(3);
+	adapter = __webpack_require__(4);
 
-	conf = __webpack_require__(4);
+	conf = __webpack_require__(5);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -264,37 +238,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter, base, conf;
-
-	adapter = __webpack_require__(3);
-
-	conf = __webpack_require__(4);
-
-	base = function() {
-	  return adapter.getAdapter();
-	};
-
-	exports.transaction = function(bundle, cb, err) {
-	  return base().http({
-	    method: 'POST',
-	    url: conf.config.baseUrl,
-	    data: bundle,
-	    success: cb,
-	    error: err
-	  });
-	};
-
-
-/***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
 
-	adapter = __webpack_require__(3);
+	adapter = __webpack_require__(4);
 
 	tagsAll = function() {
 	  return console.log('impl me');

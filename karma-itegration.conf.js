@@ -15,7 +15,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'bower_components/angular/angular.min.js',
+      'bower_components/jquery/dist/jquery.js',
       'dist/ngFhir.js',
+      'dist/jqFhir.js',
       'integration_test/**/*.coffee'
     ],
 

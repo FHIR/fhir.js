@@ -85,6 +85,35 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
 
+## AngularJS adapter: `ng-fhir`
+
+AngularJS adapter after `grunt build` could be found at `dist/ngFhir.js`
+
+
+Usage:
+
+```coffeescript
+angular.module('app', ['ng-fhir'])
+  # configure base url
+  .config ($fhirProvider)->
+     $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
+  .controller 'mainCtrl', ($scope, $fhir)->
+     $fhir.search('Patient', {name: {$exact: 'Maud'}})
+       .error (error)
+         $scope.error = error
+       .success (bundle)->
+         $scope.patients = bundle.entry
+```
+
+## jQuery adapter:
+
+TODO...
+
+## TODO
+
+* bower package
+* OAuth2 & Base authorization
+
 ## Contribute
 
 Join us by [github issues](https://github.com/FHIR/fhir.js/issues) or pull-requests
