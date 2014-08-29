@@ -181,7 +181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	cfg = __webpack_require__(5);
 
-	http = __webpack_require__(10);
+	http = __webpack_require__(11);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -558,7 +558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, base, dohttp, httpDecorators;
@@ -569,7 +569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return adapter.getAdapter();
 	};
 
-	httpDecorators = [__webpack_require__(11)];
+	httpDecorators = [__webpack_require__(12)];
 
 	dohttp = function(args) {
 	  return base().http(httpDecorators.reduce((function(req, d) {
@@ -592,7 +592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var adapter, base, basic, bearer, btoa, cfg, identity, merge, withAuth;
@@ -601,9 +601,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	adapter = __webpack_require__(4);
 
-	btoa = __webpack_require__(12).btoa;
+	btoa = __webpack_require__(13).btoa;
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(14);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -651,7 +651,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -718,7 +718,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -802,10 +802,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module)))
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
