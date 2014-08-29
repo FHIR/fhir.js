@@ -105,6 +105,8 @@ angular.module('app', ['ng-fhir'])
          $scope.patients = bundle.entry
 ```
 
+Here jsfiddle to play with [ng-fhir](http://jsfiddle.net/niquola/6Ltgynnf/4/)
+
 ## jQuery adapter:
 
 TODO...
