@@ -1,1 +1,4 @@
-exports.adapter = { xhr: 'xhr' }
+adapter = null
+
+exports.setAdapter =  (x)-> adapter = x
+exports.getAdapter =  ()-> adapter
