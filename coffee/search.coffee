@@ -1,6 +1,7 @@
 adapter = require('./adapter.coffee')
 queryBuider = require('./query.coffee')
 cfg = require('./configuration.coffee')
+http = require('./http.coffee')
 
 base = ()-> adapter.getAdapter()
 
@@ -9,7 +10,7 @@ base = ()-> adapter.getAdapter()
 searchResource = (type, query, cb, err)->
   queryStr = queryBuider.query(query)
   uri = "#{cfg.config.baseUrl}/#{type}/_search?#{queryStr}"
-  base().http
+  http
     method: 'GET',
     url: uri,
     success: (data)->

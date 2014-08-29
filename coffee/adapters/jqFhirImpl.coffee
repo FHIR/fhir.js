@@ -3,7 +3,8 @@ $ = require('jquery')
 
 adapter = {
   "http": (q)->
-    a = $.ajax {type: q.method, url: q.url}
+    console.log "Requesting", q.method, q.url, q.headers
+    a = $.ajax {type: q.method, url: q.url, headers: q.headers}
     a.done(q.success) if q.success
     a.fail(q.error) if q.error
 }

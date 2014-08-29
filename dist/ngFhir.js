@@ -176,13 +176,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, base, cfg, queryBuider, searchResource;
+	var adapter, base, cfg, http, queryBuider, searchResource;
 
 	adapter = __webpack_require__(3);
 
 	queryBuider = __webpack_require__(8);
 
 	cfg = __webpack_require__(4);
+
+	http = __webpack_require__(9);
 
 	base = function() {
 	  return adapter.getAdapter();
@@ -192,7 +194,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var queryStr, uri;
 	  queryStr = queryBuider.query(query);
 	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;
-	  return base().http({
+	  return http({
 	    method: 'GET',
 	    url: uri,
 	    success: function(data) {
@@ -531,6 +533,269 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._query = linearizeParams;
 
 	exports.query = buildSearchParams;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, base, dohttp, httpDecorators;
+
+	adapter = __webpack_require__(3);
+
+	base = function() {
+	  return adapter.getAdapter();
+	};
+
+	httpDecorators = [__webpack_require__(10)];
+
+	dohttp = function(args) {
+	  return base().http(httpDecorators.reduce((function(req, d) {
+	    return d(req);
+	  }), args));
+	};
+
+	dohttp.addDecorator = function(d) {
+	  dohttp.removeDecorator(d);
+	  return httpDecorators.push(d);
+	};
+
+	dohttp.removeDecorator = function(d) {
+	  return httpDecorators = httpDecorators.filter(function(dd) {
+	    return dd !== d;
+	  });
+	};
+
+	module.exports = dohttp;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var adapter, base, basic, bearer, btoa, cfg, identity, merge, withAuth;
+
+	cfg = __webpack_require__(4).config;
+
+	adapter = __webpack_require__(3);
+
+	btoa = __webpack_require__(12).btoa;
+
+	merge = __webpack_require__(11);
+
+	base = function() {
+	  return adapter.getAdapter();
+	};
+
+	bearer = function(req) {
+	  return withAuth(req, "Bearer " + cfg.auth.bearer);
+	};
+
+	basic = function(req) {
+	  console.log("do req with auth", req, btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
+	  return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
+	};
+
+	identity = function(req) {
+	  return req;
+	};
+
+	withAuth = function(req, a) {
+	  var headers;
+	  headers = merge(true, req.headers || {}, {
+	    "Authorization": a
+	  });
+	  return merge(true, req, {
+	    headers: headers
+	  });
+	};
+
+	module.exports = function(req) {
+	  var auth;
+	  auth = (function() {
+	    var _ref, _ref1, _ref2;
+	    switch (false) {
+	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
+	        return bearer;
+	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
+	        return basic;
+	      default:
+	        return identity;
+	    }
+	  })();
+	  console.log("woth auth fn", req, auth);
+	  return auth(req);
+	};
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * @name JavaScript/NodeJS Merge v1.1.3
+	 * @author yeikos
+	 * @repository https://github.com/yeikos/js.merge
+
+	 * Copyright 2014 yeikos - MIT license
+	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
+	 */
+
+	;(function(isNode) {
+
+		function merge() {
+
+			var items = Array.prototype.slice.call(arguments),
+				result = items.shift(),
+				deep = (result === true),
+				size = items.length,
+				item, index, key;
+
+			if (deep || typeOf(result) !== 'object')
+
+				result = {};
+
+			for (index=0;index<size;++index)
+
+				if (typeOf(item = items[index]) === 'object')
+
+					for (key in item)
+
+						result[key] = deep ? clone(item[key]) : item[key];
+
+			return result;
+
+		}
+
+		function clone(input) {
+
+			var output = input,
+				type = typeOf(input),
+				index, size;
+
+			if (type === 'array') {
+
+				output = [];
+				size = input.length;
+
+				for (index=0;index<size;++index)
+
+					output[index] = clone(input[index]);
+
+			} else if (type === 'object') {
+
+				output = {};
+
+				for (index in input)
+
+					output[index] = clone(input[index]);
+
+			}
+
+			return output;
+
+		}
+
+		function typeOf(input) {
+
+			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+		}
+
+		if (isNode) {
+
+			module.exports = merge;
+
+		} else {
+
+			window.merge = merge;
+
+		}
+
+	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module)))
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	;(function () {
+
+	  var object = true ? exports : this; // #8: web workers
+	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+	  function InvalidCharacterError(message) {
+	    this.message = message;
+	  }
+	  InvalidCharacterError.prototype = new Error;
+	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
+
+	  // encoder
+	  // [https://gist.github.com/999166] by [https://github.com/nignag]
+	  object.btoa || (
+	  object.btoa = function (input) {
+	    var str = String(input);
+	    for (
+	      // initialize result and counter
+	      var block, charCode, idx = 0, map = chars, output = '';
+	      // if the next str index does not exist:
+	      //   change the mapping table to "="
+	      //   check if d has no fractional digits
+	      str.charAt(idx | 0) || (map = '=', idx % 1);
+	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+	    ) {
+	      charCode = str.charCodeAt(idx += 3/4);
+	      if (charCode > 0xFF) {
+	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+	      }
+	      block = block << 8 | charCode;
+	    }
+	    return output;
+	  });
+
+	  // decoder
+	  // [https://gist.github.com/1020396] by [https://github.com/atk]
+	  object.atob || (
+	  object.atob = function (input) {
+	    var str = String(input).replace(/=+$/, '');
+	    if (str.length % 4 == 1) {
+	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+	    }
+	    for (
+	      // initialize result and counters
+	      var bc = 0, bs, buffer, idx = 0, output = '';
+	      // get next character
+	      buffer = str.charAt(idx++);
+	      // character found in table? initialize bit storage and add its ascii value;
+	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+	        // and if not first of each 4 characters,
+	        // convert the first 8 bits to one ascii character
+	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
+	    ) {
+	      // try to find character in table (0-63, not found => -1)
+	      buffer = chars.indexOf(buffer);
+	    }
+	    return output;
+	  });
+
+	}());
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
 
 
 /***/ }
