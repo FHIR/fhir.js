@@ -1,4 +1,8 @@
-adapter = null
+class Adapter
+  constructor: (fhir)->
+    @adapter = null
+    @fhir = fhir
+  set:  (x) -> @adapter = x
+  get:  ()  -> @adapter
 
-exports.setAdapter =  (x)-> adapter = x
-exports.getAdapter =  ()-> adapter
+module.exports = Adapter

@@ -61,16 +61,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $, adapter, fhir;
+	var $, adapter, fhir, instance;
 
 	fhir = __webpack_require__(3);
 
 	$ = __webpack_require__(2);
 
+	instance = fhir();
+
 	adapter = {
 	  "http": function(q) {
 	    var a;
-	    console.log("Requesting", q.method, q.url, q.headers);
 	    a = $.ajax({
 	      type: q.method,
 	      url: q.url,
@@ -85,16 +86,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	fhir.setAdapter(adapter);
+	instance.adapter.set(adapter);
 
-	exports.fhir = fhir;
+	exports.fhir = instance;
 
-	exports.configure = fhir.configure;
+	exports.config = instance.config;
 
 	exports.search = function(type, query) {
 	  var ret;
 	  ret = $.Deferred();
-	  fhir.search(type, query, ret.resolve, ret.reject);
+	  instance.search(type, query, ret.resolve, ret.reject);
 	  return ret;
 	};
 
@@ -111,170 +112,268 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var adapter = __webpack_require__(4);
 	var cfg = __webpack_require__(5);
+	var http = __webpack_require__(6);
+	var search = __webpack_require__(7);
+	var conf = __webpack_require__(8);
+	var tran = __webpack_require__(9);
+	var tags = __webpack_require__(10);
 
-	var search = __webpack_require__(6);
-	var conf = __webpack_require__(7);
-	var tran = __webpack_require__(8);
-	var tags = __webpack_require__(9);
+	function fhir(){
 
-	exports.setAdapter = adapter.setAdapter
-	exports.configure = cfg.configure
-	exports.config = cfg.config
+	  if (!(this instanceof arguments.callee)) {
+	    return new arguments.callee();
+	  }
+	  
 
-	exports.search = search.search;
-	exports.conformance = conf.conformance;
-	exports.profile = conf.profile;
-	exports.transaction = tran.transaction;
+	  var _ = this._ = {
+	    config: new cfg(this),
+	    search: new search(this),
+	    conformance: new conf(this),
+	    transaction: new tran(this),
+	    adapter: new adapter(this),
+	    http: new http(this),
+	    tags: tags
+	  };
 
-	exports.tags = tags.tags;
-	exports.affixTags = tags.affixTags;
-	exports.removeTags = tags.removeTags;
+	  this.adapter = _.adapter;
+	  this.config = _.config;
+	  this.http = _.http;
+	  this.conformance = _.conformance.conformance;
+	  this.profile = _.conformance.profile;
+	  this.search = _.search.search;
+	  this.transaction = _.transaction.transaction;
+	  this.tags = _.tags.tags;
+	  this.affixTags = _.tags.affixTags;
+	  this.removeTags = _.tags.removeTags;
+	};
+	module.exports = fhir;
+
 
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter;
+	var Adapter;
 
-	adapter = null;
+	Adapter = (function() {
+	  function Adapter(fhir) {
+	    this.adapter = null;
+	    this.fhir = fhir;
+	  }
 
-	exports.setAdapter = function(x) {
-	  return adapter = x;
-	};
+	  Adapter.prototype.set = function(x) {
+	    return this.adapter = x;
+	  };
 
-	exports.getAdapter = function() {
-	  return adapter;
-	};
+	  Adapter.prototype.get = function() {
+	    return this.adapter;
+	  };
+
+	  return Adapter;
+
+	})();
+
+	module.exports = Adapter;
 
 
 /***/ },
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var config;
+	var Configuration,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-	config = {};
-
-	exports.config = config;
-
-	exports.configure = function(m) {
-	  var k, v, _results;
-	  _results = [];
-	  for (k in m) {
-	    v = m[k];
-	    _results.push(config[k] = v);
+	Configuration = (function() {
+	  function Configuration(fhir) {
+	    this.get = __bind(this.get, this);
+	    this.set = __bind(this.set, this);
+	    this.config = {};
+	    this.fhir = fhir;
 	  }
-	  return _results;
-	};
+
+	  Configuration.prototype.set = function(m) {
+	    var k, v, _results;
+	    _results = [];
+	    for (k in m) {
+	      v = m[k];
+	      _results.push(this.config[k] = v);
+	    }
+	    return _results;
+	  };
+
+	  Configuration.prototype.get = function() {
+	    return this.config;
+	  };
+
+	  return Configuration;
+
+	})();
+
+	module.exports = Configuration;
 
 
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, base, cfg, http, queryBuider, searchResource;
+	var Http, adapter;
 
 	adapter = __webpack_require__(4);
 
-	queryBuider = __webpack_require__(10);
+	Http = (function() {
+	  function Http(fhir) {
+	    this.fhir = fhir;
+	    this.httpDecorators = [__webpack_require__(11)(fhir)];
+	  }
 
-	cfg = __webpack_require__(5);
+	  Http.prototype.search = function(type, query, cb, err) {};
 
-	http = __webpack_require__(11);
+	  Http.prototype.addDecorator = function(d) {
+	    this.removeDecorator(d);
+	    return this.httpDecorators.push(d);
+	  };
 
-	base = function() {
-	  return adapter.getAdapter();
-	};
+	  Http.prototype.removeDecorator = function(d) {
+	    return this.httpDecorators = this.httpDecorators.filter(function(dd) {
+	      return dd !== d;
+	    });
+	  };
 
-	searchResource = function(type, query, cb, err) {
-	  var queryStr, uri;
-	  queryStr = queryBuider.query(query);
-	  uri = "" + cfg.config.baseUrl + "/" + type + "/_search?" + queryStr;
-	  return http({
-	    method: 'GET',
-	    url: uri,
-	    success: function(data) {
-	      if (cb) {
-	        return cb(data);
-	      }
-	    },
-	    error: function(e) {
-	      if (err) {
-	        return err(e);
-	      }
-	    }
-	  });
-	};
+	  Http.prototype.request = function(args) {
+	    return this.fhir.adapter.get().http(this.httpDecorators.reduce((function(req, d) {
+	      return d(req);
+	    }), args));
+	  };
 
-	exports.search = searchResource;
+	  return Http;
+
+	})();
+
+	module.exports = Http;
 
 
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, base, conf;
+	var Search, queryBuider,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-	adapter = __webpack_require__(4);
+	queryBuider = __webpack_require__(12);
 
-	conf = __webpack_require__(5);
+	Search = (function() {
+	  function Search(fhir) {
+	    this.search = __bind(this.search, this);
+	    this.fhir = fhir;
+	  }
 
-	base = function() {
-	  return adapter.getAdapter();
-	};
+	  Search.prototype.search = function(type, query, cb, err) {
+	    var queryStr, uri;
+	    queryStr = queryBuider.query(query);
+	    uri = "" + (this.fhir.config.get().baseUrl) + "/" + type + "/_search?" + queryStr;
+	    return this.fhir.http.request({
+	      method: 'GET',
+	      url: uri,
+	      success: function(data) {
+	        if (cb) {
+	          return cb(data);
+	        }
+	      },
+	      error: function(e) {
+	        if (err) {
+	          return err(e);
+	        }
+	      }
+	    });
+	  };
 
-	exports.conformance = function(cb, err) {
-	  return base().http({
-	    method: 'GET',
-	    url: "" + conf.config.baseUrl + "/metadata",
-	    success: cb,
-	    error: err
-	  });
-	};
+	  return Search;
 
-	exports.profile = function(type, cb, err) {
-	  return base().http({
-	    method: 'GET',
-	    url: "" + conf.config.baseUrl + "/Profile/" + type,
-	    success: cb,
-	    error: err
-	  });
-	};
+	})();
+
+	module.exports = Search;
 
 
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, base, conf;
+	var Conformance,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-	adapter = __webpack_require__(4);
+	Conformance = (function() {
+	  function Conformance(fhir) {
+	    this.profile = __bind(this.profile, this);
+	    this.conformance = __bind(this.conformance, this);
+	    this.fhir = fhir;
+	    this.conf = function() {
+	      return this.fhir.config.get();
+	    };
+	  }
 
-	conf = __webpack_require__(5);
+	  Conformance.prototype.conformance = function(cb, err) {
+	    return this.fhir.http.request({
+	      method: 'GET',
+	      url: "" + (this.conf().baseUrl) + "/metadata",
+	      success: cb,
+	      error: err
+	    });
+	  };
 
-	base = function() {
-	  return adapter.getAdapter();
-	};
+	  Conformance.prototype.profile = function(type, cb, err) {
+	    return this.fhir.http.request({
+	      method: 'GET',
+	      url: "" + (this.conf().baseUrl) + "/Profile/" + type,
+	      success: cb,
+	      error: err
+	    });
+	  };
 
-	exports.transaction = function(bundle, cb, err) {
-	  return base().http({
-	    method: 'POST',
-	    url: conf.config.baseUrl,
-	    data: bundle,
-	    success: cb,
-	    error: err
-	  });
-	};
+	  return Conformance;
+
+	})();
+
+	module.exports = Conformance;
 
 
 /***/ },
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
+	var Transaction, adapter,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 	adapter = __webpack_require__(4);
+
+	Transaction = (function() {
+	  function Transaction(fhir) {
+	    this.transaction = __bind(this.transaction, this);
+	    this.fhir = fhir;
+	  }
+
+	  Transaction.prototype.transaction = function(bundle, cb, err) {
+	    return this.fhir.http.request({
+	      method: 'POST',
+	      url: this.fhir.config.get().baseUrl,
+	      data: bundle,
+	      success: cb,
+	      error: err
+	    });
+	  };
+
+	  return Transaction;
+
+	})();
+
+	module.exports = Transaction;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
 
 	tagsAll = function() {
 	  return console.log('impl me');
@@ -353,7 +452,63 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var basic, bearer, btoa, identity, merge, withAuth;
+
+	btoa = __webpack_require__(13).btoa;
+
+	merge = __webpack_require__(14);
+
+	bearer = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Bearer " + cfg.auth.bearer);
+	  };
+	};
+
+	basic = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
+	  };
+	};
+
+	identity = function(req) {
+	  return req;
+	};
+
+	withAuth = function(req, a) {
+	  var headers;
+	  headers = merge(true, req.headers || {}, {
+	    "Authorization": a
+	  });
+	  return merge(true, req, {
+	    headers: headers
+	  });
+	};
+
+	module.exports = function(fhir) {
+	  return function(req) {
+	    var auth, cfg;
+	    cfg = fhir.config.get();
+	    auth = (function() {
+	      var _ref, _ref1, _ref2;
+	      switch (false) {
+	        case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
+	          return bearer(cfg);
+	        case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
+	          return basic(cfg);
+	        default:
+	          return identity;
+	      }
+	    })();
+	    return auth(req);
+	  };
+	};
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -555,99 +710,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._query = linearizeParams;
 
 	exports.query = buildSearchParams;
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter, base, dohttp, httpDecorators;
-
-	adapter = __webpack_require__(4);
-
-	base = function() {
-	  return adapter.getAdapter();
-	};
-
-	httpDecorators = [__webpack_require__(12)];
-
-	dohttp = function(args) {
-	  return base().http(httpDecorators.reduce((function(req, d) {
-	    return d(req);
-	  }), args));
-	};
-
-	dohttp.addDecorator = function(d) {
-	  dohttp.removeDecorator(d);
-	  return httpDecorators.push(d);
-	};
-
-	dohttp.removeDecorator = function(d) {
-	  return httpDecorators = httpDecorators.filter(function(dd) {
-	    return dd !== d;
-	  });
-	};
-
-	module.exports = dohttp;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var adapter, base, basic, bearer, btoa, cfg, identity, merge, withAuth;
-
-	cfg = __webpack_require__(5).config;
-
-	adapter = __webpack_require__(4);
-
-	btoa = __webpack_require__(13).btoa;
-
-	merge = __webpack_require__(14);
-
-	base = function() {
-	  return adapter.getAdapter();
-	};
-
-	bearer = function(req) {
-	  return withAuth(req, "Bearer " + cfg.auth.bearer);
-	};
-
-	basic = function(req) {
-	  console.log("do req with auth", req, btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	  return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	};
-
-	identity = function(req) {
-	  return req;
-	};
-
-	withAuth = function(req, a) {
-	  var headers;
-	  headers = merge(true, req.headers || {}, {
-	    "Authorization": a
-	  });
-	  return merge(true, req, {
-	    headers: headers
-	  });
-	};
-
-	module.exports = function(req) {
-	  var auth;
-	  auth = (function() {
-	    var _ref, _ref1, _ref2;
-	    switch (false) {
-	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
-	        return bearer;
-	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
-	        return basic;
-	      default:
-	        return identity;
-	    }
-	  })();
-	  console.log("woth auth fn", req, auth);
-	  return auth(req);
-	};
 
 
 /***/ },

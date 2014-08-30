@@ -1,8 +1,11 @@
-f = require('../coffee/transaction.coffee')
-a = require('../coffee/adapter.coffee')
-conf = require('../coffee/configuration.coffee')
+fhir = require('../coffee/fhir.js')
+instance = new fhir()
 
-conf.configure
+f = instance._.transaction
+a = instance._.adapter
+conf = instance.config
+
+conf.set
   baseUrl: 'BASE'
 
 nop = (x)-> x
@@ -10,7 +13,7 @@ bundle = 'bundle'
 
 describe 'transaction', ->
   it 'success', (done)->
-    a.setAdapter
+    a.set
       http: (q)->
         expect(q.method).toBe('POST')
         expect(q.url).toBe('BASE')
@@ -22,7 +25,7 @@ describe 'transaction', ->
       done()
 
   it 'error', (done)->
-    a.setAdapter
+    a.set
       http: (q)->
         q.error('ok')
 

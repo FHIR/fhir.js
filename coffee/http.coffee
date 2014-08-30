@@ -1,19 +1,22 @@
 adapter = require('./adapter.coffee')
-base = ()-> adapter.getAdapter()
 
-httpDecorators = [require('./authentication.coffee')]
+class Http
+  constructor: (fhir)->
+    @fhir = fhir
+    @httpDecorators = [require('./authentication.coffee')(fhir)]
+  search: (type, query, cb, err) ->
+ 
+  addDecorator: (d) ->
+    @removeDecorator(d)
+    @httpDecorators.push(d)
 
-dohttp =  (args) ->
-  base().http(
-    httpDecorators.reduce(
-      ((req, d) -> d(req)),
-      args))
+  removeDecorator: (d) ->
+    @httpDecorators = @httpDecorators.filter((dd)->(dd != d))
 
-dohttp.addDecorator = (d) ->
-  dohttp.removeDecorator(d)
-  httpDecorators.push(d)
+  request: (args) ->
+    @fhir.adapter.get().http(
+      @httpDecorators.reduce(
+        ((req, d) -> d(req)),
+        args))
 
-dohttp.removeDecorator = (d) ->
-  httpDecorators = httpDecorators.filter((dd)->(dd != d))
-
-module.exports = dohttp
+module.exports = Http

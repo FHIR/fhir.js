@@ -5,8 +5,8 @@ fhir = jqFhir
 describe "jqFhir", ->
 
   it "simplest", (done) ->
-    fhir.configure(baseUrl: 'https://ci-api.fhir.me')
-    fhir.configure(auth: {user: 'client', pass: 'secret'})
+    fhir.config.set(baseUrl: 'https://ci-api.fhir.me')
+    fhir.config.set(auth: {user: 'client', pass: 'secret'})
     fhir.search('Patient', {name: 'maud'})
     .then (d)->
        done()

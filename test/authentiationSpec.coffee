@@ -1,17 +1,20 @@
-authentication = require('../coffee/authentication.coffee')
-conf = require('../coffee/configuration.coffee')
+fhir = require('../coffee/fhir.js')
+instance = new fhir()
+
+auth = require('../coffee/authentication.coffee')
+conf = instance.config
 
 describe "authentication:", ->
-  subject = authentication
+  subject = auth(instance)
 
   it "no auth", ->
-    conf.configure {auth: null}
+    conf.set auth: null
     authed = subject({a:1, b:2})
-    expect(authed?.headers?.Authorization).toBeUndefined();
+    expect(authed?.headers?.Authorization).toBeUndefined()
 
 
   it "bearer", ->
-    conf.configure
+    conf.set
       auth: {
         bearer: "test-token"
       }
@@ -19,7 +22,7 @@ describe "authentication:", ->
     expect(authed.headers.Authorization).toBe("Bearer test-token")
 
   it "basic", ->
-    conf.configure
+    conf.set
       auth: {
         user: "test",
         pass: "123"

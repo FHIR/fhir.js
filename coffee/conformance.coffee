@@ -1,20 +1,22 @@
-adapter = require('./adapter.coffee')
-conf = require('./configuration.coffee')
-
-base = ()-> adapter.getAdapter()
+class Conformance
 
 # TODO: cache if configured
+  constructor: (fhir)->
+    @fhir = fhir
+    @conf = () -> @fhir.config.get()
 
-exports.conformance = (cb, err)->
-  base().http
-    method: 'GET'
-    url: "#{conf.config.baseUrl}/metadata"
-    success: cb
-    error: err
+  conformance: (cb, err)=>
+    @fhir.http.request
+      method: 'GET'
+      url: "#{@conf().baseUrl}/metadata"
+      success: cb
+      error: err
 
-exports.profile = (type, cb, err)->
-  base().http
-    method: 'GET'
-    url: "#{conf.config.baseUrl}/Profile/#{type}"
-    success: cb
-    error: err
+  profile: (type, cb, err)=>
+    @fhir.http.request
+      method: 'GET'
+      url: "#{@conf().baseUrl}/Profile/#{type}"
+      success: cb
+      error: err
+
+module.exports = Conformance
