@@ -1,4 +1,4 @@
-h = require('../coffee/history.coffee')
+history = require('../coffee/history.coffee')
 
 nop = (x)-> x
 
@@ -9,7 +9,7 @@ describe 'history', ->
       expect(q.url).toBe('BASE/Alert/test-id/_history')
       q.success('ok')
 
-    h.history 'BASE', http, 'Alert', 'test-id', (data) ->
+    history 'BASE', http, 'Alert', 'test-id', (data) ->
       expect(data).toBe('ok')
       done()
     , nop
@@ -17,7 +17,7 @@ describe 'history', ->
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    h.history 'BASE', http, 'Alert', 'test-id', nop, (data)->
+    history 'BASE', http, 'Alert', 'test-id', nop, (data)->
       expect(data).toBe('ok')
       done()
 
@@ -29,7 +29,7 @@ describe 'historyType', ->
       expect(q.url).toBe('BASE/Alert/_history')
       q.success('ok')
 
-    h.history 'BASE', http, 'Alert', (data) ->
+    history 'BASE', http, 'Alert', (data) ->
       expect(data).toBe('ok')
       done()
     , nop
@@ -37,7 +37,7 @@ describe 'historyType', ->
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    h.history 'BASE', http, 'Alert', nop, (data)->
+    history 'BASE', http, 'Alert', nop, (data)->
       expect(data).toBe('ok')
       done()
 
@@ -48,7 +48,7 @@ describe 'historyAll', ->
       expect(q.url).toBe('BASE/_history')
       q.success('ok')
 
-    h.history 'BASE', http, (data) ->
+    history 'BASE', http, (data) ->
       expect(data).toBe('ok')
       done()
     , nop
@@ -56,6 +56,6 @@ describe 'historyAll', ->
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    h.history 'BASE', http, nop, (data)->
+    history 'BASE', http, nop, (data)->
       expect(data).toBe('ok')
       done()

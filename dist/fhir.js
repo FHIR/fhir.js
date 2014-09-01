@@ -60,8 +60,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var conf = __webpack_require__(4);
 	var transaction = __webpack_require__(5);
 	var tags = __webpack_require__(6);
+	var history = __webpack_require__(7);
 
-	var wrapHttp = __webpack_require__(7);
+	var wrapHttp = __webpack_require__(8);
 
 	// cunstruct fhir object
 	// params:
@@ -84,6 +85,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    transaction: function(bundle, cb, err){
 	      return transaction(baseUrl, http, bundle, cb, err)
+	    },
+	    history: function(){
+	      console.log(arguments.length)
+	      return history.apply(null, [baseUrl, http].concat(arguments))
 	    }
 	  }
 	}
@@ -160,7 +165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(8);
+	queryBuider = __webpack_require__(9);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
@@ -325,11 +330,58 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var history, historyAll, historyType;
+
+	history = function(baseUrl, http, type, id, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_history",
+	    success: cb,
+	    error: err
+	  });
+	};
+
+	historyType = function(baseUrl, http, type, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/_history",
+	    success: cb,
+	    error: err
+	  });
+	};
+
+	historyAll = function(baseUrl, http, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/_history",
+	    success: cb,
+	    error: err
+	  });
+	};
+
+	module.exports = function() {
+	  switch (arguments.length) {
+	    case 4:
+	      return historyAll.apply(null, arguments);
+	    case 5:
+	      return historyType.apply(null, arguments);
+	    case 6:
+	      return history.apply(null, arguments);
+	    default:
+	      throw "wrong arity: expected (baseUrl, http, type?, id?, cb, err)";
+	  }
+	};
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var adapter, auth, wrap;
 
 	adapter = __webpack_require__(1);
 
-	auth = __webpack_require__(9);
+	auth = __webpack_require__(10);
 
 	wrap = function(cfg, http) {
 	  return auth(cfg, http);
@@ -339,7 +391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -544,14 +596,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(10).btoa;
+	btoa = __webpack_require__(11).btoa;
 
-	merge = __webpack_require__(11);
+	merge = __webpack_require__(12);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -601,7 +653,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -668,7 +720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -752,10 +804,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module)))
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

@@ -4,6 +4,7 @@ var search = require('./search.coffee');
 var conf = require('./conformance.coffee');
 var transaction = require('./transaction.coffee');
 var tags = require('./tags.coffee');
+var history = require('./history.coffee');
 
 var wrapHttp = require('./http.coffee');
 
@@ -28,6 +29,10 @@ function fhir(cfg, adapter){
     },
     transaction: function(bundle, cb, err){
       return transaction(baseUrl, http, bundle, cb, err)
+    },
+    history: function(){
+      console.log(arguments.length)
+      return history.apply(null, [baseUrl, http].concat(arguments))
     }
   }
 }

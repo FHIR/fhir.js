@@ -24,3 +24,13 @@ describe "ngFhir", ->
            # console.log('Transaction', d)
            done()
      ]
+
+  it "history", (done) ->
+    $injector.invoke ['$fhir', ($fhir)->
+       $fhir.history()
+         .then (d)->
+           # console.log('History', d)
+           done()
+         .error (err)->
+           console.log('History', err)
+     ]

@@ -19,7 +19,7 @@ historyAll = (baseUrl, http, cb, err)->
     success: cb
     error: err
 
-exports.history = ()->
+module.exports = ()->
   switch arguments.length
     when 4 then historyAll.apply(null, arguments)
     when 5 then historyType.apply(null, arguments)
