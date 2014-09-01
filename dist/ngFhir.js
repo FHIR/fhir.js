@@ -69,11 +69,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	implementXhr = function($http) {
 	  return function(q) {
 	    var p;
-	    p = $http({
-	      method: q.method,
-	      url: q.url,
-	      data: q.data
-	    });
+	    p = $http(q);
 	    if (q.success) {
 	      p.success(q.success);
 	    }
@@ -114,19 +110,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter = __webpack_require__(3);
-	var cfg = __webpack_require__(4);
-	var search = __webpack_require__(5);
-	var conf = __webpack_require__(6);
-	var transaction = __webpack_require__(7);
-	var tags = __webpack_require__(8);
+	var search = __webpack_require__(3);
+	var conf = __webpack_require__(4);
+	var transaction = __webpack_require__(5);
+	var tags = __webpack_require__(6);
 
-	var wrapHttp = __webpack_require__(9);
+	var wrapHttp = __webpack_require__(7);
 
 	// cunstruct fhir object
 	// params:
 	//   * cfg - config object - props???
 	//   * adapter - main operations
+	//      * http - function({method, url, success, error})
+	//               call success with (data, status, headersFn, config)
 	function fhir(cfg, adapter){
 	  // TODO: add cfg & adapter validation
 	  var http = wrapHttp(cfg, adapter.http)
@@ -155,72 +151,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Adapter;
-
-	Adapter = (function() {
-	  function Adapter(fhir) {
-	    this.adapter = null;
-	    this.fhir = fhir;
-	  }
-
-	  Adapter.prototype.set = function(x) {
-	    return this.adapter = x;
-	  };
-
-	  Adapter.prototype.get = function() {
-	    return this.adapter;
-	  };
-
-	  return Adapter;
-
-	})();
-
-	module.exports = Adapter;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Configuration,
-	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-	Configuration = (function() {
-	  function Configuration(fhir) {
-	    this.get = __bind(this.get, this);
-	    this.set = __bind(this.set, this);
-	    this.config = {};
-	    this.fhir = fhir;
-	  }
-
-	  Configuration.prototype.set = function(m) {
-	    var k, v, _results;
-	    _results = [];
-	    for (k in m) {
-	      v = m[k];
-	      _results.push(this.config[k] = v);
-	    }
-	    return _results;
-	  };
-
-	  Configuration.prototype.get = function() {
-	    return this.config;
-	  };
-
-	  return Configuration;
-
-	})();
-
-	module.exports = Configuration;
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(10);
+	queryBuider = __webpack_require__(8);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
@@ -248,7 +181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var conformance, profile;
@@ -279,7 +212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var transaction;
@@ -300,7 +233,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -382,14 +315,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, auth, wrap;
+	var auth, wrap;
 
-	adapter = __webpack_require__(3);
-
-	auth = __webpack_require__(11);
+	auth = __webpack_require__(9);
 
 	wrap = function(cfg, http) {
 	  return auth(cfg, http);
@@ -399,7 +330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -604,14 +535,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(13).btoa;
+	btoa = __webpack_require__(10).btoa;
 
-	merge = __webpack_require__(12);
+	merge = __webpack_require__(11);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -661,7 +592,74 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	;(function () {
+
+	  var object = true ? exports : this; // #8: web workers
+	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+	  function InvalidCharacterError(message) {
+	    this.message = message;
+	  }
+	  InvalidCharacterError.prototype = new Error;
+	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
+
+	  // encoder
+	  // [https://gist.github.com/999166] by [https://github.com/nignag]
+	  object.btoa || (
+	  object.btoa = function (input) {
+	    var str = String(input);
+	    for (
+	      // initialize result and counter
+	      var block, charCode, idx = 0, map = chars, output = '';
+	      // if the next str index does not exist:
+	      //   change the mapping table to "="
+	      //   check if d has no fractional digits
+	      str.charAt(idx | 0) || (map = '=', idx % 1);
+	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+	    ) {
+	      charCode = str.charCodeAt(idx += 3/4);
+	      if (charCode > 0xFF) {
+	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+	      }
+	      block = block << 8 | charCode;
+	    }
+	    return output;
+	  });
+
+	  // decoder
+	  // [https://gist.github.com/1020396] by [https://github.com/atk]
+	  object.atob || (
+	  object.atob = function (input) {
+	    var str = String(input).replace(/=+$/, '');
+	    if (str.length % 4 == 1) {
+	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+	    }
+	    for (
+	      // initialize result and counters
+	      var bc = 0, bs, buffer, idx = 0, output = '';
+	      // get next character
+	      buffer = str.charAt(idx++);
+	      // character found in table? initialize bit storage and add its ascii value;
+	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+	        // and if not first of each 4 characters,
+	        // convert the first 8 bits to one ascii character
+	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
+	    ) {
+	      // try to find character in table (0-63, not found => -1)
+	      buffer = chars.indexOf(buffer);
+	    }
+	    return output;
+	  });
+
+	}());
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -745,77 +743,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	;(function () {
-
-	  var object = true ? exports : this; // #8: web workers
-	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-	  function InvalidCharacterError(message) {
-	    this.message = message;
-	  }
-	  InvalidCharacterError.prototype = new Error;
-	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-	  // encoder
-	  // [https://gist.github.com/999166] by [https://github.com/nignag]
-	  object.btoa || (
-	  object.btoa = function (input) {
-	    var str = String(input);
-	    for (
-	      // initialize result and counter
-	      var block, charCode, idx = 0, map = chars, output = '';
-	      // if the next str index does not exist:
-	      //   change the mapping table to "="
-	      //   check if d has no fractional digits
-	      str.charAt(idx | 0) || (map = '=', idx % 1);
-	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-	    ) {
-	      charCode = str.charCodeAt(idx += 3/4);
-	      if (charCode > 0xFF) {
-	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-	      }
-	      block = block << 8 | charCode;
-	    }
-	    return output;
-	  });
-
-	  // decoder
-	  // [https://gist.github.com/1020396] by [https://github.com/atk]
-	  object.atob || (
-	  object.atob = function (input) {
-	    var str = String(input).replace(/=+$/, '');
-	    if (str.length % 4 == 1) {
-	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-	    }
-	    for (
-	      // initialize result and counters
-	      var bc = 0, bs, buffer, idx = 0, output = '';
-	      // get next character
-	      buffer = str.charAt(idx++);
-	      // character found in table? initialize bit storage and add its ascii value;
-	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-	        // and if not first of each 4 characters,
-	        // convert the first 8 bits to one ascii character
-	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-	    ) {
-	      // try to find character in table (0-63, not found => -1)
-	      buffer = chars.indexOf(buffer);
-	    }
-	    return output;
-	  });
-
-	}());
-
-
-/***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

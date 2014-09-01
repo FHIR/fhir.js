@@ -1,5 +1,3 @@
-var adapter = require('./adapter.coffee');
-var cfg = require('./configuration.coffee');
 var search = require('./search.coffee');
 var conf = require('./conformance.coffee');
 var transaction = require('./transaction.coffee');
@@ -11,6 +9,8 @@ var wrapHttp = require('./http.coffee');
 // params:
 //   * cfg - config object - props???
 //   * adapter - main operations
+//      * http - function({method, url, success, error})
+//               call success with (data, status, headersFn, config)
 function fhir(cfg, adapter){
   // TODO: add cfg & adapter validation
   var http = wrapHttp(cfg, adapter.http)

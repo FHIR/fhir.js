@@ -2,7 +2,7 @@ mkFhir = require('../fhir.js')
 
 implementXhr = ($http)->
   (q)->
-    p = $http(method: q.method, url: q.url, data: q.data)
+    p = $http(q)
     p.success(q.success) if q.success
     p.error(q.error) if q.error
     p

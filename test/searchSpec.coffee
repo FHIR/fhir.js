@@ -3,9 +3,6 @@ subject = require('../coffee/search.coffee')
 nop = ()->
 
 describe "search:", ->
-  it "api", ->
-    expect(subject).not.toBe(null)
-
   it "search success", (done)->
     http = (q)->
       expect(q.method).toBe('GET')

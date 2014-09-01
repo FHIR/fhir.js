@@ -1,4 +1,3 @@
-adapter = require('./adapter.coffee')
 auth = require('./authentication.coffee')
 
 # here we use classical FP pattern for decorating functions

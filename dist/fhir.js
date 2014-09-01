@@ -54,19 +54,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter = __webpack_require__(1);
-	var cfg = __webpack_require__(2);
-	var search = __webpack_require__(3);
-	var conf = __webpack_require__(4);
-	var transaction = __webpack_require__(5);
-	var tags = __webpack_require__(6);
+	var search = __webpack_require__(1);
+	var conf = __webpack_require__(2);
+	var transaction = __webpack_require__(3);
+	var tags = __webpack_require__(4);
 
-	var wrapHttp = __webpack_require__(7);
+	var wrapHttp = __webpack_require__(5);
 
 	// cunstruct fhir object
 	// params:
 	//   * cfg - config object - props???
 	//   * adapter - main operations
+	//      * http - function({method, url, success, error})
+	//               call success with (data, status, headersFn, config)
 	function fhir(cfg, adapter){
 	  // TODO: add cfg & adapter validation
 	  var http = wrapHttp(cfg, adapter.http)
@@ -95,72 +95,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Adapter;
-
-	Adapter = (function() {
-	  function Adapter(fhir) {
-	    this.adapter = null;
-	    this.fhir = fhir;
-	  }
-
-	  Adapter.prototype.set = function(x) {
-	    return this.adapter = x;
-	  };
-
-	  Adapter.prototype.get = function() {
-	    return this.adapter;
-	  };
-
-	  return Adapter;
-
-	})();
-
-	module.exports = Adapter;
-
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Configuration,
-	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-	Configuration = (function() {
-	  function Configuration(fhir) {
-	    this.get = __bind(this.get, this);
-	    this.set = __bind(this.set, this);
-	    this.config = {};
-	    this.fhir = fhir;
-	  }
-
-	  Configuration.prototype.set = function(m) {
-	    var k, v, _results;
-	    _results = [];
-	    for (k in m) {
-	      v = m[k];
-	      _results.push(this.config[k] = v);
-	    }
-	    return _results;
-	  };
-
-	  Configuration.prototype.get = function() {
-	    return this.config;
-	  };
-
-	  return Configuration;
-
-	})();
-
-	module.exports = Configuration;
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(8);
+	queryBuider = __webpack_require__(6);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
@@ -188,7 +125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var conformance, profile;
@@ -219,7 +156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var transaction;
@@ -240,7 +177,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -322,14 +259,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var adapter, auth, wrap;
+	var auth, wrap;
 
-	adapter = __webpack_require__(1);
-
-	auth = __webpack_require__(9);
+	auth = __webpack_require__(7);
 
 	wrap = function(cfg, http) {
 	  return auth(cfg, http);
@@ -339,7 +274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
@@ -544,14 +479,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(10).btoa;
+	btoa = __webpack_require__(8).btoa;
 
-	merge = __webpack_require__(11);
+	merge = __webpack_require__(9);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -601,7 +536,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -668,7 +603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -752,10 +687,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
