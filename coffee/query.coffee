@@ -1,31 +1,10 @@
-type = (obj) ->
-    if obj == undefined or obj == null
-      return String obj
-    classToType =
-      '[object Boolean]': 'boolean',
-      '[object Number]': 'number',
-      '[object String]': 'string',
-      '[object Function]': 'function',
-      '[object Array]': 'array',
-      '[object Date]': 'date',
-      '[object RegExp]': 'regexp',
-      '[object Object]': 'object'
-    return classToType[Object.prototype.toString.call(obj)]
+utils = require('./utils.coffee')
+type = utils.type
+assertArray = utils.assertArray
+assertObject = utils.assertObject
 
-assertArray = (a)->
-  throw 'not array' unless type(a) == 'array'
-  a
-assertObject = (a)->
-  throw 'not object' unless type(a) == 'object'
-  a
-
-reduceMap = (m, fn, acc)->
-  acc ||= []
-  assertObject(m)
-  ([k,v] for k,v of m).reduce(fn, acc)
-
-
-identity = (x)-> x
+reduceMap = utils.reduceMap
+identity = utils.identity
 
 OPERATORS =
   $gt: '>'

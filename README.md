@@ -71,6 +71,27 @@ myFhir = fhir(cfg, adapter)
 
 ### Adapter implementation
 
+Currently adapter should implement http function `http(requestObj)`.
+
+Structure of requestObj:
+
+* `method` - http method (GET|POST|PUT|DELETE)
+* `url` - url for request
+* `headers` - object with headers (i.e. {'Category': 'term; scheme="sch"; label="lbl"'}
+* `success` - success callback, which should be called with (data, status, headersFn, config)
+  * data - parsed body of responce
+  * status - responce HTTP status
+  * headerFn - function to get header, i.e. headerFn('Content')
+  * config - initial requestObj passed to http
+* `error` - error callback, which should be called with (data, status, headerFn, config)
+
+```
+
+Here is implementations for
+
+* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/ngFhirImpl.coffee)
+* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/jqFhirImpl.coffee)
+
 ### Conformance & Profiles
 
 ### Resource's CRUD

@@ -329,58 +329,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type;
+	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	type = function(obj) {
-	  var classToType;
-	  if (obj === void 0 || obj === null) {
-	    return String(obj);
-	  }
-	  classToType = {
-	    '[object Boolean]': 'boolean',
-	    '[object Number]': 'number',
-	    '[object String]': 'string',
-	    '[object Function]': 'function',
-	    '[object Array]': 'array',
-	    '[object Date]': 'date',
-	    '[object RegExp]': 'regexp',
-	    '[object Object]': 'object'
-	  };
-	  return classToType[Object.prototype.toString.call(obj)];
-	};
+	utils = __webpack_require__(9);
 
-	assertArray = function(a) {
-	  if (type(a) !== 'array') {
-	    throw 'not array';
-	  }
-	  return a;
-	};
+	type = utils.type;
 
-	assertObject = function(a) {
-	  if (type(a) !== 'object') {
-	    throw 'not object';
-	  }
-	  return a;
-	};
+	assertArray = utils.assertArray;
 
-	reduceMap = function(m, fn, acc) {
-	  var k, v;
-	  acc || (acc = []);
-	  assertObject(m);
-	  return ((function() {
-	    var _results;
-	    _results = [];
-	    for (k in m) {
-	      v = m[k];
-	      _results.push([k, v]);
-	    }
-	    return _results;
-	  })()).reduce(fn, acc);
-	};
+	assertObject = utils.assertObject;
 
-	identity = function(x) {
-	  return x;
-	};
+	reduceMap = utils.reduceMap;
+
+	identity = utils.identity;
 
 	OPERATORS = {
 	  $gt: '>',
@@ -536,9 +497,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(9).btoa;
+	btoa = __webpack_require__(10).btoa;
 
-	merge = __webpack_require__(10);
+	merge = __webpack_require__(11);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -589,6 +550,129 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var RTRIM, addKey, assertArray, assertObject, headerToTags, identity, reduceMap, tagsToHeader, trim, type;
+
+	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+
+	trim = function(text) {
+	  if (text != null) {
+	    return (text + "").replace(RTRIM, "");
+	  } else {
+	    return "";
+	  }
+	};
+
+	exports.trim = trim;
+
+	tagsToHeader = function(tags) {
+	  return (tags || []).filter(function(i) {
+	    return trim(i.term);
+	  }).map(function(i) {
+	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	  }).join(",");
+	};
+
+	exports.tagsToHeader = tagsToHeader;
+
+	addKey = function(acc, str) {
+	  var pair, val;
+	  if (!str) {
+	    return;
+	  }
+	  pair = str.split("=").map(trim);
+	  val = pair[1].replace(/(^"|"$)/g, '');
+	  if (val) {
+	    acc[pair[0]] = val;
+	  }
+	  return acc;
+	};
+
+	headerToTags = function(categoryHeader) {
+	  if (!categoryHeader) {
+	    return [];
+	  }
+	  return categoryHeader.split(',').map(function(x) {
+	    var acc, parts;
+	    parts = trim(x).split(';').map(trim);
+	    if (parts[0]) {
+	      acc = {
+	        term: parts[0]
+	      };
+	      addKey(acc, parts[1]);
+	      addKey(acc, parts[2]);
+	      return acc;
+	    }
+	  });
+	};
+
+	exports.headerToTags = headerToTags;
+
+	type = function(obj) {
+	  var classToType;
+	  if (obj === void 0 || obj === null) {
+	    return String(obj);
+	  }
+	  classToType = {
+	    '[object Boolean]': 'boolean',
+	    '[object Number]': 'number',
+	    '[object String]': 'string',
+	    '[object Function]': 'function',
+	    '[object Array]': 'array',
+	    '[object Date]': 'date',
+	    '[object RegExp]': 'regexp',
+	    '[object Object]': 'object'
+	  };
+	  return classToType[Object.prototype.toString.call(obj)];
+	};
+
+	exports.type = type;
+
+	assertArray = function(a) {
+	  if (type(a) !== 'array') {
+	    throw 'not array';
+	  }
+	  return a;
+	};
+
+	exports.assertArray = assertArray;
+
+	assertObject = function(a) {
+	  if (type(a) !== 'object') {
+	    throw 'not object';
+	  }
+	  return a;
+	};
+
+	exports.assertObject = assertObject;
+
+	reduceMap = function(m, fn, acc) {
+	  var k, v;
+	  acc || (acc = []);
+	  assertObject(m);
+	  return ((function() {
+	    var _results;
+	    _results = [];
+	    for (k in m) {
+	      v = m[k];
+	      _results.push([k, v]);
+	    }
+	    return _results;
+	  })()).reduce(fn, acc);
+	};
+
+	exports.reduceMap = reduceMap;
+
+	identity = function(x) {
+	  return x;
+	};
+
+	exports.identity = identity;
+
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -655,7 +739,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -739,10 +823,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
