@@ -5,22 +5,19 @@ bearer = (cfg) ->
   (req) -> withAuth(req, "Bearer #{cfg.auth.bearer}")
 
 basic = (cfg) ->
-  (req) ->
-    withAuth( req, "Basic " + btoa("#{cfg.auth.user}:#{cfg.auth.pass}"))
+  (req) -> withAuth( req, "Basic " + btoa("#{cfg.auth.user}:#{cfg.auth.pass}"))
 
-identity = (req)->req
+identity = (x)-> x
 
 withAuth = (req, a) ->
-  headers = merge(true, req.headers or {}, {
-    "Authorization": a
-  })
+  headers = merge(true, req.headers or {}, { "Authorization": a })
   merge(true, req, {headers: headers})
 
-module.exports = (fhir)->
-  (req)->
-    cfg = fhir.config.get()
-    auth = switch
+wrapWithAuth = (cfg, http)->
+  requestProcessor = switch
       when cfg?.auth?.bearer then bearer(cfg)
       when cfg?.auth?.user and cfg?.auth?.pass then basic(cfg)
       else identity
-    auth req
+  (req)-> http(requestProcessor(req))
+
+module.exports = wrapWithAuth

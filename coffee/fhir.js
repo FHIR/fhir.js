@@ -1,38 +1,35 @@
 var adapter = require('./adapter.coffee');
 var cfg = require('./configuration.coffee');
-var http = require('./http.coffee');
 var search = require('./search.coffee');
 var conf = require('./conformance.coffee');
-var tran = require('./transaction.coffee');
+var transaction = require('./transaction.coffee');
 var tags = require('./tags.coffee');
 
-function fhir(){
+var wrapHttp = require('./http.coffee');
 
-  if (!(this instanceof arguments.callee)) {
-    return new arguments.callee();
+// cunstruct fhir object
+// params:
+//   * cfg - config object - props???
+//   * adapter - main operations
+function fhir(cfg, adapter){
+  // TODO: add cfg & adapter validation
+  var http = wrapHttp(cfg, adapter.http)
+  var baseUrl = cfg.baseUrl
+
+  return  {
+    search: function(type, query, cb, err){
+      return search(baseUrl, http, type, query, cb, err)
+    },
+    conformance: function(cb, err){
+      return conf.conformance(baseUrl, http, cb, err)
+    },
+    profile: function(type, cb, err){
+      return conf.profile(baseUrl, http, type, cb, err)
+    },
+    transaction: function(bundle, cb, err){
+      return transaction(baseUrl, http, bundle, cb, err)
+    }
   }
-  
-
-  var _ = this._ = {
-    config: new cfg(this),
-    search: new search(this),
-    conformance: new conf(this),
-    transaction: new tran(this),
-    adapter: new adapter(this),
-    http: new http(this),
-    tags: tags
-  };
-
-  this.adapter = _.adapter;
-  this.config = _.config;
-  this.http = _.http;
-  this.conformance = _.conformance.conformance;
-  this.profile = _.conformance.profile;
-  this.search = _.search.search;
-  this.transaction = _.transaction.transaction;
-  this.tags = _.tags.tags;
-  this.affixTags = _.tags.affixTags;
-  this.removeTags = _.tags.removeTags;
-};
-module.exports = fhir;
+}
+module.exports = fhir
 

@@ -1,5 +1,4 @@
-fhir = require('../fhir.js')
-instance = fhir()
+mkFhir = require('../fhir.js')
 
 implementXhr = ($http)->
   (q)->
@@ -10,18 +9,14 @@ implementXhr = ($http)->
 
 angular.module('ng-fhir', ['ng'])
 angular.module('ng-fhir').provider '$fhir', ()->
-  prov = {}
-  constructor = ($http)->
-    instance.config.set(baseUrl: prov.baseUrl)
-    instance.adapter.set
-      http: implementXhr($http)
+  prov =
+    $get: ($http)->
+      adapter = {http: implementXhr($http)}
+      fhir = mkFhir(prov, adapter)
 
-    search: instance.search
-    conformance: instance.conformance
-    profile: instance.profile
-    transaction: instance.transaction
-
-  prov.$get = constructor
-  prov
+      search: fhir.search
+      conformance: fhir.conformance
+      profile: fhir.profile
+      transaction: fhir.transaction
 
 exports.ngInit = ()-> console.log('ng initialized')

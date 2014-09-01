@@ -1,53 +1,38 @@
-fhir = require('../coffee/fhir.js')
-
-instance = new fhir()
-f = instance._.conformance
-a = instance._.adapter
-
-instance.config.set
-  baseUrl: 'BASE'
+conf = require('../coffee/conformance.coffee')
 
 nop = (x)-> x
 
 describe 'conformance', ->
   it 'success', (done)->
-    console.log "gonna set an adapter", a.get()
-
-    a.set http: (q)->
+    http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/metadata')
       q.success('ok')
 
-    f.conformance (data)->
+    conf.conformance 'BASE', http, (data)->
       expect(data).toBe('ok')
       done()
 
   it 'error', (done)->
-    a.set
-      http: (q)->
-        q.error('ok')
+    http = (q)-> q.error('ok')
 
-    f.conformance nop, (data)->
+    conf.conformance 'BASE', http,  nop, (data)->
       expect(data).toBe('ok')
       done()
 
 describe 'profile', ->
-
   it 'success', (done)->
-    a.set
-      http: (q)->
-        expect(q.method).toBe('GET')
-        expect(q.url).toBe('BASE/Profile/Alert')
-        q.success('ok')
+    http = (q)->
+      expect(q.method).toBe('GET')
+      expect(q.url).toBe('BASE/Profile/Alert')
+      q.success('ok')
 
-    f.profile 'Alert', (data)->
+    conf.profile 'BASE', http, 'Alert', (data)->
       expect(data).toBe('ok')
       done()
   it 'error', (done)->
-    a.set
-      http: (q)->
-        q.error('ok')
+    http = (q)-> q.error('ok')
 
-    f.profile 'Alert', nop, (data)->
+    conf.profile 'BASE', http, 'Alert', nop, (data)->
       expect(data).toBe('ok')
       done()

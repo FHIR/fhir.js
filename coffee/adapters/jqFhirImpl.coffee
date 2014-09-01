@@ -1,6 +1,5 @@
-fhir = require('../fhir.js')
+mkFhir = require('../fhir.js')
 $ = require('jquery')
-instance = fhir()
 
 adapter = {
   "http": (q)->
@@ -9,12 +8,13 @@ adapter = {
     a.fail(q.error) if q.error
 }
 
-instance.adapter.set adapter
+config = {}
+fhir = null
 
-exports.fhir = instance
-exports.config = instance.config
+exports.configure = (config)->
+  fhir = mkFhir(config, adapter)
 
 exports.search = (type, query) ->
   ret = $.Deferred()
-  instance.search(type, query, ret.resolve, ret.reject)
+  fhir.search(type, query, ret.resolve, ret.reject)
   ret

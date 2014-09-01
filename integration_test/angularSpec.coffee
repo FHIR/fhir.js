@@ -11,7 +11,7 @@ describe "ngFhir", ->
     $injector.invoke ['$fhir', ($fhir)->
        $fhir.search('Patient', {name: 'maud'})
          .then (d)->
-           console.log('Search by patients', d)
+           # console.log('Search by patients', d)
            done()
      ]
 
@@ -21,6 +21,6 @@ describe "ngFhir", ->
     $injector.invoke ['$fhir', ($fhir)->
        $fhir.transaction(bundle)
          .then (d)->
-           console.log('Transaction', d)
+           # console.log('Transaction', d)
            done()
      ]

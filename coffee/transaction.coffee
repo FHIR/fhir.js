@@ -1,16 +1,9 @@
-adapter = require('./adapter.coffee')
-
-class Transaction
-
-  constructor: (fhir)->
-    @fhir = fhir
-
-  transaction: (bundle, cb, err)=>
-    @fhir.http.request
+transaction = (baseUrl, http, bundle, cb, err)=>
+    http
       method: 'POST'
-      url: @fhir.config.get().baseUrl
+      url: baseUrl
       data: bundle
       success: cb
       error: err
 
-module.exports = Transaction
+module.exports = transaction
