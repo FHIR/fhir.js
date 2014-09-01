@@ -85,7 +85,6 @@ Structure of requestObj:
   * config - initial requestObj passed to http
 * `error` - error callback, which should be called with (data, status, headerFn, config)
 
-```
 
 Here is implementations for
 
