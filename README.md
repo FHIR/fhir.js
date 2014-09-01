@@ -163,16 +163,35 @@ angular.module('app', ['ng-fhir'])
          $scope.patients = bundle.entry
 ```
 
-Here jsfiddle to play with [ng-fhir](http://jsfiddle.net/niquola/6Ltgynnf/4/)
+## jQuery adapter: `ngFhir`
 
-## jQuery adapter:
+jQuery builda could be found at `dist/jqFhir.js`
 
-TODO...
+
+Usage:
+
+```html
+<script src="./jquery-???.min.js"> </script>
+<script src="./jqFhir.js"> </script>
+```
+
+
+```coffeescript
+// create fhir instance
+var fhir = jqFhir({
+    baseUrl: 'https://ci-api.fhir.me',
+    auth: {user: 'client', pass: 'secret'}
+})
+
+fhir.search('Pateint', {name: 'maud'})
+.then(function(bundle){
+  console.log('Search patients', bundle)
+})
+```
 
 ## TODO
 
 * bower package
-* OAuth2 & Base authorization
 
 ## Contribute
 

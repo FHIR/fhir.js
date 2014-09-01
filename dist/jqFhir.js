@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $, adapter, config, fhir, mkFhir;
+	var $, adapter, mkFhir;
 
 	mkFhir = __webpack_require__(3);
 
@@ -84,19 +84,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	config = {};
-
-	fhir = null;
-
-	exports.configure = function(config) {
-	  return fhir = mkFhir(config, adapter);
-	};
-
-	exports.search = function(type, query) {
-	  var ret;
-	  ret = $.Deferred();
-	  fhir.search(type, query, ret.resolve, ret.reject);
-	  return ret;
+	module.exports = function(config) {
+	  var fhir;
+	  fhir = mkFhir(config, adapter);
+	  return {
+	    search: function(type, query) {
+	      var ret;
+	      ret = $.Deferred();
+	      fhir.search(type, query, ret.resolve, ret.reject);
+	      return ret;
+	    }
+	  };
 	};
 
 

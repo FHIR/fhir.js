@@ -8,13 +8,11 @@ adapter = {
     a.fail(q.error) if q.error
 }
 
-config = {}
-fhir = null
-
-exports.configure = (config)->
+module.exports = (config)->
   fhir = mkFhir(config, adapter)
 
-exports.search = (type, query) ->
-  ret = $.Deferred()
-  fhir.search(type, query, ret.resolve, ret.reject)
-  ret
+  search: (type, query) ->
+    ret = $.Deferred()
+    fhir.search(type, query, ret.resolve, ret.reject)
+    ret
+
