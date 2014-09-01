@@ -4,15 +4,22 @@ trim = utils.trim
 tagsToHeader = utils.tagsToHeader
 headerToTags = utils.headerToTags
 
+assert = (pred, mess)->
+  throw mess unless pred?
+
 # entry
 #
 # * category  - tags array
 # * content   - resource json
 # * cb - function(entry)
 exports.create = (baseUrl, http, entry, cb, err)->
-  tags = entry.category
+  tags = entry.category || []
   resource = entry.content
+  assert(resource, 'entry.content with resource body should be present')
+
   type = resource.resourceType
+  assert(type, 'entry.content.resourceType with resourceType should be present')
+
   headers = {}
   tagHeader = tagsToHeader(tags)
   headers["Category"] =  tagHeader if tagHeader

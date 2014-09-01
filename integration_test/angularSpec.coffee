@@ -1,11 +1,44 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
+fhir = require('../coffee/adapters/ngFhirImpl.coffee')
+
+Chance = require('chance')
+chance = new Chance()
+
 angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
 
+
+pt = ()->
+  resourceType: "Patient"
+  text:{ status: "generated", div: "Generated"}
+  identifier: [
+    use: "usual"
+    label: "MRN"
+    system: "urn:oid:1.2.36.146.595.217.0.1"
+    value: chance.ssn()
+    period: { start: "2001-05-06"}
+    assigner: { display: "Acme Healthcare"}
+  ]
+  name: [
+    {use: "official", family: [chance.last()], given: [chance.first(), chance.first()]}
+  ]
+
 describe "ngFhir", ->
   $injector = angular.injector(['test'])
+
+  it "create", (done) ->
+    $injector.invoke ['$fhir', ($fhir)->
+       entry =
+         tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
+         content: pt()
+       done()
+
+       # $fhir.create entry, (entry)->
+       #     console.log('Patient created', entry)
+       #     done()
+     ]
 
   it "search", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
@@ -15,15 +48,15 @@ describe "ngFhir", ->
            done()
      ]
 
-  bundle = '{"resourceType":"Bundle","entry":[]}'
+  # bundle = '{"resourceType":"Bundle","entry":[]}'
 
-  it "transaction", (done) ->
-    $injector.invoke ['$fhir', ($fhir)->
-       $fhir.transaction(bundle)
-         .then (d)->
-           # console.log('Transaction', d)
-           done()
-     ]
+  # it "transaction", (done) ->
+  #   $injector.invoke ['$fhir', ($fhir)->
+  #      $fhir.transaction(bundle)
+  #        .then (d)->
+  #          # console.log('Transaction', d)
+  #          done()
+  #    ]
 
   # it "history", (done) ->
   #   $injector.invoke ['$fhir', ($fhir)->

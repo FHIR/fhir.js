@@ -1,6 +1,6 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
-fhir = jqFhir
+fhir = require('../coffee/adapters/jqFhir.js')
 
 describe "jqFhir", ->
   subject = fhir

@@ -19,5 +19,10 @@ angular.module('ng-fhir').provider '$fhir', ()->
       profile: fhir.profile
       transaction: fhir.transaction
       history: fhir.history
+      create: fhir.create
+      read: fhir.read
+      update: fhir.update
+      delete: fhir.delete
+      vread: fhir.vread
 
 exports.ngInit = ()-> console.log('ng initialized')

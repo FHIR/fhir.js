@@ -16,8 +16,6 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.min.js',
       'bower_components/jquery/dist/jquery.js',
-      'dist/ngFhir.js',
-      'dist/jqFhir.js',
       'integration_test/**/*.coffee'
     ],
 
@@ -28,7 +26,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 
-    preprocessors: { 'integration_test/**/*.coffee': ['webpack'] },
+    preprocessors: { '**/*.coffee': ['webpack'] },
 
     webpack: {
       cache: true,

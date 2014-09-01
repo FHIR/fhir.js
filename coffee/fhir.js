@@ -3,6 +3,7 @@ var conf = require('./conformance.coffee');
 var transaction = require('./transaction.coffee');
 var tags = require('./tags.coffee');
 var history = require('./history.coffee');
+var crud = require('./resource.coffee');
 
 var wrapHttp = require('./http.coffee');
 
@@ -31,8 +32,19 @@ function fhir(cfg, adapter){
       return transaction(baseUrl, http, bundle, cb, err)
     },
     history: function(){
-      console.log(arguments.length)
       return history.apply(null, [baseUrl, http].concat(arguments))
+    },
+    create: function(){
+      return crud.create.apply(null, [baseUrl, http].concat(arguments))
+    },
+    read: function(){
+      return crud.read.apply(null, [baseUrl, http].concat(arguments))
+    },
+    update: function(){
+      return crud.update.apply(null, [baseUrl, http].concat(arguments))
+    },
+    delete: function(){
+      return crud.delete.apply(null, [baseUrl, http].concat(arguments))
     }
   }
 }

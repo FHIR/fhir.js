@@ -1,5 +1,5 @@
 mkFhir = require('../fhir.js')
-$ = require('jquery')
+$ = jQuery
 
 adapter = {
   "http": (q)->

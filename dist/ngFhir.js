@@ -96,7 +96,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        conformance: fhir.conformance,
 	        profile: fhir.profile,
 	        transaction: fhir.transaction,
-	        history: fhir.history
+	        history: fhir.history,
+	        create: fhir.create,
+	        read: fhir.read,
+	        update: fhir.update,
+	        "delete": fhir["delete"],
+	        vread: fhir.vread
 	      };
 	    }
 	  };
@@ -116,8 +121,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var transaction = __webpack_require__(5);
 	var tags = __webpack_require__(6);
 	var history = __webpack_require__(7);
+	var crud = __webpack_require__(8);
 
-	var wrapHttp = __webpack_require__(8);
+	var wrapHttp = __webpack_require__(9);
 
 	// cunstruct fhir object
 	// params:
@@ -144,8 +150,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return transaction(baseUrl, http, bundle, cb, err)
 	    },
 	    history: function(){
-	      console.log(arguments.length)
 	      return history.apply(null, [baseUrl, http].concat(arguments))
+	    },
+	    create: function(){
+	      return crud.create.apply(null, [baseUrl, http].concat(arguments))
+	    },
+	    read: function(){
+	      return crud.read.apply(null, [baseUrl, http].concat(arguments))
+	    },
+	    update: function(){
+	      return crud.update.apply(null, [baseUrl, http].concat(arguments))
+	    },
+	    delete: function(){
+	      return crud.delete.apply(null, [baseUrl, http].concat(arguments))
 	    }
 	  }
 	}
@@ -159,7 +176,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(9);
+	queryBuider = __webpack_require__(10);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
@@ -371,9 +388,121 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var assert, headerToTags, tagsToHeader, trim, utils;
+
+	utils = __webpack_require__(11);
+
+	trim = utils.trim;
+
+	tagsToHeader = utils.tagsToHeader;
+
+	headerToTags = utils.headerToTags;
+
+	assert = function(pred, mess) {
+	  if (pred == null) {
+	    throw mess;
+	  }
+	};
+
+	exports.create = function(baseUrl, http, entry, cb, err) {
+	  var headers, resource, tagHeader, tags, type;
+	  tags = entry.category || [];
+	  resource = entry.content;
+	  assert(resource, 'entry.content with resource body should be present, but ' + JSON.stringify(entry));
+	  type = resource.resourceType;
+	  assert(type, 'entry.content.resourceType with resourceType should be present');
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	  }
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type,
+	    data: resource,
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category')) || tags;
+	      return cb({
+	        id: id,
+	        category: tags || [],
+	        content: data || resource
+	      }, config);
+	    },
+	    error: err
+	  });
+	};
+
+	exports.read = function(baseUrl, http, id, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: id,
+	    success: function(data, status, headers, config) {
+	      var tags;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category'));
+	      return cb({
+	        id: id,
+	        category: tags || [],
+	        content: data
+	      }, config);
+	    },
+	    error: err
+	  });
+	};
+
+	exports.update = function(baseUrl, http, entry, cb, err) {
+	  var headers, tagHeader, tags, url;
+	  url = entry.id;
+	  tags = entry.tags;
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	  }
+	  headers['Content-Location'] = url;
+	  return http({
+	    method: 'PUT',
+	    url: url,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category'));
+	      return cb({
+	        id: id,
+	        category: tags || [],
+	        content: data
+	      }, config);
+	    },
+	    error: err
+	  });
+	};
+
+	exports["delete"] = function(baseUrl, http, entry, cb, err) {
+	  return http({
+	    method: 'DELETE',
+	    url: entry.id,
+	    success: function(data, status, headers, config) {
+	      return cb(entry, config);
+	    },
+	    error: err
+	  });
+	};
+
+	exports.vread = function(baseUrl, http) {
+	  return console.log('TODO');
+	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var auth, wrap;
 
-	auth = __webpack_require__(10);
+	auth = __webpack_require__(12);
 
 	wrap = function(cfg, http) {
 	  return auth(cfg, http);
@@ -383,7 +512,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
@@ -549,63 +678,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
-
-	btoa = __webpack_require__(12).btoa;
-
-	merge = __webpack_require__(13);
-
-	bearer = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Bearer " + cfg.auth.bearer);
-	  };
-	};
-
-	basic = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	  };
-	};
-
-	identity = function(x) {
-	  return x;
-	};
-
-	withAuth = function(req, a) {
-	  var headers;
-	  headers = merge(true, req.headers || {}, {
-	    "Authorization": a
-	  });
-	  return merge(true, req, {
-	    headers: headers
-	  });
-	};
-
-	wrapWithAuth = function(cfg, http) {
-	  var requestProcessor;
-	  requestProcessor = (function() {
-	    var _ref, _ref1, _ref2;
-	    switch (false) {
-	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
-	        return bearer(cfg);
-	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
-	        return basic(cfg);
-	      default:
-	        return identity;
-	    }
-	  })();
-	  return function(req) {
-	    return http(requestProcessor(req));
-	  };
-	};
-
-	module.exports = wrapWithAuth;
-
-
-/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -732,6 +804,63 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
+
+	btoa = __webpack_require__(13).btoa;
+
+	merge = __webpack_require__(14);
+
+	bearer = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Bearer " + cfg.auth.bearer);
+	  };
+	};
+
+	basic = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
+	  };
+	};
+
+	identity = function(x) {
+	  return x;
+	};
+
+	withAuth = function(req, a) {
+	  var headers;
+	  headers = merge(true, req.headers || {}, {
+	    "Authorization": a
+	  });
+	  return merge(true, req, {
+	    headers: headers
+	  });
+	};
+
+	wrapWithAuth = function(cfg, http) {
+	  var requestProcessor;
+	  requestProcessor = (function() {
+	    var _ref, _ref1, _ref2;
+	    switch (false) {
+	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
+	        return bearer(cfg);
+	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
+	        return basic(cfg);
+	      default:
+	        return identity;
+	    }
+	  })();
+	  return function(req) {
+	    return http(requestProcessor(req));
+	  };
+	};
+
+	module.exports = wrapWithAuth;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
 	;(function () {
 
 	  var object = true ? exports : this; // #8: web workers
@@ -796,7 +925,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -880,10 +1009,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module)))
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
