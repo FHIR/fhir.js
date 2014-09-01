@@ -12,7 +12,7 @@ angular.module('test', ['ng-fhir'])
 
 pt = ()->
   resourceType: "Patient"
-  text:{ status: "generated", div: "Generated"}
+  text:{ status: "generated", div: "<div>Generated</div>"}
   identifier: [
     use: "usual"
     label: "MRN"
@@ -28,17 +28,6 @@ pt = ()->
 describe "ngFhir", ->
   $injector = angular.injector(['test'])
 
-  it "create", (done) ->
-    $injector.invoke ['$fhir', ($fhir)->
-       entry =
-         tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-         content: pt()
-       done()
-
-       # $fhir.create entry, (entry)->
-       #     console.log('Patient created', entry)
-       #     done()
-     ]
 
   it "search", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
@@ -46,6 +35,21 @@ describe "ngFhir", ->
          .then (d)->
            # console.log('Search by patients', d)
            done()
+     ]
+
+  it "create", (done) ->
+    $injector.invoke ['$fhir', ($fhir)->
+       entry =
+         tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
+         content: pt()
+       success = (res)->
+         console.log('Patient created', JSON.stringify(res))
+         done()
+       error = (res)->
+         console.log('Error Patient created', JSON.stringify(res))
+         done()
+
+       $fhir.create entry, success, error
      ]
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'

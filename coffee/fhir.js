@@ -34,14 +34,14 @@ function fhir(cfg, adapter){
     history: function(){
       return history.apply(null, [baseUrl, http].concat(arguments))
     },
-    create: function(){
-      return crud.create.apply(null, [baseUrl, http].concat(arguments))
+    create: function(entry, cb, err){
+      return crud.create(baseUrl, http, entry, cb, err)
     },
-    read: function(){
-      return crud.read.apply(null, [baseUrl, http].concat(arguments))
+    read: function(id, cb, err){
+      return crud.read.apply(baseUrl, http, id , cb, err)
     },
-    update: function(){
-      return crud.update.apply(null, [baseUrl, http].concat(arguments))
+    update: function(entry, cb, err){
+      return crud.update(baseUrl, http, entry, cb, err)
     },
     delete: function(){
       return crud.delete.apply(null, [baseUrl, http].concat(arguments))

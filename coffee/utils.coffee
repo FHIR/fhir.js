@@ -6,7 +6,8 @@ trim = (text)->
 exports.trim = trim
 
 tagsToHeader = (tags)->
-  (tags || []).filter((i)-> trim(i.term))
+  (tags || [])
+    .filter((i)-> i && trim(i.term))
     .map((i)-> "#{i.term}; scheme=\"#{i.scheme}\"; label=\"#{i.label}\"")
     .join(",")
 

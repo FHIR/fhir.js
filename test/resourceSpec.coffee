@@ -29,7 +29,7 @@ describe "search:", ->
 
       expect(q.method).toBe('POST')
       expect(q.url).toBe('BASE/Patient')
-      expect(q.data).toBe(entry.content)
+      expect(q.data).toBe(JSON.stringify(entry.content))
       expect(q.headers['Category']).toBe('term; scheme="sch"; label="lbl"')
 
       done()

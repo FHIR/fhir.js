@@ -152,14 +152,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    history: function(){
 	      return history.apply(null, [baseUrl, http].concat(arguments))
 	    },
-	    create: function(){
-	      return crud.create.apply(null, [baseUrl, http].concat(arguments))
+	    create: function(entry, cb, err){
+	      return crud.create(baseUrl, http, entry, cb, err)
 	    },
-	    read: function(){
-	      return crud.read.apply(null, [baseUrl, http].concat(arguments))
+	    read: function(id, cb, err){
+	      return crud.read.apply(baseUrl, http, id , cb, err)
 	    },
-	    update: function(){
-	      return crud.update.apply(null, [baseUrl, http].concat(arguments))
+	    update: function(entry, cb, err){
+	      return crud.update(baseUrl, http, entry, cb, err)
 	    },
 	    delete: function(){
 	      return crud.delete.apply(null, [baseUrl, http].concat(arguments))
@@ -388,7 +388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assert, headerToTags, tagsToHeader, trim, utils;
+	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
 	utils = __webpack_require__(11);
 
@@ -397,6 +397,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	tagsToHeader = utils.tagsToHeader;
 
 	headerToTags = utils.headerToTags;
+
+	gettype = utils.type;
+
+	toJson = function(resource) {
+	  if (gettype(resource) === 'string') {
+	    return resource;
+	  } else if (gettype(resource) === 'object') {
+	    return JSON.stringify(resource);
+	  }
+	};
 
 	assert = function(pred, mess) {
 	  if (pred == null) {
@@ -408,18 +418,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var headers, resource, tagHeader, tags, type;
 	  tags = entry.category || [];
 	  resource = entry.content;
-	  assert(resource, 'entry.content with resource body should be present, but ' + JSON.stringify(entry));
+	  assert(resource, 'entry.content with resource body should be present');
 	  type = resource.resourceType;
 	  assert(type, 'entry.content.resourceType with resourceType should be present');
 	  headers = {};
 	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader) {
+	  if (tagHeader.length > 0) {
 	    headers["Category"] = tagHeader;
 	  }
 	  return http({
 	    method: 'POST',
 	    url: "" + baseUrl + "/" + type,
-	    data: resource,
+	    data: toJson(resource),
 	    headers: headers,
 	    success: function(data, status, headers, config) {
 	      var id;
@@ -467,12 +477,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    method: 'PUT',
 	    url: url,
 	    success: function(data, status, headers, config) {
-	      var id;
+	      var id, _tags;
 	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category'));
+	      _tags = headerToTags(headers('Category'));
 	      return cb({
 	        id: id,
-	        category: tags || [],
+	        category: _tags || tags || [],
 	        content: data
 	      }, config);
 	    },
@@ -697,7 +707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	tagsToHeader = function(tags) {
 	  return (tags || []).filter(function(i) {
-	    return trim(i.term);
+	    return i && trim(i.term);
 	  }).map(function(i) {
 	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
 	  }).join(",");

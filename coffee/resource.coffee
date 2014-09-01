@@ -3,6 +3,13 @@ utils = require('./utils.coffee')
 trim = utils.trim
 tagsToHeader = utils.tagsToHeader
 headerToTags = utils.headerToTags
+gettype = utils.type
+
+toJson = (resource)->
+  if gettype(resource) == 'string'
+    resource
+  else if gettype(resource) == 'object'
+    JSON.stringify(resource)
 
 assert = (pred, mess)->
   throw mess unless pred?
@@ -22,13 +29,15 @@ exports.create = (baseUrl, http, entry, cb, err)->
 
   headers = {}
   tagHeader = tagsToHeader(tags)
-  headers["Category"] =  tagHeader if tagHeader
+  headers["Category"] =  tagHeader if tagHeader.length > 0
+
   http
     method: 'POST'
     url: "#{baseUrl}/#{type}"
-    data: resource
+    data: toJson(resource)
     headers: headers
     success: (data, status, headers, config)->
+      # console.log('Headers',headers(), headers('Location'), headers('Content-Location'))
       id = headers('Content-Location')
       tags = headerToTags(headers('Category')) || tags
       cb({id: id, category: (tags || []), content: (data || resource)}, config)
@@ -56,8 +65,8 @@ exports.update = (baseUrl, http, entry, cb ,err)->
     url: url
     success: (data, status, headers, config)->
       id = headers('Content-Location')
-      tags = headerToTags(headers('Category'))
-      cb({id: id, category: (tags || []), content: data}, config)
+      _tags = headerToTags(headers('Category'))
+      cb({id: id, category: (_tags || tags || []), content: data}, config)
     error: err
 
 
