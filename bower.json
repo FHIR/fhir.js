@@ -17,7 +17,7 @@
     "Gruntfile.js",
     "karma.conf.js",
     "karma-itegration.conf.js",
-    "package.json",
+    "package.json"
 
   ],
   "license": "MIT",
