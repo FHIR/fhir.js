@@ -45,17 +45,16 @@ describe "ngFhir", ->
        success = (res)->
          expect(res.content.name[0].family).toEqual(patient.name[0].family)
          id = res.id.split("/_history/")[0]
-         console.log(id)
 
          readSuccess = (res)->
            expect(res.content.name[0].family).toEqual(patient.name[0].family)
-           family = chance.last()
-           res.content.name[0].family = family
+           family = chance.last() + '-test'
+           res.content.name[0].family[0] = family
            updateSuccess = (res)->
-             console.log(res)
+             expect(res.content.name[0].family[0]).toEqual(family)
              done()
            updateError = (res)->
-             console.log(res)
+             console.log(JSON.stringify(res))
              done()
            $fhir.update(res, updateSuccess, updateError)
 

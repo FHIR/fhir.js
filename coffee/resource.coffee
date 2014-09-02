@@ -59,11 +59,12 @@ exports.update = (baseUrl, http, entry, cb ,err)->
   headers = {}
   tagHeader = tagsToHeader(tags)
   headers["Category"] =  tagHeader if tagHeader
-  headers['Content-Location'] = url
+  headers['Content-Location'] = entry.id
   http
     method: 'PUT'
     url: url
     data: toJson(resource)
+    headers: headers
     success: (data, status, headers, config)->
       id = headers('Content-Location')
       _tags = headerToTags(headers('Category'))

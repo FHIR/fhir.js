@@ -402,18 +402,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.update = function(baseUrl, http, entry, cb, err) {
-	  var headers, tagHeader, tags, url;
-	  url = entry.id;
+	  var headers, resource, tagHeader, tags, url;
+	  url = entry.id.split("/_history/")[0];
 	  tags = entry.tags;
+	  resource = entry.content;
+	  console.log(url);
+	  console.log(toJson(resource));
 	  headers = {};
 	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader) {
-	    headers["Category"] = tagHeader;
-	  }
-	  headers['Content-Location'] = url;
+	  headers['Content-Location'] = entry.id;
 	  return http({
 	    method: 'PUT',
 	    url: url,
+	    data: toJson(resource),
 	    success: function(data, status, headers, config) {
 	      var id, _tags;
 	      id = headers('Content-Location');
