@@ -37,7 +37,6 @@ exports.create = (baseUrl, http, entry, cb, err)->
     data: toJson(resource)
     headers: headers
     success: (data, status, headers, config)->
-      # console.log('Headers',headers(), headers('Location'), headers('Content-Location'))
       id = headers('Content-Location')
       tags = headerToTags(headers('Category')) || tags
       cb({id: id, category: (tags || []), content: (data || resource)}, config)

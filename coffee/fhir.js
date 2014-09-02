@@ -38,7 +38,7 @@ function fhir(cfg, adapter){
       return crud.create(baseUrl, http, entry, cb, err)
     },
     read: function(id, cb, err){
-      return crud.read.apply(baseUrl, http, id , cb, err)
+      return crud.read(baseUrl, http, id , cb, err)
     },
     update: function(entry, cb, err){
       return crud.update(baseUrl, http, entry, cb, err)

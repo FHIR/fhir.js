@@ -9,7 +9,6 @@ angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
 
-
 pt = ()->
   resourceType: "Patient"
   text:{ status: "generated", div: "<div>Generated</div>"}
@@ -39,18 +38,32 @@ describe "ngFhir", ->
 
   it "create", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
+       patient = pt()
        entry =
          tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-         content: pt()
+         content: patient
        success = (res)->
-         console.log('Patient created', JSON.stringify(res))
-         done()
+         expect(res.content.name[0].family).toEqual(patient.name[0].family)
+         id = res.id.split("/Patient/")[1].split("/")[0]
+
+         readSuccess = (res)->
+           console.log(res)
+           done()
+         readError = (res)->
+           console.log('Error Patient read', JSON.stringify(res))
+           done()
+
+         $fhir.read(id, readSuccess, readError)
        error = (res)->
-         console.log('Error Patient created', JSON.stringify(res))
+         console.log('Error Patient create', JSON.stringify(res))
          done()
 
-       $fhir.create entry, success, error
+       $fhir.create(entry, success, error)
      ]
+
+  it "update", (done)->
+    console.log('update')
+    done()
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'
 
