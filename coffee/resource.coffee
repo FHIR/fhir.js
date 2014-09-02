@@ -53,8 +53,9 @@ exports.read = (baseUrl, http, id, cb, err)->
     error: err
 
 exports.update = (baseUrl, http, entry, cb ,err)->
-  url = entry.id
+  url = entry.id.split("/_history/")[0]
   tags = entry.tags
+  resource = entry.content
   headers = {}
   tagHeader = tagsToHeader(tags)
   headers["Category"] =  tagHeader if tagHeader
@@ -62,6 +63,7 @@ exports.update = (baseUrl, http, entry, cb ,err)->
   http
     method: 'PUT'
     url: url
+    data: toJson(resource)
     success: (data, status, headers, config)->
       id = headers('Content-Location')
       _tags = headerToTags(headers('Category'))

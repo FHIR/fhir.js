@@ -44,11 +44,21 @@ describe "ngFhir", ->
          content: patient
        success = (res)->
          expect(res.content.name[0].family).toEqual(patient.name[0].family)
-         id = res.id.split("/Patient/")[1].split("/")[0]
+         id = res.id.split("/_history/")[0]
+         console.log(id)
 
          readSuccess = (res)->
-           console.log(res)
-           done()
+           expect(res.content.name[0].family).toEqual(patient.name[0].family)
+           family = chance.last()
+           res.content.name[0].family = family
+           updateSuccess = (res)->
+             console.log(res)
+             done()
+           updateError = (res)->
+             console.log(res)
+             done()
+           $fhir.update(res, updateSuccess, updateError)
+
          readError = (res)->
            console.log('Error Patient read', JSON.stringify(res))
            done()
@@ -60,10 +70,6 @@ describe "ngFhir", ->
 
        $fhir.create(entry, success, error)
      ]
-
-  it "update", (done)->
-    console.log('update')
-    done()
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'
 
