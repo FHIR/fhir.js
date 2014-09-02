@@ -43,8 +43,8 @@ function fhir(cfg, adapter){
     update: function(entry, cb, err){
       return crud.update(baseUrl, http, entry, cb, err)
     },
-    delete: function(){
-      return crud.delete.apply(null, [baseUrl, http].concat(arguments))
+    delete: function(entry, cb, err){
+      return crud.delete(baseUrl, http, entry, cb, err)
     }
   }
 }

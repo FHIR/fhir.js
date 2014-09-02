@@ -36,7 +36,7 @@ describe "ngFhir", ->
            done()
      ]
 
-  it "create", (done) ->
+  it "crud", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
        patient = pt()
        entry =
@@ -52,7 +52,28 @@ describe "ngFhir", ->
            res.content.name[0].family[0] = family
            updateSuccess = (res)->
              expect(res.content.name[0].family[0]).toEqual(family)
-             done()
+             updateReadSuccess = (res)->
+               expect(res.content.name[0].family[0]).toEqual(family)
+               deleteSuccess = (res)->
+                 deleteReadSuccess = (res)->
+                   console.log(JSON.stringify(res))
+                   done()
+                 deleteReadError = ()->
+                   console.log(JSON.stringify(res))
+                   done()
+                 $fhir.read(id, deleteReadSuccess, deleteReadError)
+
+               deleteError = (res)->
+                 console.log(JSON.stringify(res))
+                 done()
+               $fhir.delete({id: id}, deleteSuccess, deleteError)
+
+             updateReadError = (res)->
+               console.log(JSON.stringify(res))
+               done()
+
+             $fhir.read(id, updateReadSuccess, updateReadError)
+
            updateError = (res)->
              console.log(JSON.stringify(res))
              done()

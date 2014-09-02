@@ -99,8 +99,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    update: function(entry, cb, err){
 	      return crud.update(baseUrl, http, entry, cb, err)
 	    },
-	    delete: function(){
-	      return crud.delete.apply(null, [baseUrl, http].concat(arguments))
+	    delete: function(entry, cb, err){
+	      return crud.delete(baseUrl, http, entry, cb, err)
 	    }
 	  }
 	}
@@ -389,8 +389,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    url: id,
 	    success: function(data, status, headers, config) {
 	      var tags;
-	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category'));
+	      id = headers && headers('Content-Location') || '??';
+	      tags = headers && headerToTags(headers('Category')) || '??';
 	      return cb({
 	        id: id,
 	        category: tags || [],
@@ -406,15 +406,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  url = entry.id.split("/_history/")[0];
 	  tags = entry.tags;
 	  resource = entry.content;
-	  console.log(url);
-	  console.log(toJson(resource));
 	  headers = {};
 	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	  }
 	  headers['Content-Location'] = entry.id;
 	  return http({
 	    method: 'PUT',
 	    url: url,
 	    data: toJson(resource),
+	    headers: headers,
 	    success: function(data, status, headers, config) {
 	      var id, _tags;
 	      id = headers('Content-Location');
