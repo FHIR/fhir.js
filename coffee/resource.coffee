@@ -47,8 +47,8 @@ exports.read = (baseUrl, http, id, cb, err)->
     method: 'GET'
     url: id
     success: (data, status, headers, config)->
-      id = headers('Content-Location')
-      tags = headerToTags(headers('Category'))
+      id = headers and headers('Content-Location') or '??'
+      tags = headers and headerToTags(headers('Category')) or '??'
       cb({id: id, category: (tags || []), content: data}, config)
     error: err
 

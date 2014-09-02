@@ -23,3 +23,5 @@ describe "fhir:", ->
   it "transaction", (done)->
     subject.transaction 'bundle', (_)-> done()
 
+  it "read", (done)->
+    subject.read 'BASE/Patient/123', (_)-> done()
