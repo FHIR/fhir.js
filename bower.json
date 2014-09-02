@@ -11,9 +11,14 @@
   "main": ["fhir.js", "jqFhir.js", "ngFhir.js"],
   "ignore": [
     "coffee",
+    "integration_test",
+    "test",
     ".gitignore",
     "Gruntfile.js",
-    "package.json"
+    "karma.conf.js",
+    "karma-itegration.conf.js",
+    "package.json",
+
   ],
   "license": "MIT",
   "dependencies": {
