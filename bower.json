@@ -7,12 +7,8 @@
     "Josh Mandel <joshua.mandel@childrens.harvard.edu>"
   ],
   "description": "FHIR javascript API",
-  "keywords": [
-    "fhir"
-  ],
-  "main": [
-    "fhir.js"
-  ],
+  "keywords": ["fhir", "angular", "jquery"],
+  "main": ["fhir.js", "jqFhir.js", "ngFhir.js"],
   "ignore": [
     "coffee",
     ".gitignore",
@@ -21,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "angular":"~1.2.0",
     "jquery": "~2.1.1"
   },
   "devDependencies": {

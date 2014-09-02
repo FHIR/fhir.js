@@ -328,7 +328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(9);
+	utils = __webpack_require__(10);
 
 	trim = utils.trim;
 
@@ -450,7 +450,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var auth, wrap;
 
-	auth = __webpack_require__(10);
+	auth = __webpack_require__(9);
 
 	wrap = function(cfg, http) {
 	  return auth(cfg, http);
@@ -465,7 +465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(9);
+	utils = __webpack_require__(10);
 
 	type = utils.type;
 
@@ -629,6 +629,63 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
+
+	btoa = __webpack_require__(11).btoa;
+
+	merge = __webpack_require__(12);
+
+	bearer = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Bearer " + cfg.auth.bearer);
+	  };
+	};
+
+	basic = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
+	  };
+	};
+
+	identity = function(x) {
+	  return x;
+	};
+
+	withAuth = function(req, a) {
+	  var headers;
+	  headers = merge(true, req.headers || {}, {
+	    "Authorization": a
+	  });
+	  return merge(true, req, {
+	    headers: headers
+	  });
+	};
+
+	wrapWithAuth = function(cfg, http) {
+	  var requestProcessor;
+	  requestProcessor = (function() {
+	    var _ref, _ref1, _ref2;
+	    switch (false) {
+	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
+	        return bearer(cfg);
+	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
+	        return basic(cfg);
+	      default:
+	        return identity;
+	    }
+	  })();
+	  return function(req) {
+	    return http(requestProcessor(req));
+	  };
+	};
+
+	module.exports = wrapWithAuth;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var RTRIM, addKey, assertArray, assertObject, headerToTags, identity, reduceMap, tagsToHeader, trim, type;
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
@@ -746,63 +803,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.identity = identity;
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
-
-	btoa = __webpack_require__(11).btoa;
-
-	merge = __webpack_require__(12);
-
-	bearer = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Bearer " + cfg.auth.bearer);
-	  };
-	};
-
-	basic = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	  };
-	};
-
-	identity = function(x) {
-	  return x;
-	};
-
-	withAuth = function(req, a) {
-	  var headers;
-	  headers = merge(true, req.headers || {}, {
-	    "Authorization": a
-	  });
-	  return merge(true, req, {
-	    headers: headers
-	  });
-	};
-
-	wrapWithAuth = function(cfg, http) {
-	  var requestProcessor;
-	  requestProcessor = (function() {
-	    var _ref, _ref1, _ref2;
-	    switch (false) {
-	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
-	        return bearer(cfg);
-	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
-	        return basic(cfg);
-	      default:
-	        return identity;
-	    }
-	  })();
-	  return function(req) {
-	    return http(requestProcessor(req));
-	  };
-	};
-
-	module.exports = wrapWithAuth;
 
 
 /***/ },
