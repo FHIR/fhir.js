@@ -1,4 +1,5 @@
 mkFhir = require('../fhir.js')
+merge = require('merge')
 utils = require('../utils.coffee')
 auth = require('../middlewares/httpAuthentication.coffee')
 searchByPatient = require('../middlewares/searchByPatient.coffee')

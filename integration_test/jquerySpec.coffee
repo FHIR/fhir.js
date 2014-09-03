@@ -8,7 +8,7 @@ ddescribe "jqFhir", ->
       patient: '123',
       auth: {user: 'client', pass: 'secret'}
 
-  iit "simplest", (done) ->
-    q = subject.search('Patient', {name: 'maud'})
-    console.log(q)
-    q.then (d)-> done()
+  it "simplest", (done) ->
+    subject.search('Patient', {name: 'maud'})
+      .done (d)-> done()
+      .fail (d)-> throw "failed seach"

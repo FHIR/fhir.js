@@ -61,9 +61,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $, adapter, auth, mkFhir, searchByPatient, utils;
+	var $, adapter, auth, merge, mkFhir, searchByPatient, utils;
 
 	mkFhir = __webpack_require__(2);
+
+	merge = __webpack_require__(6);
 
 	utils = __webpack_require__(3);
 
@@ -96,17 +98,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    http: [auth],
 	    search: [searchByPatient]
 	  };
-	  middlewares = utils.mergeLists(cfg.middlewares, defaultMiddlewares);
+	  middlewares = utils.mergeLists(config.middlewares, defaultMiddlewares);
 	  config = merge(true, config, {
 	    middlewares: middlewares
 	  });
 	  fhir = mkFhir(config, adapter);
 	  defer = function(fname) {
-	    var args, ret;
-	    ret = $.Deferred();
-	    args = utils.argsArray.apply(null, argumets).concat([ret.resolve, ret.reject]);
-	    fhir[fname].apply(null, args);
-	    return ret;
+	    return function() {
+	      var args, ret;
+	      ret = $.Deferred();
+	      args = utils.argsArray.apply(null, arguments).concat([ret.resolve, ret.reject]);
+	      fhir[fname].apply(null, args);
+	      return ret;
+	    };
 	  };
 	  ops = {};
 	  _ref = ["search", "conformance", "profile", "transaction", "history", "create", "read", "update", "delete", "vread"];
@@ -122,13 +126,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var search = __webpack_require__(6);
-	var conf = __webpack_require__(7);
-	var transaction = __webpack_require__(8);
-	var tags = __webpack_require__(9);
-	var history = __webpack_require__(10);
-	var crud = __webpack_require__(11);
-	var wrap = __webpack_require__(12);
+	var search = __webpack_require__(7);
+	var conf = __webpack_require__(8);
+	var transaction = __webpack_require__(9);
+	var tags = __webpack_require__(10);
+	var history = __webpack_require__(11);
+	var crud = __webpack_require__(12);
+	var wrap = __webpack_require__(13);
 	var utils = __webpack_require__(3);
 
 	// construct fhir object
@@ -142,7 +146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // TODO: add cfg & adapter validation
 	  var middlewares =cfg.middlewares || {};
 	 
-	  var http = wrap(cfg, adapter.http, middlewares.httm)
+	  var http = wrap(cfg, adapter.http, middlewares.http)
 	  var baseUrl = cfg.baseUrl
 
 	  return  {
@@ -186,7 +190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var RTRIM, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, tagsToHeader, trim, type;
 
-	merge = __webpack_require__(14);
+	merge = __webpack_require__(6);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -341,7 +345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	btoa = __webpack_require__(15).btoa;
 
-	merge = __webpack_require__(14);
+	merge = __webpack_require__(6);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -396,7 +400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var keyFor, merge, withPatient, wrap;
 
-	merge = __webpack_require__(14);
+	merge = __webpack_require__(6);
 
 	keyFor = {
 	  "Observation": "subject",
@@ -429,9 +433,96 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * @name JavaScript/NodeJS Merge v1.1.3
+	 * @author yeikos
+	 * @repository https://github.com/yeikos/js.merge
+
+	 * Copyright 2014 yeikos - MIT license
+	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
+	 */
+
+	;(function(isNode) {
+
+		function merge() {
+
+			var items = Array.prototype.slice.call(arguments),
+				result = items.shift(),
+				deep = (result === true),
+				size = items.length,
+				item, index, key;
+
+			if (deep || typeOf(result) !== 'object')
+
+				result = {};
+
+			for (index=0;index<size;++index)
+
+				if (typeOf(item = items[index]) === 'object')
+
+					for (key in item)
+
+						result[key] = deep ? clone(item[key]) : item[key];
+
+			return result;
+
+		}
+
+		function clone(input) {
+
+			var output = input,
+				type = typeOf(input),
+				index, size;
+
+			if (type === 'array') {
+
+				output = [];
+				size = input.length;
+
+				for (index=0;index<size;++index)
+
+					output[index] = clone(input[index]);
+
+			} else if (type === 'object') {
+
+				output = {};
+
+				for (index in input)
+
+					output[index] = clone(input[index]);
+
+			}
+
+			return output;
+
+		}
+
+		function typeOf(input) {
+
+			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+		}
+
+		if (isNode) {
+
+			module.exports = merge;
+
+		} else {
+
+			window.merge = merge;
+
+		}
+
+	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)(module)))
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(13);
+	queryBuider = __webpack_require__(14);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
@@ -459,7 +550,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var conformance, profile;
@@ -490,7 +581,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var transaction;
@@ -511,7 +602,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -593,7 +684,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var history, historyAll, historyType;
@@ -640,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
@@ -765,7 +856,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var wrap;
@@ -786,7 +877,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
@@ -950,93 +1041,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.query = buildSearchParams;
 
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(module) {/*!
-	 * @name JavaScript/NodeJS Merge v1.1.3
-	 * @author yeikos
-	 * @repository https://github.com/yeikos/js.merge
-
-	 * Copyright 2014 yeikos - MIT license
-	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
-	 */
-
-	;(function(isNode) {
-
-		function merge() {
-
-			var items = Array.prototype.slice.call(arguments),
-				result = items.shift(),
-				deep = (result === true),
-				size = items.length,
-				item, index, key;
-
-			if (deep || typeOf(result) !== 'object')
-
-				result = {};
-
-			for (index=0;index<size;++index)
-
-				if (typeOf(item = items[index]) === 'object')
-
-					for (key in item)
-
-						result[key] = deep ? clone(item[key]) : item[key];
-
-			return result;
-
-		}
-
-		function clone(input) {
-
-			var output = input,
-				type = typeOf(input),
-				index, size;
-
-			if (type === 'array') {
-
-				output = [];
-				size = input.length;
-
-				for (index=0;index<size;++index)
-
-					output[index] = clone(input[index]);
-
-			} else if (type === 'object') {
-
-				output = {};
-
-				for (index in input)
-
-					output[index] = clone(input[index]);
-
-			}
-
-			return output;
-
-		}
-
-		function typeOf(input) {
-
-			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
-
-		}
-
-		if (isNode) {
-
-			module.exports = merge;
-
-		} else {
-
-			window.merge = merge;
-
-		}
-
-	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)(module)))
 
 /***/ },
 /* 15 */
