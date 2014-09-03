@@ -18,7 +18,7 @@ function fhir(cfg, adapter){
   // TODO: add cfg & adapter validation
   var middlewares =cfg.middlewares || {};
  
-  var http = wrap(cfg, adapter.http, middlewares.httm)
+  var http = wrap(cfg, adapter.http, middlewares.http)
   var baseUrl = cfg.baseUrl
 
   return  {

@@ -4,7 +4,6 @@ wrap = (cfg, fn, middlewares)->
     middlewares = [middlewares]
   
   next = (wrapped, nextf)->
-    console.log("Wrapping with", nextf)
     nextf(cfg, wrapped)
 
   [].concat(middlewares or []).reverse().reduce(next, fn)
