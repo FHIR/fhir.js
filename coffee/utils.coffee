@@ -74,11 +74,7 @@ identity = (x)-> x
 
 exports.identity = identity
 
-argsArray = ()->
-  ret = []
-  for a in arguments
-    ret.push a
-  ret
+argsArray = (args...)-> args
 
 exports.argsArray = argsArray
 

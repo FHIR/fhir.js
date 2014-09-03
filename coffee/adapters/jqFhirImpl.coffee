@@ -2,6 +2,7 @@ mkFhir = require('../fhir.js')
 utils = require('../utils.coffee')
 auth = require('../middlewares/httpAuthentication.coffee')
 searchByPatient = require('../middlewares/searchByPatient.coffee')
+merge = require('merge')
 
 $ = jQuery
 
@@ -19,34 +20,29 @@ module.exports = (config)->
     search: [searchByPatient]
   }
 
-  middlewares = utils.mergeLists(cfg.middlewares, defaultMiddlewares)
+  middlewares = utils.mergeLists(config.middlewares, defaultMiddlewares)
 
   config = merge(true, config, {middlewares:middlewares})
- 
+
   fhir = mkFhir(config, adapter)
 
-  defer = (fname) ->
-    ret = $.Deferred()
-    args = utils.argsArray
-      .apply(null, argumets)
-      .concat([ret.resolve, ret.reject])
+  defer = (fname)->
+    fn = fhir[fname]
+    (args...) ->
+      ret = $.Deferred()
+      console.log('args list', args.concat([ret.resolve, ret.reject]))
+      fn.apply(null, args.concat([ret.resolve, ret.reject]))
+      ret
 
-    fhir[fname].apply(null, args)
-    ret
-
-  ops = {}
-
-  for v in [
-    "search",
-    "conformance",
-    "profile",
-    "transaction",
-    "history",
-    "create",
-    "read",
-    "update",
-    "delete",
-    "vread"]
-    ops[v] = defer(v)
-
-  ops
+  [
+    "search"
+    "conformance"
+    "profile"
+    "transaction"
+    "history"
+    "create"
+    "read"
+    "update"
+    "delete"
+    "vread"
+  ].reduce ((acc, v)-> acc[v] = defer(v); acc), {}
