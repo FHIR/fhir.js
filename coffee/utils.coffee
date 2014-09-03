@@ -1,3 +1,5 @@
+merge = require('merge')
+
 RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
 
 trim = (text)->
@@ -72,3 +74,21 @@ identity = (x)-> x
 
 exports.identity = identity
 
+argsArray = ()->
+  ret = []
+  for a in arguments
+    ret.push a
+  ret
+
+exports.argsArray = argsArray
+
+mergeLists = ()->
+  reduce = (merged, nextMap) ->
+    ret = merge(true, merged)
+    for k, v of nextMap
+      ret[k] = (ret[k] || []).concat(v)
+    ret
+
+  argsArray.apply(null, arguments).reduce(reduce, {})
+
+exports.mergeLists = mergeLists
