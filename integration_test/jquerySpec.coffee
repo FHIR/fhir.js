@@ -2,7 +2,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
 fhir = require('../coffee/adapters/jqFhir.js')
 
-ddescribe "jqFhir", ->
+describe "jqFhir", ->
   subject = fhir
       baseUrl: 'https://ci-api.fhir.me',
       patient: '123',
