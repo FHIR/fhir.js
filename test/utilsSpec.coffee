@@ -25,3 +25,19 @@ describe "utils", ->
     expect(utils.type({a:1})).toEqual('object')
     expect(utils.type(utils.identity)).toEqual('function')
 
+  it "utils", ->
+    expect(utils.identity(42)).toEqual(42)
+
+    expect(utils.type(42)).toEqual('number')
+    expect(utils.type('str')).toEqual('string')
+    expect(utils.type([1,2,3])).toEqual('array')
+    expect(utils.type({a:1})).toEqual('object')
+    expect(utils.type(utils.identity)).toEqual('function')
+
+    expect(utils.mergeLists({}, {})).toEqual({})
+    expect(utils.mergeLists({a:[1,2]}, {a:[3]})).toEqual({a:[1,2,3]})
+
+    testArgs = ()->
+      utils.argsArray.apply(null, arguments)
+    expect(testArgs(1,2,3)).toEqual([1,2,3])
+

@@ -5,6 +5,7 @@ fhir = require('../coffee/adapters/jqFhir.js')
 describe "jqFhir", ->
   subject = fhir
       baseUrl: 'https://ci-api.fhir.me',
+      patient: '123',
       auth: {user: 'client', pass: 'secret'}
 
   it "simplest", (done) ->
