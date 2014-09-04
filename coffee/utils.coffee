@@ -88,3 +88,19 @@ mergeLists = ()->
   argsArray.apply(null, arguments).reduce(reduce, {})
 
 exports.mergeLists = mergeLists
+
+absoluteUrl = (baseUrl, ref)->
+  if (ref.slice(ref, baseUrl.length+1) != baseUrl+"/")
+    "#{baseUrl}/#{ref}"
+  else
+    ref
+
+exports.absoluteUrl = absoluteUrl
+
+relativeUrl = (baseUrl, ref)->
+  if (ref.slice(ref, baseUrl.length+1) == baseUrl+"/")
+    ref.slice(baseUrl.length+1)
+  else
+    ref
+
+exports.relativeUrl = relativeUrl
