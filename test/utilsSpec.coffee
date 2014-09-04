@@ -41,3 +41,11 @@ describe "utils", ->
       utils.argsArray.apply(null, arguments)
     expect(testArgs(1,2,3)).toEqual([1,2,3])
 
+  it "url utils", ->
+    expect(utils.absoluteUrl("BASE", "Patient/123")).toEqual("BASE/Patient/123")
+    expect(utils.relativeUrl("BASE", "BASE/Patient/123")).toEqual("Patient/123")
+    expect(utils.absoluteUrl("BASE", "BASE/Patient/123")).toEqual("BASE/Patient/123")
+    expect(utils.relativeUrl("BASE", "Patient/123")).toEqual("Patient/123")
+
+
+ 
