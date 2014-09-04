@@ -17,9 +17,9 @@ JavaScript client for FHIR
 
 ## Development
 
-`nodejs` is required for build.
+`Node.js` is required for build.
 
-We recommend install it using [nvm](https://github.com/creationix/nvm/blob/master/README.markdown)
+We recommend installling Node.js using [nvm](https://github.com/creationix/nvm/blob/master/README.markdown)
 
 Build & test:
 
@@ -38,9 +38,6 @@ node_modules/karma/bin/karma start --single-run
 # watch tests while development
 node_modules/karma/bin/karma start
 
-# run concrete test
-node_modules/karma/bin/karma start
-
 # run integration tests
 `npm bin`/bower install
 node_modules/karma/bin/karma start karma-itegration.conf.js --single-run
@@ -49,11 +46,12 @@ node_modules/karma/bin/karma start karma-itegration.conf.js --single-run
 ## API
 
 
-### Create instalce of fhir service
+### Create instance of the FHIR client
 
-To communicate with concrete FHIR server, you should create
-instance of api, passing configuration object & adapter object.
-Adapters are implemented for concrete frameworks/libs (see below).
+To communicate with concrete FHIR server, you can
+create instance of the FHIR client, passing a
+configuration object & adapter object.  Adapters are
+implemented for concrete frameworks/libs (see below).
 
 ```
 var cfg = {
@@ -67,13 +65,13 @@ var cfg = {
   }
 }
 
-myFhir = fhir(cfg, adapter)
-
+myClient = fhir(cfg, adapter)
 ```
 
 ### Adapter implementation
 
-Currently adapter should implement http function `http(requestObj)`.
+Currently each adapter must implement an
+`http(requestObj)` function:
 
 Structure of requestObj:
 
@@ -88,7 +86,7 @@ Structure of requestObj:
 * `error` - error callback, which should be called with (data, status, headerFn, config)
 
 
-Here is implementations for
+Here are implementations for:
 
 * [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/ngFhirImpl.coffee)
 * [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/jqFhirImpl.coffee)
@@ -97,10 +95,16 @@ Here is implementations for
 
 ### Resource's CRUD
 
-To create FHIR resource you call `myFhir.create(entry, callback, errback)` passing entry object,
-which contain resource json in content attribute and tags in category attribute.
-In case of success in callback function will be passed resulting entry
-with following attributes:
+To create a FHIR resource, call
+`myClient.create(entry, callback, errback)`, passing
+an object that contains the following propperties:
+
+* `content` (required) - resource in FHIR json
+* `tags` (opttional) - list of categories (see below)
+
+In case of success,the  callback function will be
+invoked with an object that contains the following
+attributes:
 
 * `id` - url of created resource
 * `content` - resource json
@@ -116,7 +120,7 @@ var entry = {
   }
 }
 
-myFhir.create(entry,
+myClient.create(entry,
  function(entry){
     console.log(entry.id)
  },
@@ -167,7 +171,7 @@ For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/tes
 
 ## AngularJS adapter: `ng-fhir`
 
-AngularJS adapter after `grunt build` could be found at `dist/ngFhir.js`
+AngularJS adapter after `grunt build` can be found at `dist/ngFhir.js`
 
 
 Usage:
@@ -187,7 +191,7 @@ angular.module('app', ['ng-fhir'])
 
 ## jQuery adapter: `ngFhir`
 
-jQuery builda could be found at `dist/jqFhir.js`
+jQuery build can be found at `dist/jqFhir.js`
 
 
 Usage:
@@ -198,14 +202,14 @@ Usage:
 ```
 
 
-```coffeescript
+```javascript
 // create fhir instance
 var fhir = jqFhir({
     baseUrl: 'https://ci-api.fhir.me',
     auth: {user: 'client', pass: 'secret'}
 })
 
-fhir.search('Pateint', {name: 'maud'})
+fhir.search('Patient', {name: 'maud'})
 .then(function(bundle){
   console.log('Search patients', bundle)
 })
