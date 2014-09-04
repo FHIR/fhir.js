@@ -71,3 +71,9 @@ describe "test params builder", ->
   it "include", ->
     expect(subject($include: {Observation: "related.component", Patient: ["link.other", "careProvider"]}))
       .toBe('_include=Observation.related.component&_include=Patient.link.other&_include=Patient.careProvider')
+
+  it "or", ->
+    expect(subject(name: {$or: ['bill', 'ted']}))
+      .toBe('name=bill%2Cted')
+
+ 
