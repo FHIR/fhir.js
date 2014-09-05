@@ -384,6 +384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.read = function(baseUrl, http, id, cb, err) {
+	  console.log("[read] ", id);
 	  return http({
 	    method: 'GET',
 	    url: id,
@@ -403,6 +404,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.update = function(baseUrl, http, entry, cb, err) {
 	  var headers, resource, tagHeader, tags, url;
+	  console.log("[update] ", entry);
 	  url = entry.id.split("/_history/")[0];
 	  tags = entry.tags;
 	  resource = entry.content;
