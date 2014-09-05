@@ -29,7 +29,7 @@ exports.create = (baseUrl, http, entry, cb, err)->
 
   headers = {}
   tagHeader = tagsToHeader(tags)
-  headers["Category"] =  tagHeader if tagHeader.length > 0
+  headers["Category"] = tagHeader if tagHeader.length > 0
 
   http
     method: 'POST'
@@ -43,6 +43,7 @@ exports.create = (baseUrl, http, entry, cb, err)->
     error: err
 
 exports.read = (baseUrl, http, id, cb, err)->
+  console.log("[read] ", id)
   http
     method: 'GET'
     url: id
@@ -53,6 +54,7 @@ exports.read = (baseUrl, http, id, cb, err)->
     error: err
 
 exports.update = (baseUrl, http, entry, cb ,err)->
+  console.log("[update] ", entry)
   url = entry.id.split("/_history/")[0]
   tags = entry.tags
   resource = entry.content
@@ -70,7 +72,6 @@ exports.update = (baseUrl, http, entry, cb ,err)->
       _tags = headerToTags(headers('Category'))
       cb({id: id, category: (_tags || tags || []), content: data}, config)
     error: err
-
 
 exports.delete = (baseUrl, http, entry, cb, err)->
   http
