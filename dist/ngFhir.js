@@ -122,23 +122,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	var tags = __webpack_require__(6);
 	var history = __webpack_require__(7);
 	var crud = __webpack_require__(8);
+	var wrap = __webpack_require__(9);
+	var utils = __webpack_require__(10);
 
-	var wrapHttp = __webpack_require__(9);
-
-	// cunstruct fhir object
+	// construct fhir object
 	// params:
 	//   * cfg - config object - props???
 	//   * adapter - main operations
 	//      * http - function({method, url, success, error})
 	//               call success with (data, status, headersFn, config)
+
 	function fhir(cfg, adapter){
 	  // TODO: add cfg & adapter validation
-	  var http = wrapHttp(cfg, adapter.http)
+	  var middlewares =cfg.middlewares || {};
+	 
+	  var http = wrap(cfg, adapter.http, middlewares.http)
 	  var baseUrl = cfg.baseUrl
 
 	  return  {
 	    search: function(type, query, cb, err){
-	      return search(baseUrl, http, type, query, cb, err)
+	      var wrapped = wrap(cfg, search, middlewares.search);
+	      return wrapped(baseUrl, http, type, query, cb, err);
 	    },
 	    conformance: function(cb, err){
 	      return conf.conformance(baseUrl, http, cb, err)
@@ -176,11 +180,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var queryBuider, search;
 
-	queryBuider = __webpack_require__(10);
+	queryBuider = __webpack_require__(11);
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
 	    var queryStr, uri;
+	    console.log('search', baseUrl, http, type, query, cb, err);
 	    queryStr = queryBuider.query(query);
 	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
 	    return http({
@@ -390,7 +395,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(11);
+	utils = __webpack_require__(10);
 
 	trim = utils.trim;
 
@@ -515,12 +520,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var auth, wrap;
+	var wrap;
 
-	auth = __webpack_require__(12);
-
-	wrap = function(cfg, http) {
-	  return auth(cfg, http);
+	wrap = function(cfg, fn, middlewares) {
+	  var next;
+	  if (typeof middlewares === 'function') {
+	    middlewares = [middlewares];
+	  }
+	  next = function(wrapped, nextf) {
+	    return nextf(cfg, wrapped);
+	  };
+	  return [].concat(middlewares || []).reverse().reduce(next, fn);
 	};
 
 	module.exports = wrap;
@@ -530,9 +540,159 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var RTRIM, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, tagsToHeader, trim, type,
+	  __slice = [].slice;
+
+	merge = __webpack_require__(12);
+
+	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+
+	trim = function(text) {
+	  if (text != null) {
+	    return (text + "").replace(RTRIM, "");
+	  } else {
+	    return "";
+	  }
+	};
+
+	exports.trim = trim;
+
+	tagsToHeader = function(tags) {
+	  return (tags || []).filter(function(i) {
+	    return i && trim(i.term);
+	  }).map(function(i) {
+	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	  }).join(",");
+	};
+
+	exports.tagsToHeader = tagsToHeader;
+
+	addKey = function(acc, str) {
+	  var pair, val;
+	  if (!str) {
+	    return;
+	  }
+	  pair = str.split("=").map(trim);
+	  val = pair[1].replace(/(^"|"$)/g, '');
+	  if (val) {
+	    acc[pair[0]] = val;
+	  }
+	  return acc;
+	};
+
+	headerToTags = function(categoryHeader) {
+	  if (!categoryHeader) {
+	    return [];
+	  }
+	  return categoryHeader.split(',').map(function(x) {
+	    var acc, parts;
+	    parts = trim(x).split(';').map(trim);
+	    if (parts[0]) {
+	      acc = {
+	        term: parts[0]
+	      };
+	      addKey(acc, parts[1]);
+	      addKey(acc, parts[2]);
+	      return acc;
+	    }
+	  });
+	};
+
+	exports.headerToTags = headerToTags;
+
+	type = function(obj) {
+	  var classToType;
+	  if (obj === void 0 || obj === null) {
+	    return String(obj);
+	  }
+	  classToType = {
+	    '[object Boolean]': 'boolean',
+	    '[object Number]': 'number',
+	    '[object String]': 'string',
+	    '[object Function]': 'function',
+	    '[object Array]': 'array',
+	    '[object Date]': 'date',
+	    '[object RegExp]': 'regexp',
+	    '[object Object]': 'object'
+	  };
+	  return classToType[Object.prototype.toString.call(obj)];
+	};
+
+	exports.type = type;
+
+	assertArray = function(a) {
+	  if (type(a) !== 'array') {
+	    throw 'not array';
+	  }
+	  return a;
+	};
+
+	exports.assertArray = assertArray;
+
+	assertObject = function(a) {
+	  if (type(a) !== 'object') {
+	    throw 'not object';
+	  }
+	  return a;
+	};
+
+	exports.assertObject = assertObject;
+
+	reduceMap = function(m, fn, acc) {
+	  var k, v;
+	  acc || (acc = []);
+	  assertObject(m);
+	  return ((function() {
+	    var _results;
+	    _results = [];
+	    for (k in m) {
+	      v = m[k];
+	      _results.push([k, v]);
+	    }
+	    return _results;
+	  })()).reduce(fn, acc);
+	};
+
+	exports.reduceMap = reduceMap;
+
+	identity = function(x) {
+	  return x;
+	};
+
+	exports.identity = identity;
+
+	argsArray = function() {
+	  var args;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  return args;
+	};
+
+	exports.argsArray = argsArray;
+
+	mergeLists = function() {
+	  var reduce;
+	  reduce = function(merged, nextMap) {
+	    var k, ret, v;
+	    ret = merge(true, merged);
+	    for (k in nextMap) {
+	      v = nextMap[k];
+	      ret[k] = (ret[k] || []).concat(v);
+	    }
+	    return ret;
+	  };
+	  return argsArray.apply(null, arguments).reduce(reduce, {});
+	};
+
+	exports.mergeLists = mergeLists;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(11);
+	utils = __webpack_require__(10);
 
 	type = utils.type;
 
@@ -693,254 +853,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var RTRIM, addKey, assertArray, assertObject, headerToTags, identity, reduceMap, tagsToHeader, trim, type;
-
-	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-
-	trim = function(text) {
-	  if (text != null) {
-	    return (text + "").replace(RTRIM, "");
-	  } else {
-	    return "";
-	  }
-	};
-
-	exports.trim = trim;
-
-	tagsToHeader = function(tags) {
-	  return (tags || []).filter(function(i) {
-	    return i && trim(i.term);
-	  }).map(function(i) {
-	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
-	  }).join(",");
-	};
-
-	exports.tagsToHeader = tagsToHeader;
-
-	addKey = function(acc, str) {
-	  var pair, val;
-	  if (!str) {
-	    return;
-	  }
-	  pair = str.split("=").map(trim);
-	  val = pair[1].replace(/(^"|"$)/g, '');
-	  if (val) {
-	    acc[pair[0]] = val;
-	  }
-	  return acc;
-	};
-
-	headerToTags = function(categoryHeader) {
-	  if (!categoryHeader) {
-	    return [];
-	  }
-	  return categoryHeader.split(',').map(function(x) {
-	    var acc, parts;
-	    parts = trim(x).split(';').map(trim);
-	    if (parts[0]) {
-	      acc = {
-	        term: parts[0]
-	      };
-	      addKey(acc, parts[1]);
-	      addKey(acc, parts[2]);
-	      return acc;
-	    }
-	  });
-	};
-
-	exports.headerToTags = headerToTags;
-
-	type = function(obj) {
-	  var classToType;
-	  if (obj === void 0 || obj === null) {
-	    return String(obj);
-	  }
-	  classToType = {
-	    '[object Boolean]': 'boolean',
-	    '[object Number]': 'number',
-	    '[object String]': 'string',
-	    '[object Function]': 'function',
-	    '[object Array]': 'array',
-	    '[object Date]': 'date',
-	    '[object RegExp]': 'regexp',
-	    '[object Object]': 'object'
-	  };
-	  return classToType[Object.prototype.toString.call(obj)];
-	};
-
-	exports.type = type;
-
-	assertArray = function(a) {
-	  if (type(a) !== 'array') {
-	    throw 'not array';
-	  }
-	  return a;
-	};
-
-	exports.assertArray = assertArray;
-
-	assertObject = function(a) {
-	  if (type(a) !== 'object') {
-	    throw 'not object';
-	  }
-	  return a;
-	};
-
-	exports.assertObject = assertObject;
-
-	reduceMap = function(m, fn, acc) {
-	  var k, v;
-	  acc || (acc = []);
-	  assertObject(m);
-	  return ((function() {
-	    var _results;
-	    _results = [];
-	    for (k in m) {
-	      v = m[k];
-	      _results.push([k, v]);
-	    }
-	    return _results;
-	  })()).reduce(fn, acc);
-	};
-
-	exports.reduceMap = reduceMap;
-
-	identity = function(x) {
-	  return x;
-	};
-
-	exports.identity = identity;
-
-
-/***/ },
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
-
-	btoa = __webpack_require__(13).btoa;
-
-	merge = __webpack_require__(14);
-
-	bearer = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Bearer " + cfg.auth.bearer);
-	  };
-	};
-
-	basic = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	  };
-	};
-
-	identity = function(x) {
-	  return x;
-	};
-
-	withAuth = function(req, a) {
-	  var headers;
-	  headers = merge(true, req.headers || {}, {
-	    "Authorization": a
-	  });
-	  return merge(true, req, {
-	    headers: headers
-	  });
-	};
-
-	wrapWithAuth = function(cfg, http) {
-	  var requestProcessor;
-	  requestProcessor = (function() {
-	    var _ref, _ref1, _ref2;
-	    switch (false) {
-	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
-	        return bearer(cfg);
-	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
-	        return basic(cfg);
-	      default:
-	        return identity;
-	    }
-	  })();
-	  return function(req) {
-	    return http(requestProcessor(req));
-	  };
-	};
-
-	module.exports = wrapWithAuth;
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	;(function () {
-
-	  var object = true ? exports : this; // #8: web workers
-	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-	  function InvalidCharacterError(message) {
-	    this.message = message;
-	  }
-	  InvalidCharacterError.prototype = new Error;
-	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-	  // encoder
-	  // [https://gist.github.com/999166] by [https://github.com/nignag]
-	  object.btoa || (
-	  object.btoa = function (input) {
-	    var str = String(input);
-	    for (
-	      // initialize result and counter
-	      var block, charCode, idx = 0, map = chars, output = '';
-	      // if the next str index does not exist:
-	      //   change the mapping table to "="
-	      //   check if d has no fractional digits
-	      str.charAt(idx | 0) || (map = '=', idx % 1);
-	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-	    ) {
-	      charCode = str.charCodeAt(idx += 3/4);
-	      if (charCode > 0xFF) {
-	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-	      }
-	      block = block << 8 | charCode;
-	    }
-	    return output;
-	  });
-
-	  // decoder
-	  // [https://gist.github.com/1020396] by [https://github.com/atk]
-	  object.atob || (
-	  object.atob = function (input) {
-	    var str = String(input).replace(/=+$/, '');
-	    if (str.length % 4 == 1) {
-	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-	    }
-	    for (
-	      // initialize result and counters
-	      var bc = 0, bs, buffer, idx = 0, output = '';
-	      // get next character
-	      buffer = str.charAt(idx++);
-	      // character found in table? initialize bit storage and add its ascii value;
-	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-	        // and if not first of each 4 characters,
-	        // convert the first 8 bits to one ascii character
-	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-	    ) {
-	      // try to find character in table (0-63, not found => -1)
-	      buffer = chars.indexOf(buffer);
-	    }
-	    return output;
-	  });
-
-	}());
-
-
-/***/ },
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -1024,10 +937,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module)))
 
 /***/ },
-/* 15 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
