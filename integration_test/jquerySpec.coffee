@@ -9,6 +9,6 @@ describe "jqFhir", ->
       auth: {user: 'client', pass: 'secret'}
 
   it "simplest", (done) ->
-    subject.search('Patient', {name: 'maud'})
+    subject.search(type: 'Patient', query: {name: 'maud'})
       .done (d)-> done()
       .fail (d)-> throw "failed seach"

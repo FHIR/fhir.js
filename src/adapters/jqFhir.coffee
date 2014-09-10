@@ -29,10 +29,11 @@ module.exports = (config)->
 
   defer = (fname)->
     fn = fhir[fname]
-    (args...) ->
+    (args) ->
       ret = $.Deferred()
-      console.log('args list', args.concat([ret.resolve, ret.reject]))
-      fn.apply(null, args.concat([ret.resolve, ret.reject]))
+      args.success = ret.resolve
+      args.error = ret.reject
+      fn(args)
       ret
 
   [

@@ -30,7 +30,7 @@ describe "ngFhir", ->
 
   it "search", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
-       $fhir.search('Patient', {name: 'maud'})
+       $fhir.search(type: 'Patient', query: {name: 'maud'})
          .then (d)->
            # console.log('Search by patients', d)
            done()
@@ -61,34 +61,34 @@ describe "ngFhir", ->
                  deleteReadError = ()->
                    console.log(JSON.stringify(res))
                    done()
-                 $fhir.read(id, deleteReadSuccess, deleteReadError)
+                 $fhir.read(id: id, success: deleteReadSuccess, error: deleteReadError)
 
                deleteError = (res)->
                  console.log(JSON.stringify(res))
                  done()
-               $fhir.delete({id: id}, deleteSuccess, deleteError)
+               $fhir.delete(entry: {id: id}, success: deleteSuccess, error: deleteError)
 
              updateReadError = (res)->
                console.log(JSON.stringify(res))
                done()
 
-             $fhir.read(id, updateReadSuccess, updateReadError)
+             $fhir.read(id: id, success: updateReadSuccess, error: updateReadError)
 
            updateError = (res)->
              console.log(JSON.stringify(res))
              done()
-           $fhir.update(res, updateSuccess, updateError)
+           $fhir.update(entry: res, success: updateSuccess, error: updateError)
 
          readError = (res)->
            console.log('Error Patient read', JSON.stringify(res))
            done()
 
-         $fhir.read(id, readSuccess, readError)
+         $fhir.read(id: id, success: readSuccess, error: readError)
        error = (res)->
          console.log('Error Patient create', JSON.stringify(res))
          done()
 
-       $fhir.create(entry, success, error)
+       $fhir.create(entry: entry, success: success, error: error)
      ]
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'
