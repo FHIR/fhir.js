@@ -18,8 +18,8 @@ assert = (pred, mess)->
 #
 # * category  - tags array
 # * content   - resource json
-# * cb - function(entry)
-exports.create = (baseUrl, http, entry, cb, err)->
+# * success - function(entry)
+exports.create = ({baseUrl, http, entry, success, error})->
   tags = entry.category || []
   resource = entry.content
   assert(resource, 'entry.content with resource body should be present')
@@ -39,10 +39,10 @@ exports.create = (baseUrl, http, entry, cb, err)->
     success: (data, status, headers, config)->
       id = headers('Content-Location')
       tags = headerToTags(headers('Category')) || tags
-      cb({id: id, category: (tags || []), content: (data || resource)}, config)
-    error: err
+      success({id: id, category: (tags || []), content: (data || resource)}, config)
+    error: error
 
-exports.read = (baseUrl, http, id, cb, err)->
+exports.read = ({baseUrl, http, id, success, error})->
   console.log("[read] ", id)
   http
     method: 'GET'
@@ -50,10 +50,10 @@ exports.read = (baseUrl, http, id, cb, err)->
     success: (data, status, headers, config)->
       id = headers and headers('Content-Location') or '??'
       tags = headers and headerToTags(headers('Category')) or '??'
-      cb({id: id, category: (tags || []), content: data}, config)
-    error: err
+      success({id: id, category: (tags || []), content: data}, config)
+    error: error
 
-exports.update = (baseUrl, http, entry, cb ,err)->
+exports.update = ({baseUrl, http, entry, success ,error})->
   console.log("[update] ", entry)
   url = entry.id.split("/_history/")[0]
   tags = entry.tags
@@ -70,16 +70,16 @@ exports.update = (baseUrl, http, entry, cb ,err)->
     success: (data, status, headers, config)->
       id = headers('Content-Location')
       _tags = headerToTags(headers('Category'))
-      cb({id: id, category: (_tags || tags || []), content: data}, config)
-    error: err
+      success({id: id, category: (_tags || tags || []), content: data}, config)
+    error: error
 
-exports.delete = (baseUrl, http, entry, cb, err)->
+exports.delete = ({baseUrl, http, entry, success, error})->
   http
     method: 'DELETE'
     url: entry.id
     success: (data, status, headers, config)->
-      cb(entry, config)
-    error: err
+      success(entry, config)
+    error: error
 
-exports.vread = (baseUrl, http)->
+exports.vread = ({baseUrl, http})->
   console.log('TODO')

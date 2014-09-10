@@ -1,27 +1,28 @@
-history = (baseUrl, http, type, id, cb, err)->
+history = ({baseUrl, http, type, id, success, error})->
   http
     method: 'GET'
     url: "#{baseUrl}/#{type}/#{id}/_history"
-    success: cb
-    error: err
+    success: success
+    error: error
 
-historyType = (baseUrl, http, type, cb, err)->
+historyType = ({baseUrl, http, type, success, error})->
   http
     method: 'GET'
     url: "#{baseUrl}/#{type}/_history"
-    success: cb
-    error: err
+    success: success
+    error: error
 
-historyAll = (baseUrl, http, cb, err)->
+historyAll = ({baseUrl, http, success, error})->
   http
     method: 'GET'
     url: "#{baseUrl}/_history"
-    success: cb
-    error: err
+    success: success
+    error: error
 
-module.exports = ()->
-  switch arguments.length
-    when 4 then historyAll.apply(null, arguments)
-    when 5 then historyType.apply(null, arguments)
-    when 6 then history.apply(null, arguments)
-    else throw "wrong arity: expected (baseUrl, http, type?, id?, cb, err)"
+module.exports = (q)->
+  if q.id? and q.type?
+    history(q)
+  else if q.type?
+    historyType(q)
+  else
+    historyAll(q)

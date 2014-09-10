@@ -9,17 +9,28 @@ describe 'history', ->
       expect(q.url).toBe('BASE/Alert/test-id/_history')
       q.success('ok')
 
-    history 'BASE', http, 'Alert', 'test-id', (data) ->
-      expect(data).toBe('ok')
-      done()
-    , nop
+    history
+      baseUrl: 'BASE'
+      http: http
+      type: 'Alert'
+      id: 'test-id'
+      success: (data) ->
+        expect(data).toBe('ok')
+        done()
+      error: nop
 
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    history 'BASE', http, 'Alert', 'test-id', nop, (data)->
-      expect(data).toBe('ok')
-      done()
+    history
+      baseUrl: 'BASE'
+      http: http
+      type: 'Alert'
+      id: 'test-id'
+      success: nop
+      error: (data)->
+        expect(data).toBe('ok')
+        done()
 
 
 describe 'historyType', ->
@@ -29,17 +40,26 @@ describe 'historyType', ->
       expect(q.url).toBe('BASE/Alert/_history')
       q.success('ok')
 
-    history 'BASE', http, 'Alert', (data) ->
-      expect(data).toBe('ok')
-      done()
-    , nop
+    history
+      baseUrl: 'BASE'
+      http: http,
+      type:'Alert'
+      success: (data) ->
+        expect(data).toBe('ok')
+        done()
+      error: nop
 
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    history 'BASE', http, 'Alert', nop, (data)->
-      expect(data).toBe('ok')
-      done()
+    history
+      baseUrl:'BASE',
+      http: http,
+      type: 'Alert'
+      success: nop
+      error: (data)->
+        expect(data).toBe('ok')
+        done()
 
 describe 'historyAll', ->
   it 'success', (done)->
@@ -48,14 +68,21 @@ describe 'historyAll', ->
       expect(q.url).toBe('BASE/_history')
       q.success('ok')
 
-    history 'BASE', http, (data) ->
-      expect(data).toBe('ok')
-      done()
-    , nop
+    history
+      baseUrl: 'BASE'
+      http: http
+      success: (data) ->
+        expect(data).toBe('ok')
+        done()
+      error: nop
 
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    history 'BASE', http, nop, (data)->
-      expect(data).toBe('ok')
-      done()
+    history
+      baseUrl: 'BASE'
+      http: http
+      success: nop
+      error: (data)->
+        expect(data).toBe('ok')
+        done()

@@ -10,7 +10,13 @@ describe "search:", ->
       expect(q.url).toBe('BASE/Patient/_search?name=maud')
       done()
 
-    subject.search('BASE', http, 'Patient', {name: 'maud'}, nop, nop)
+    subject.search
+      baseUrl: 'BASE'
+      http: http
+      type: 'Patient'
+      query: {name: 'maud'}
+      success: nop
+      error: nop
 
   it "search error", (done)->
     err = (e)->
@@ -19,11 +25,11 @@ describe "search:", ->
 
     http = (q)-> q.error('error')
 
-    subject.search('BASE', http, 'Patient', {name: 'maud'}, nop, err)
+    subject.search(baseUrl: 'BASE',http: http, type: 'Patient', query: {name: 'maud'}, success: nop, error: err)
 
   it "fetch prev page fails when no link is available", (done)->
     err = (msg)-> done()
-    subject.prev('BASE', nop, patientBundle, nop, err)
+    subject.prev(baseUrl: 'BASE', http: nop, bundle: patientBundle, success: nop, error: err)
 
   it "fetch next page suceeds", (done)->
     http = (q)->
@@ -32,4 +38,4 @@ describe "search:", ->
       console.log('finishing')
       done()
 
-    subject.next('BASE', http, patientBundle, nop, (e)->console.log("ERR",e))
+    subject.next(baseUrl: 'BASE', http: http, bundle: patientBundle, success: nop, error: (e)->console.log("ERR",e))

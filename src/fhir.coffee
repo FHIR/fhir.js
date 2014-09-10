@@ -18,15 +18,21 @@ fhir = (cfg, adapter) ->
   middlewares = cfg.middlewares or {}
   http = wrap(cfg, adapter.http, middlewares.http)
   baseUrl = cfg.baseUrl
-  search: (type, query, cb, err) ->
+  search: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
     wrapped = wrap(cfg, search.search, middlewares.search)
-    wrapped baseUrl, http, type, query, cb, err
+    wrapped opt
 
-  nextPage: (bundle, cb, err) ->
-    search.next baseUrl, http, bundle, cb, err
+  nextPage: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    search.next opt
 
-  prevPage: (bundle, cb, err) ->
-    search.prev baseUrl, http, bundle, cb, err
+  prevPage: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    search.prev opt
 
   conformance: (cb, err) ->
     conf.conformance baseUrl, http, cb, err
@@ -37,23 +43,30 @@ fhir = (cfg, adapter) ->
   transaction: (bundle, cb, err) ->
     transaction baseUrl, http, bundle, cb, err
 
-  history: ->
-    history.apply null, [
-      baseUrl
-      http
-    ].concat(arguments)
+  history: (opt)->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    history(opt)
 
-  create: (entry, cb, err) ->
-    crud.create baseUrl, http, entry, cb, err
+  create: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    crud.create opt
 
-  read: (id, cb, err) ->
-    crud.read baseUrl, http, id, cb, err
+  read: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    crud.read opt
 
-  update: (entry, cb, err) ->
-    crud.update baseUrl, http, entry, cb, err
+  update: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    crud.update opt
 
-  delete: (entry, cb, err) ->
-    crud["delete"] baseUrl, http, entry, cb, err
+  delete: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    crud["delete"](opt)
 
   resolve: (ref, resource, bundle, cb, err) ->
     resolve.async baseUrl, http, cfg.cache and cache[baseUrl], ref, resource, bundle, cb, err
