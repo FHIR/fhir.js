@@ -11,13 +11,21 @@ describe 'transaction', ->
       expect(q.data).toBe(bundle)
       q.success('ok')
 
-    trans 'BASE', http,  bundle, (data)->
-      expect(data).toBe('ok')
-      done()
+    trans
+      baseUrl: 'BASE'
+      http: http
+      bundle: bundle,
+      success: (data)->
+        expect(data).toBe('ok')
+        done()
 
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    trans 'BASE', http, bundle, nop, (data)->
-      expect(data).toBe('ok')
-      done()
+    trans
+      baseUrl: 'BASE'
+      http: http
+      success: nop
+      error: (data)->
+        expect(data).toBe('ok')
+        done()

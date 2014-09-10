@@ -12,9 +12,10 @@ resolveContained = (ref, resource)->
 # 2. containing bundle
 # 3. local cache
 # If anything goes wrong, return null.
-sync = (baseUrl, http, cache, ref, resource, bundle)->
-  unless ref.reference
-    return null
+sync = ({baseUrl, http, cache, reference, resource, bundle})->
+  ref = reference
+  console.log(ref)
+  return null unless ref.reference
 
   if ref.reference.match(CONTAINED)
     return resolveContained(ref.reference, resource)
@@ -26,28 +27,30 @@ sync = (baseUrl, http, cache, ref, resource, bundle)->
 # Resolve a reference asynchronously, by:
 # 1. Wrapping around the `sync` function if the data exists locally
 # 2. Issing an HTTP get otherwise
-async = (baseUrl, http, cache, ref, resource, bundle, cb, err)->
-  didSync = sync(baseUrl, http, cache, ref, resource, bundle)
+async = (opt)->
+  {baseUrl, http, cache, reference, resource, bundle, success, error} = opt
+  ref = reference
+  didSync = sync(opt)
 
   if didSync
     return setTimeout ()->
-      cb(didSync) if cb
+      success(didSync) if success
 
   unless ref.reference
     return setTimeout ()->
-      err("No reference found") if err
-   
+      error("No reference found") if error
+
   if ref.reference.match(CONTAINED)
     return setTimeout ()->
-      err("Contained resource not found") if err
+      error("Contained resource not found") if error
 
   abs = utils.absoluteUrl(baseUrl, ref.reference)
 
   http
     method: 'GET'
     url: abs,
-    success: (data)-> cb(data) if cb
-    error: (e)-> err(e) if err
+    success: (data)-> success(data) if success
+    error: (e)-> error(e) if error
 
 module.exports.async = async
 module.exports.sync = sync

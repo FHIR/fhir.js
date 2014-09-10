@@ -1,16 +1,16 @@
-conformance = (baseUrl, http, cb, err)->
+conformance = ({baseUrl, http, success, error})->
     http
       method: 'GET'
       url: "#{baseUrl}/metadata"
-      success: cb
-      error: err
+      success: success
+      error: error
 
-profile = (baseUrl, http, type, cb, err)=>
+profile = ({baseUrl, http, type, success, error})=>
   http
     method: 'GET'
     url: "#{baseUrl}/Profile/#{type}"
-    success: cb
-    error: err
+    success: success
+    error: error
 
 exports.conformance = conformance
 exports.profile = profile

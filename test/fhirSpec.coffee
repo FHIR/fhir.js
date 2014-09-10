@@ -12,16 +12,16 @@ describe "fhir:", ->
     expect(subject.transaction).not.toBe(null)
 
   it "search", (done)->
-    subject.search type: 'Patient', query: {name: 'maud'}, success: (_)-> done()
+    subject.search type: 'Patient', query: {name: 'maud'}, success: done
 
   it "conformance", (done)->
-    subject.conformance (_)-> done()
+    subject.conformance success: done
 
   it "profile", (done)->
-    subject.profile 'Patient', (_)-> done()
+    subject.profile type: 'Patient', success: done
 
   it "transaction", (done)->
-    subject.transaction 'bundle', (_)-> done()
+    subject.transaction bundle: 'bundle', success: done
 
   it "read", (done)->
-    subject.read id :'BASE/Patient/123', success: (_)-> done()
+    subject.read id :'BASE/Patient/123', success: done

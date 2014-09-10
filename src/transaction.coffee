@@ -1,9 +1,9 @@
-transaction = (baseUrl, http, bundle, cb, err)=>
+transaction = ({baseUrl, http, bundle, success, error})=>
     http
       method: 'POST'
       url: baseUrl
       data: bundle
-      success: cb
-      error: err
+      success: success
+      error: error
 
 module.exports = transaction

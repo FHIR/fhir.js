@@ -34,14 +34,20 @@ fhir = (cfg, adapter) ->
     opt.http =  http
     search.prev opt
 
-  conformance: (cb, err) ->
-    conf.conformance baseUrl, http, cb, err
+  conformance: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    conf.conformance(opt)
 
-  profile: (type, cb, err) ->
-    conf.profile baseUrl, http, type, cb, err
+  profile: (opt)->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    conf.profile opt
 
-  transaction: (bundle, cb, err) ->
-    transaction baseUrl, http, bundle, cb, err
+  transaction: (opt)->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    transaction(opt)
 
   history: (opt)->
     opt.baseUrl =  baseUrl
@@ -68,10 +74,16 @@ fhir = (cfg, adapter) ->
     opt.http =  http
     crud["delete"](opt)
 
-  resolve: (ref, resource, bundle, cb, err) ->
-    resolve.async baseUrl, http, cfg.cache and cache[baseUrl], ref, resource, bundle, cb, err
+  resolve: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    opt.cache = cfg.cache and cache[baseUrl]
+    resolve.async(opt)
 
-  resolveSync: (ref, resource, bundle) ->
-    resolve.sync baseUrl, http, cfg.cache and cache[baseUrl], ref, resource, bundle
+  resolveSync: (opt) ->
+    opt.baseUrl =  baseUrl
+    opt.http =  http
+    opt.cache = cfg.cache and cache[baseUrl]
+    resolve.sync(opt)
 
 module.exports = fhir
