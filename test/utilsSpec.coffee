@@ -47,5 +47,18 @@ describe "utils", ->
     expect(utils.absoluteUrl("BASE", "BASE/Patient/123")).toEqual("BASE/Patient/123")
     expect(utils.relativeUrl("BASE", "Patient/123")).toEqual("Patient/123")
 
+  it "resourceIdToUrl", ->
+    subj = utils.resourceIdToUrl
+    expect(subj("BASE/Patient/123", "BASE", "Patient"))
+      .toEqual("BASE/Patient/123")
+
+    expect(subj("Patient/123", "BASE", "Patient"))
+      .toEqual("BASE/Patient/123")
+
+    expect(subj("/Patient/123", "BASE", "Patient"))
+      .toEqual("BASE/Patient/123")
+
+    expect(subj("123", "BASE", "Patient"))
+      .toEqual("BASE/Patient/123")
 
 

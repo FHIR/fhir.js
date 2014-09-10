@@ -104,3 +104,15 @@ relativeUrl = (baseUrl, ref)->
     ref
 
 exports.relativeUrl = relativeUrl
+
+# entry id sometimes id sometimes url
+# this method will normalize id to url
+exports.resourceIdToUrl = (id, baseUrl, type)->
+  baseUrl = baseUrl.replace(/\/$/, '')
+  id = id.replace(/^\//, '')
+  if id.indexOf('/') < 0
+    "#{baseUrl}/#{type}/#{id}"
+  else if id.indexOf(baseUrl) != 0
+    "#{baseUrl}/#{id}"
+  else
+    id
