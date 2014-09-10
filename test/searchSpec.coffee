@@ -1,4 +1,4 @@
-subject = require('../coffee/search.coffee')
+subject = require('../src/search.coffee')
 patientBundle = require('../fixtures/patientBundle.js')
 
 nop = ()->

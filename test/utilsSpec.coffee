@@ -1,4 +1,4 @@
-utils = require('../coffee/utils.coffee')
+utils = require('../src/utils.coffee')
 
 describe "utils", ->
   it "trim", ->
@@ -48,4 +48,4 @@ describe "utils", ->
     expect(utils.relativeUrl("BASE", "Patient/123")).toEqual("Patient/123")
 
 
- 
+

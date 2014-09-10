@@ -3,7 +3,7 @@ module.exports = function (grunt) {
     clean: ['dist/*.js'],
     webpack: {
       fhir: {
-        entry: "./coffee/fhir.js",
+        entry: "./src/fhir.coffee",
         node: {
           buffer: "mock"
         },
@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
       },
       ngfhir: {
-        entry: "./coffee/adapters/ngFhir.js",
+        entry: "./src/adapters/ngFhir.coffee",
         output: {
           path: __dirname + "/dist",
           filename: "ngFhir.js",
@@ -29,7 +29,7 @@ module.exports = function (grunt) {
         module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
       },
       jqfhir: {
-        entry: "./coffee/adapters/jqFhir.js",
+        entry: "./src/adapters/jqFhir.coffee",
         node: {
           buffer: "mock"
         },

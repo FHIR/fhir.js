@@ -54,96 +54,141 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var search = __webpack_require__(1);
-	var conf = __webpack_require__(2);
-	var transaction = __webpack_require__(3);
-	var tags = __webpack_require__(4);
-	var history = __webpack_require__(5);
-	var crud = __webpack_require__(6);
-	var wrap = __webpack_require__(7);
-	var utils = __webpack_require__(8);
+	var cache, conf, crud, fhir, history, search, tags, transaction, utils, wrap;
 
-	// construct fhir object
-	// params:
-	//   * cfg - config object - props???
-	//   * adapter - main operations
-	//      * http - function({method, url, success, error})
-	//               call success with (data, status, headersFn, config)
+	search = __webpack_require__(1);
 
-	function fhir(cfg, adapter){
-	  // TODO: add cfg & adapter validation
-	  var middlewares =cfg.middlewares || {};
-	 
-	  var http = wrap(cfg, adapter.http, middlewares.http)
-	  var baseUrl = cfg.baseUrl
+	conf = __webpack_require__(2);
 
-	  return  {
-	    search: function(type, query, cb, err){
-	      var wrapped = wrap(cfg, search, middlewares.search);
+	transaction = __webpack_require__(3);
+
+	tags = __webpack_require__(4);
+
+	history = __webpack_require__(5);
+
+	crud = __webpack_require__(6);
+
+	wrap = __webpack_require__(7);
+
+	utils = __webpack_require__(8);
+
+	cache = {};
+
+	fhir = function(cfg, adapter) {
+	  var baseUrl, http, middlewares;
+	  middlewares = cfg.middlewares || {};
+	  http = wrap(cfg, adapter.http, middlewares.http);
+	  baseUrl = cfg.baseUrl;
+	  return {
+	    search: function(type, query, cb, err) {
+	      var wrapped;
+	      wrapped = wrap(cfg, search.search, middlewares.search);
 	      return wrapped(baseUrl, http, type, query, cb, err);
 	    },
-	    conformance: function(cb, err){
-	      return conf.conformance(baseUrl, http, cb, err)
+	    nextPage: function(bundle, cb, err) {
+	      return search.next(baseUrl, http, bundle, cb, err);
 	    },
-	    profile: function(type, cb, err){
-	      return conf.profile(baseUrl, http, type, cb, err)
+	    prevPage: function(bundle, cb, err) {
+	      return search.prev(baseUrl, http, bundle, cb, err);
 	    },
-	    transaction: function(bundle, cb, err){
-	      return transaction(baseUrl, http, bundle, cb, err)
+	    conformance: function(cb, err) {
+	      return conf.conformance(baseUrl, http, cb, err);
 	    },
-	    history: function(){
-	      return history.apply(null, [baseUrl, http].concat(arguments))
+	    profile: function(type, cb, err) {
+	      return conf.profile(baseUrl, http, type, cb, err);
 	    },
-	    create: function(entry, cb, err){
-	      return crud.create(baseUrl, http, entry, cb, err)
+	    transaction: function(bundle, cb, err) {
+	      return transaction(baseUrl, http, bundle, cb, err);
 	    },
-	    read: function(id, cb, err){
-	      return crud.read(baseUrl, http, id, cb, err)
+	    history: function() {
+	      return history.apply(null, [baseUrl, http].concat(arguments));
 	    },
-	    update: function(entry, cb, err){
-	      return crud.update(baseUrl, http, entry, cb, err)
+	    create: function(entry, cb, err) {
+	      return crud.create(baseUrl, http, entry, cb, err);
 	    },
-	    delete: function(entry, cb, err){
-	      return crud.delete(baseUrl, http, entry, cb, err)
+	    read: function(id, cb, err) {
+	      return crud.read(baseUrl, http, id, cb, err);
+	    },
+	    update: function(entry, cb, err) {
+	      return crud.update(baseUrl, http, entry, cb, err);
+	    },
+	    "delete": function(entry, cb, err) {
+	      return crud["delete"](baseUrl, http, entry, cb, err);
+	    },
+	    resolve: function(ref, resource, bundle, cb, err) {
+	      return resolve.async(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle, cb, err);
+	    },
+	    resolveSync: function(ref, resource, bundle) {
+	      return resolve.sync(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle);
 	    }
-	  }
-	}
-	module.exports = fhir
+	  };
+	};
 
+	module.exports = fhir;
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var queryBuider, search;
+	var doGet, getRel, queryBuider, search;
 
 	queryBuider = __webpack_require__(9);
+
+	doGet = function(http, uri, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: uri,
+	    success: function(data) {
+	      if (cb) {
+	        return cb(data);
+	      }
+	    },
+	    error: function(e) {
+	      if (err) {
+	        return err(e);
+	      }
+	    }
+	  });
+	};
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
 	    var queryStr, uri;
-	    console.log('search', baseUrl, http, type, query, cb, err);
 	    queryStr = queryBuider.query(query);
 	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
-	    return http({
-	      method: 'GET',
-	      url: uri,
-	      success: function(data) {
-	        if (cb) {
-	          return cb(data);
-	        }
-	      },
-	      error: function(e) {
-	        if (err) {
-	          return err(e);
-	        }
-	      }
-	    });
+	    return doGet(http, uri, cb, err);
 	  };
 	})(this);
 
-	module.exports = search;
+	getRel = function(rel) {
+	  return function(baseUrl, http, bundle, cb, err) {
+	    var l, urls;
+	    urls = (function() {
+	      var _i, _len, _ref, _results;
+	      _ref = bundle != null ? bundle.link : void 0;
+	      _results = [];
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        l = _ref[_i];
+	        if (l.rel === rel) {
+	          _results.push(l.href);
+	        }
+	      }
+	      return _results;
+	    })();
+	    if (urls.length !== 1) {
+	      return err("No " + rel + " link found in bundle");
+	    } else {
+	      return doGet(http, urls[0], cb, err);
+	    }
+	  };
+	};
+
+	module.exports.search = search;
+
+	module.exports.next = getRel("next");
+
+	module.exports.prev = getRel("prev");
 
 
 /***/ },
@@ -478,7 +523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RTRIM, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, tagsToHeader, trim, type,
+	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, relativeUrl, tagsToHeader, trim, type,
 	  __slice = [].slice;
 
 	merge = __webpack_require__(10);
@@ -622,6 +667,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.mergeLists = mergeLists;
+
+	absoluteUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
+	    return "" + baseUrl + "/" + ref;
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.absoluteUrl = absoluteUrl;
+
+	relativeUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) === baseUrl + "/") {
+	    return ref.slice(baseUrl.length + 1);
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.relativeUrl = relativeUrl;
 
 
 /***/ },

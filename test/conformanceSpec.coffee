@@ -1,4 +1,4 @@
-conf = require('../coffee/conformance.coffee')
+conf = require('../src/conformance.coffee')
 
 nop = (x)-> x
 

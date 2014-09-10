@@ -1,4 +1,4 @@
-fhir = require('../coffee/query.coffee')
+fhir = require('../src/query.coffee')
 describe "linearizeParams:", ->
   subject = fhir._query
 
@@ -76,4 +76,4 @@ describe "test params builder", ->
     expect(subject(name: {$or: ['bill', 'ted']}))
       .toBe('name=bill%2Cted')
 
- 
+

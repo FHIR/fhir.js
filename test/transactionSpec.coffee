@@ -1,4 +1,4 @@
-trans = require('../coffee/transaction.coffee')
+trans = require('../src/transaction.coffee')
 
 nop = (x)-> x
 bundle = 'bundle'

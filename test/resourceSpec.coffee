@@ -1,4 +1,4 @@
-res = require('../coffee/resource.coffee')
+res = require('../src/resource.coffee')
 
 nop = ()->
 

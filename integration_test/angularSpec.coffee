@@ -1,6 +1,6 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
-fhir = require('../coffee/adapters/ngFhirImpl.coffee')
+fhir = require('../src/adapters/ngFhir.coffee')
 
 Chance = require('chance')
 chance = new Chance()

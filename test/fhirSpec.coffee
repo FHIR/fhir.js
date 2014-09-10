@@ -1,4 +1,4 @@
-fhir = require('../coffee/fhir.js')
+fhir = require('../src/fhir.coffee')
 
 
 describe "fhir:", ->

@@ -54,27 +54,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1);
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var $, adapter, auth, merge, mkFhir, searchByPatient, utils,
 	  __slice = [].slice;
 
-	mkFhir = __webpack_require__(2);
+	mkFhir = __webpack_require__(1);
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(5);
 
-	utils = __webpack_require__(3);
+	utils = __webpack_require__(2);
 
-	auth = __webpack_require__(4);
+	auth = __webpack_require__(3);
 
-	searchByPatient = __webpack_require__(5);
+	searchByPatient = __webpack_require__(4);
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(5);
 
 	$ = jQuery;
 
@@ -126,75 +119,90 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var search = __webpack_require__(6);
-	var conf = __webpack_require__(7);
-	var transaction = __webpack_require__(8);
-	var tags = __webpack_require__(9);
-	var history = __webpack_require__(10);
-	var crud = __webpack_require__(11);
-	var wrap = __webpack_require__(12);
-	var utils = __webpack_require__(3);
+	var cache, conf, crud, fhir, history, search, tags, transaction, utils, wrap;
 
-	// construct fhir object
-	// params:
-	//   * cfg - config object - props???
-	//   * adapter - main operations
-	//      * http - function({method, url, success, error})
-	//               call success with (data, status, headersFn, config)
+	search = __webpack_require__(6);
 
-	function fhir(cfg, adapter){
-	  // TODO: add cfg & adapter validation
-	  var middlewares =cfg.middlewares || {};
-	 
-	  var http = wrap(cfg, adapter.http, middlewares.http)
-	  var baseUrl = cfg.baseUrl
+	conf = __webpack_require__(7);
 
-	  return  {
-	    search: function(type, query, cb, err){
-	      var wrapped = wrap(cfg, search, middlewares.search);
+	transaction = __webpack_require__(8);
+
+	tags = __webpack_require__(9);
+
+	history = __webpack_require__(10);
+
+	crud = __webpack_require__(11);
+
+	wrap = __webpack_require__(12);
+
+	utils = __webpack_require__(2);
+
+	cache = {};
+
+	fhir = function(cfg, adapter) {
+	  var baseUrl, http, middlewares;
+	  middlewares = cfg.middlewares || {};
+	  http = wrap(cfg, adapter.http, middlewares.http);
+	  baseUrl = cfg.baseUrl;
+	  return {
+	    search: function(type, query, cb, err) {
+	      var wrapped;
+	      wrapped = wrap(cfg, search.search, middlewares.search);
 	      return wrapped(baseUrl, http, type, query, cb, err);
 	    },
-	    conformance: function(cb, err){
-	      return conf.conformance(baseUrl, http, cb, err)
+	    nextPage: function(bundle, cb, err) {
+	      return search.next(baseUrl, http, bundle, cb, err);
 	    },
-	    profile: function(type, cb, err){
-	      return conf.profile(baseUrl, http, type, cb, err)
+	    prevPage: function(bundle, cb, err) {
+	      return search.prev(baseUrl, http, bundle, cb, err);
 	    },
-	    transaction: function(bundle, cb, err){
-	      return transaction(baseUrl, http, bundle, cb, err)
+	    conformance: function(cb, err) {
+	      return conf.conformance(baseUrl, http, cb, err);
 	    },
-	    history: function(){
-	      return history.apply(null, [baseUrl, http].concat(arguments))
+	    profile: function(type, cb, err) {
+	      return conf.profile(baseUrl, http, type, cb, err);
 	    },
-	    create: function(entry, cb, err){
-	      return crud.create(baseUrl, http, entry, cb, err)
+	    transaction: function(bundle, cb, err) {
+	      return transaction(baseUrl, http, bundle, cb, err);
 	    },
-	    read: function(id, cb, err){
-	      return crud.read(baseUrl, http, id, cb, err)
+	    history: function() {
+	      return history.apply(null, [baseUrl, http].concat(arguments));
 	    },
-	    update: function(entry, cb, err){
-	      return crud.update(baseUrl, http, entry, cb, err)
+	    create: function(entry, cb, err) {
+	      return crud.create(baseUrl, http, entry, cb, err);
 	    },
-	    delete: function(entry, cb, err){
-	      return crud.delete(baseUrl, http, entry, cb, err)
+	    read: function(id, cb, err) {
+	      return crud.read(baseUrl, http, id, cb, err);
+	    },
+	    update: function(entry, cb, err) {
+	      return crud.update(baseUrl, http, entry, cb, err);
+	    },
+	    "delete": function(entry, cb, err) {
+	      return crud["delete"](baseUrl, http, entry, cb, err);
+	    },
+	    resolve: function(ref, resource, bundle, cb, err) {
+	      return resolve.async(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle, cb, err);
+	    },
+	    resolveSync: function(ref, resource, bundle) {
+	      return resolve.sync(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle);
 	    }
-	  }
-	}
-	module.exports = fhir
+	  };
+	};
 
+	module.exports = fhir;
 
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RTRIM, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, tagsToHeader, trim, type,
+	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, relativeUrl, tagsToHeader, trim, type,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(5);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -336,16 +344,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.mergeLists = mergeLists;
 
+	absoluteUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
+	    return "" + baseUrl + "/" + ref;
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.absoluteUrl = absoluteUrl;
+
+	relativeUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) === baseUrl + "/") {
+	    return ref.slice(baseUrl.length + 1);
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.relativeUrl = relativeUrl;
+
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(15).btoa;
+	btoa = __webpack_require__(14).btoa;
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(5);
 
 	bearer = function(cfg) {
 	  return function(req) {
@@ -395,12 +423,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var keyFor, merge, withPatient, wrap;
 
-	merge = __webpack_require__(13);
+	merge = __webpack_require__(5);
 
 	keyFor = {
 	  "Observation": "subject",
@@ -430,37 +458,154 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * @name JavaScript/NodeJS Merge v1.1.3
+	 * @author yeikos
+	 * @repository https://github.com/yeikos/js.merge
+
+	 * Copyright 2014 yeikos - MIT license
+	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
+	 */
+
+	;(function(isNode) {
+
+		function merge() {
+
+			var items = Array.prototype.slice.call(arguments),
+				result = items.shift(),
+				deep = (result === true),
+				size = items.length,
+				item, index, key;
+
+			if (deep || typeOf(result) !== 'object')
+
+				result = {};
+
+			for (index=0;index<size;++index)
+
+				if (typeOf(item = items[index]) === 'object')
+
+					for (key in item)
+
+						result[key] = deep ? clone(item[key]) : item[key];
+
+			return result;
+
+		}
+
+		function clone(input) {
+
+			var output = input,
+				type = typeOf(input),
+				index, size;
+
+			if (type === 'array') {
+
+				output = [];
+				size = input.length;
+
+				for (index=0;index<size;++index)
+
+					output[index] = clone(input[index]);
+
+			} else if (type === 'object') {
+
+				output = {};
+
+				for (index in input)
+
+					output[index] = clone(input[index]);
+
+			}
+
+			return output;
+
+		}
+
+		function typeOf(input) {
+
+			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+		}
+
+		if (isNode) {
+
+			module.exports = merge;
+
+		} else {
+
+			window.merge = merge;
+
+		}
+
+	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module)))
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var queryBuider, search;
+	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(14);
+	queryBuider = __webpack_require__(13);
+
+	doGet = function(http, uri, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: uri,
+	    success: function(data) {
+	      if (cb) {
+	        return cb(data);
+	      }
+	    },
+	    error: function(e) {
+	      if (err) {
+	        return err(e);
+	      }
+	    }
+	  });
+	};
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
 	    var queryStr, uri;
-	    console.log('search', baseUrl, http, type, query, cb, err);
 	    queryStr = queryBuider.query(query);
 	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
-	    return http({
-	      method: 'GET',
-	      url: uri,
-	      success: function(data) {
-	        if (cb) {
-	          return cb(data);
-	        }
-	      },
-	      error: function(e) {
-	        if (err) {
-	          return err(e);
-	        }
-	      }
-	    });
+	    return doGet(http, uri, cb, err);
 	  };
 	})(this);
 
-	module.exports = search;
+	getRel = function(rel) {
+	  return function(baseUrl, http, bundle, cb, err) {
+	    var l, urls;
+	    urls = (function() {
+	      var _i, _len, _ref, _results;
+	      _ref = bundle != null ? bundle.link : void 0;
+	      _results = [];
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        l = _ref[_i];
+	        if (l.rel === rel) {
+	          _results.push(l.href);
+	        }
+	      }
+	      return _results;
+	    })();
+	    if (urls.length !== 1) {
+	      return err("No " + rel + " link found in bundle");
+	    } else {
+	      return doGet(http, urls[0], cb, err);
+	    }
+	  };
+	};
+
+	module.exports.search = search;
+
+	module.exports.next = getRel("next");
+
+	module.exports.prev = getRel("prev");
 
 
 /***/ },
@@ -650,7 +795,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(3);
+	utils = __webpack_require__(2);
 
 	trim = utils.trim;
 
@@ -795,96 +940,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {/*!
-	 * @name JavaScript/NodeJS Merge v1.1.3
-	 * @author yeikos
-	 * @repository https://github.com/yeikos/js.merge
-
-	 * Copyright 2014 yeikos - MIT license
-	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
-	 */
-
-	;(function(isNode) {
-
-		function merge() {
-
-			var items = Array.prototype.slice.call(arguments),
-				result = items.shift(),
-				deep = (result === true),
-				size = items.length,
-				item, index, key;
-
-			if (deep || typeOf(result) !== 'object')
-
-				result = {};
-
-			for (index=0;index<size;++index)
-
-				if (typeOf(item = items[index]) === 'object')
-
-					for (key in item)
-
-						result[key] = deep ? clone(item[key]) : item[key];
-
-			return result;
-
-		}
-
-		function clone(input) {
-
-			var output = input,
-				type = typeOf(input),
-				index, size;
-
-			if (type === 'array') {
-
-				output = [];
-				size = input.length;
-
-				for (index=0;index<size;++index)
-
-					output[index] = clone(input[index]);
-
-			} else if (type === 'object') {
-
-				output = {};
-
-				for (index in input)
-
-					output[index] = clone(input[index]);
-
-			}
-
-			return output;
-
-		}
-
-		function typeOf(input) {
-
-			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
-
-		}
-
-		if (isNode) {
-
-			module.exports = merge;
-
-		} else {
-
-			window.merge = merge;
-
-		}
-
-	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)(module)))
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(3);
+	utils = __webpack_require__(2);
 
 	type = utils.type;
 
@@ -1045,7 +1103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -1112,7 +1170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

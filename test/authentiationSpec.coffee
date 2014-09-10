@@ -1,4 +1,4 @@
-wrapAuth = require('../coffee/middlewares/httpAuthentication.coffee')
+wrapAuth = require('../src/middlewares/httpAuthentication.coffee')
 
 describe "authentication:", ->
   identity = (x)-> x

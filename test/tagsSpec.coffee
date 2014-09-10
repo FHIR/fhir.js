@@ -1,4 +1,4 @@
-# tags = require('../coffee/tags.coffee')
+# tags = require('../src/tags.coffee')
 
 # describe "tags:", ->
 #   subject = tags

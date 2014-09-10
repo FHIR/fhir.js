@@ -1,4 +1,4 @@
-mkFhir = require('../fhir.js')
+mkFhir = require('../fhir.coffee')
 
 implementXhr = ($http)->
   (q)->
@@ -24,5 +24,3 @@ angular.module('ng-fhir').provider '$fhir', ()->
       update: fhir.update
       delete: fhir.delete
       vread: fhir.vread
-
-exports.ngInit = ()-> console.log('ng initialized')

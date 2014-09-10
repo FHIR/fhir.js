@@ -1,4 +1,4 @@
-mkFhir = require('../fhir.js')
+mkFhir = require('../fhir.coffee')
 merge = require('merge')
 utils = require('../utils.coffee')
 auth = require('../middlewares/httpAuthentication.coffee')

@@ -1,4 +1,4 @@
-subject = require('../coffee/resolve.coffee')
+subject = require('../src/resolve.coffee')
 rx = require('../fixtures/medicationPrescription.js')
 
 bpBundle = require('../fixtures/bpBundle.js')
@@ -20,7 +20,7 @@ describe "resolve synchronous", ->
   it "resolves a missing contained resource as null", ->
     resolved = subject.sync('BASE', http, cache, {reference: "#no-such-thing"}, rx, null)
     expect(resolved).toEqual(null)
- 
+
   it "resolves a contained resource", ->
     resolved = subject.sync('BASE', http, cache, rx.medication, rx, null)
     expect(resolved).toEqual(rx.contained[0])
@@ -49,7 +49,7 @@ describe "resolve async", ->
     http = (q)-> (throw "should not be called")
     err = (e)-> done()
     subject.async('BASE', http, cache, {reference: "#no-such-thing"}, rx, null, null, err)
- 
+
   it "resolves a contained resource", (done)->
     http = (q)->(throw "should not be called")
     cb = (r)->

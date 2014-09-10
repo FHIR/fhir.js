@@ -1,4 +1,4 @@
-history = require('../coffee/history.coffee')
+history = require('../src/history.coffee')
 
 nop = (x)-> x
 

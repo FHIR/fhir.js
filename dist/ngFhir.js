@@ -54,17 +54,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ng = __webpack_require__(1)
-	ng.ngInit()
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var implementXhr, mkFhir;
 
-	mkFhir = __webpack_require__(2);
+	mkFhir = __webpack_require__(1);
 
 	implementXhr = function($http) {
 	  return function(q) {
@@ -107,109 +99,150 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	});
 
-	exports.ngInit = function() {
-	  return console.log('ng initialized');
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cache, conf, crud, fhir, history, search, tags, transaction, utils, wrap;
+
+	search = __webpack_require__(2);
+
+	conf = __webpack_require__(3);
+
+	transaction = __webpack_require__(4);
+
+	tags = __webpack_require__(5);
+
+	history = __webpack_require__(6);
+
+	crud = __webpack_require__(7);
+
+	wrap = __webpack_require__(8);
+
+	utils = __webpack_require__(9);
+
+	cache = {};
+
+	fhir = function(cfg, adapter) {
+	  var baseUrl, http, middlewares;
+	  middlewares = cfg.middlewares || {};
+	  http = wrap(cfg, adapter.http, middlewares.http);
+	  baseUrl = cfg.baseUrl;
+	  return {
+	    search: function(type, query, cb, err) {
+	      var wrapped;
+	      wrapped = wrap(cfg, search.search, middlewares.search);
+	      return wrapped(baseUrl, http, type, query, cb, err);
+	    },
+	    nextPage: function(bundle, cb, err) {
+	      return search.next(baseUrl, http, bundle, cb, err);
+	    },
+	    prevPage: function(bundle, cb, err) {
+	      return search.prev(baseUrl, http, bundle, cb, err);
+	    },
+	    conformance: function(cb, err) {
+	      return conf.conformance(baseUrl, http, cb, err);
+	    },
+	    profile: function(type, cb, err) {
+	      return conf.profile(baseUrl, http, type, cb, err);
+	    },
+	    transaction: function(bundle, cb, err) {
+	      return transaction(baseUrl, http, bundle, cb, err);
+	    },
+	    history: function() {
+	      return history.apply(null, [baseUrl, http].concat(arguments));
+	    },
+	    create: function(entry, cb, err) {
+	      return crud.create(baseUrl, http, entry, cb, err);
+	    },
+	    read: function(id, cb, err) {
+	      return crud.read(baseUrl, http, id, cb, err);
+	    },
+	    update: function(entry, cb, err) {
+	      return crud.update(baseUrl, http, entry, cb, err);
+	    },
+	    "delete": function(entry, cb, err) {
+	      return crud["delete"](baseUrl, http, entry, cb, err);
+	    },
+	    resolve: function(ref, resource, bundle, cb, err) {
+	      return resolve.async(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle, cb, err);
+	    },
+	    resolveSync: function(ref, resource, bundle) {
+	      return resolve.sync(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle);
+	    }
+	  };
 	};
+
+	module.exports = fhir;
 
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var search = __webpack_require__(3);
-	var conf = __webpack_require__(4);
-	var transaction = __webpack_require__(5);
-	var tags = __webpack_require__(6);
-	var history = __webpack_require__(7);
-	var crud = __webpack_require__(8);
-	var wrap = __webpack_require__(9);
-	var utils = __webpack_require__(10);
+	var doGet, getRel, queryBuider, search;
 
-	// construct fhir object
-	// params:
-	//   * cfg - config object - props???
-	//   * adapter - main operations
-	//      * http - function({method, url, success, error})
-	//               call success with (data, status, headersFn, config)
+	queryBuider = __webpack_require__(10);
 
-	function fhir(cfg, adapter){
-	  // TODO: add cfg & adapter validation
-	  var middlewares =cfg.middlewares || {};
-	 
-	  var http = wrap(cfg, adapter.http, middlewares.http)
-	  var baseUrl = cfg.baseUrl
-
-	  return  {
-	    search: function(type, query, cb, err){
-	      var wrapped = wrap(cfg, search, middlewares.search);
-	      return wrapped(baseUrl, http, type, query, cb, err);
+	doGet = function(http, uri, cb, err) {
+	  return http({
+	    method: 'GET',
+	    url: uri,
+	    success: function(data) {
+	      if (cb) {
+	        return cb(data);
+	      }
 	    },
-	    conformance: function(cb, err){
-	      return conf.conformance(baseUrl, http, cb, err)
-	    },
-	    profile: function(type, cb, err){
-	      return conf.profile(baseUrl, http, type, cb, err)
-	    },
-	    transaction: function(bundle, cb, err){
-	      return transaction(baseUrl, http, bundle, cb, err)
-	    },
-	    history: function(){
-	      return history.apply(null, [baseUrl, http].concat(arguments))
-	    },
-	    create: function(entry, cb, err){
-	      return crud.create(baseUrl, http, entry, cb, err)
-	    },
-	    read: function(id, cb, err){
-	      return crud.read(baseUrl, http, id, cb, err)
-	    },
-	    update: function(entry, cb, err){
-	      return crud.update(baseUrl, http, entry, cb, err)
-	    },
-	    delete: function(entry, cb, err){
-	      return crud.delete(baseUrl, http, entry, cb, err)
+	    error: function(e) {
+	      if (err) {
+	        return err(e);
+	      }
 	    }
-	  }
-	}
-	module.exports = fhir
-
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var queryBuider, search;
-
-	queryBuider = __webpack_require__(11);
+	  });
+	};
 
 	search = (function(_this) {
 	  return function(baseUrl, http, type, query, cb, err) {
 	    var queryStr, uri;
-	    console.log('search', baseUrl, http, type, query, cb, err);
 	    queryStr = queryBuider.query(query);
 	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
-	    return http({
-	      method: 'GET',
-	      url: uri,
-	      success: function(data) {
-	        if (cb) {
-	          return cb(data);
-	        }
-	      },
-	      error: function(e) {
-	        if (err) {
-	          return err(e);
-	        }
-	      }
-	    });
+	    return doGet(http, uri, cb, err);
 	  };
 	})(this);
 
-	module.exports = search;
+	getRel = function(rel) {
+	  return function(baseUrl, http, bundle, cb, err) {
+	    var l, urls;
+	    urls = (function() {
+	      var _i, _len, _ref, _results;
+	      _ref = bundle != null ? bundle.link : void 0;
+	      _results = [];
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        l = _ref[_i];
+	        if (l.rel === rel) {
+	          _results.push(l.href);
+	        }
+	      }
+	      return _results;
+	    })();
+	    if (urls.length !== 1) {
+	      return err("No " + rel + " link found in bundle");
+	    } else {
+	      return doGet(http, urls[0], cb, err);
+	    }
+	  };
+	};
+
+	module.exports.search = search;
+
+	module.exports.next = getRel("next");
+
+	module.exports.prev = getRel("prev");
 
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var conformance, profile;
@@ -240,7 +273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var transaction;
@@ -261,7 +294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -343,7 +376,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var history, historyAll, historyType;
@@ -390,12 +423,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(10);
+	utils = __webpack_require__(9);
 
 	trim = utils.trim;
 
@@ -517,7 +550,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var wrap;
@@ -537,13 +570,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RTRIM, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, tagsToHeader, trim, type,
+	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, relativeUrl, tagsToHeader, trim, type,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(12);
+	merge = __webpack_require__(11);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -685,14 +718,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.mergeLists = mergeLists;
 
+	absoluteUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
+	    return "" + baseUrl + "/" + ref;
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.absoluteUrl = absoluteUrl;
+
+	relativeUrl = function(baseUrl, ref) {
+	  if (ref.slice(ref, baseUrl.length + 1) === baseUrl + "/") {
+	    return ref.slice(baseUrl.length + 1);
+	  } else {
+	    return ref;
+	  }
+	};
+
+	exports.relativeUrl = relativeUrl;
+
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(10);
+	utils = __webpack_require__(9);
 
 	type = utils.type;
 
@@ -853,7 +906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -937,10 +990,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
