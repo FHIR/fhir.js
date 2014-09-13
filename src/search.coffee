@@ -1,4 +1,4 @@
-queryBuider = require('./query.coffee')
+queryBuider = require('./query')
 
 doGet = (http, uri, cb, err)->
   http

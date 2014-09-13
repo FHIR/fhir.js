@@ -215,8 +215,30 @@ fhir.search('Patient', {name: 'maud'})
 })
 ```
 
+## Node.js adapter:
+
+Build `js` source:
+
+    ./node_modules/.bin/coffee --compile -o lib/ src/
+
+then:
+
+```
+var mkFhir = require('./lib/adapters/node');
+
+var fhirClient = mkFhir({
+  baseUrl: 'http://try-fhirplace.hospital-systems.com'
+});
+
+fhirClient.search('Patient', {birthdate: '1974'}, function(err, bundle) {
+  console.log("# patients born in 1974: ", bundle.entry.length); 
+});
+
+```
+
 ## TODO
 
+* npm package
 * bower package
 
 ## Contribute

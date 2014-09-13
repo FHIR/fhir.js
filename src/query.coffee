@@ -1,4 +1,4 @@
-utils = require('./utils.coffee')
+utils = require('./utils')
 type = utils.type
 assertArray = utils.assertArray
 assertObject = utils.assertObject

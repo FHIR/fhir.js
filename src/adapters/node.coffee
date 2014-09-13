@@ -1,15 +1,16 @@
 request = require('request')
-mkFhir = require('../fhir.coffee')
+mkFhir = require('../fhir')
 merge = require('merge')
-utils = require('../utils.coffee')
-auth = require('../middlewares/httpAuthentication.coffee')
-searchByPatient = require('../middlewares/searchByPatient.coffee')
+utils = require('../utils')
+auth = require('../middlewares/httpAuthentication')
+searchByPatient = require('../middlewares/searchByPatient')
 merge = require('merge')
 
 adapter = {
   "http": (q)->
 
     q = merge(true, q)
+    q.headers = q.headers || {}
     q.headers["Accept"] = "application/json"
     q.json = true
 
