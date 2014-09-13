@@ -6,3 +6,4 @@ before_script:
 script:
 - 'node_modules/karma/bin/karma start karma.conf.js --single-run'
 - 'node_modules/karma/bin/karma start karma-itegration.conf.js --single-run'
+- 'node_modules/.bin/jasmine-node --coffee node_tests/'
