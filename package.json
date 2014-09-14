@@ -1,6 +1,6 @@
 {
   "name": "fhir.js",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "devDependencies": {
     "bower": "latest",
     "grunt": "~0.4.5",
@@ -17,8 +17,7 @@
     "karma-coffee-preprocessor": "latest",
     "webpack-dev-server": "~1.5.0",
     "karma-webpack": "~1.2.2",
-    "grunt-webpack": "~1.0.8",
-    "request": "~2.42.0"
+    "grunt-webpack": "~1.0.8"
   },
   "description": "FHIR javascript client",
   "main": "lib/adapters/node",
@@ -49,6 +48,7 @@
     "webpack": "~1.4.0-beta1",
     "merge": "~1.1.3",
     "Base64": "~0.3.0",
-    "chance": "latest"
+    "chance": "latest",
+    "request": "~2.42.0"
   }
 }
