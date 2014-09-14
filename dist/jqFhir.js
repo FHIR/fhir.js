@@ -78,7 +78,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      type: q.method,
 	      url: q.url,
 	      headers: q.headers,
-	      dataType: "json"
+	      dataType: "json",
+	      data: q.data
 	    });
 	    if (q.success) {
 	      a.done(q.success);

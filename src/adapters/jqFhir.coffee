@@ -9,7 +9,13 @@ $ = jQuery
 
 adapter = {
   "http": (q)->
-    a = $.ajax {type: q.method, url: q.url, headers: q.headers, dataType: "json"}
+    a = $.ajax {
+      type: q.method,
+      url: q.url,
+      headers: q.headers,
+      dataType: "json",
+      data: q.data}
+
     a.done(q.success) if q.success
     a.fail(q.error) if q.error
 }
