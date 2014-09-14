@@ -16,7 +16,11 @@ module.exports = function (grunt) {
           library: "fhir",
           libraryTarget: "umd"
         },
-        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
+        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]},
+        resolve: {
+          extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
+        },
+
       },
       ngfhir: {
         entry: "./src/adapters/ngFhir.coffee",
@@ -26,7 +30,11 @@ module.exports = function (grunt) {
           library: "ng-fhir",
           libraryTarget: "umd"
         },
-        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
+        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]},
+        resolve: {
+          extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
+        },
+
       },
       jqfhir: {
         entry: "./src/adapters/jqFhir.coffee",
@@ -42,7 +50,11 @@ module.exports = function (grunt) {
         externals: {
           "jquery": "jQuery"
         },
-        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]}
+        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]},
+        resolve: {
+          extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
+        },
+
       }
     }
   });
