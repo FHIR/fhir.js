@@ -217,11 +217,7 @@ fhir.search('Patient', {name: 'maud'})
 
 ## Node.js adapter:
 
-Build `js` source:
-
-    ./node_modules/.bin/coffee --compile -o lib/ src/
-
-then:
+Build the js source by doing `npm install`, and then:
 
 ```
 var mkFhir = require('./lib/adapters/node');
