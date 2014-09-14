@@ -21,6 +21,7 @@
     "request": "~2.42.0"
   },
   "description": "FHIR javascript client",
+  "main": "lib/adapters/node",
   "repository": {
     "type": "git",
     "url": "git@github.com:FHIR/fhir.js.git"
