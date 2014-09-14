@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	adapter = {
 	  "http": function(q) {
-	    var a;
+	    var a, onSuccess;
 	    a = $.ajax({
 	      type: q.method,
 	      url: q.url,
@@ -83,7 +83,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      data: q.data
 	    });
 	    if (q.success) {
-	      a.done(q.success);
+	      onSuccess = function(data, status, xhr) {
+	        return q.success(data, status, xhr.getResponseHeader);
+	      };
+	      a.done(onSuccess);
 	    }
 	    if (q.error) {
 	      return a.fail(q.error);

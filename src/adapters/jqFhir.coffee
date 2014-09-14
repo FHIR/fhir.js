@@ -17,7 +17,10 @@ adapter = {
       contentType: "application/json",
       data: q.data}
 
-    a.done(q.success) if q.success
+    if q.success
+      onSuccess = (data, status, xhr) ->
+        q.success(data, status, xhr.getResponseHeader)
+      a.done(onSuccess)
     a.fail(q.error) if q.error
 }
 
