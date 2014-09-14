@@ -79,6 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      url: q.url,
 	      headers: q.headers,
 	      dataType: "json",
+	      contentType: "application/json",
 	      data: q.data
 	    });
 	    if (q.success) {

@@ -14,6 +14,7 @@ adapter = {
       url: q.url,
       headers: q.headers,
       dataType: "json",
+      contentType: "application/json",
       data: q.data}
 
     a.done(q.success) if q.success
