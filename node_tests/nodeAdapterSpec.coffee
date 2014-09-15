@@ -7,9 +7,8 @@ describe "nodejs adapter", ->
       auth: {user: 'client', pass: 'secret'}
 
   it "simplest", (done) ->
-    subject.search('Patient', {name: 'adams'},
+    subject.search {type: 'Patient', query: {name: 'adams'}},
       (err, patient)->
         expect(err).toBe(null)
         expect(patient.entry.length).toBe(1)
         done()
-    )

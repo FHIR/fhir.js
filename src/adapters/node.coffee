@@ -6,9 +6,8 @@ auth = require('../middlewares/httpAuthentication')
 searchByPatient = require('../middlewares/searchByPatient')
 merge = require('merge')
 
-adapter = {
-  "http": (q)->
-
+adapter =
+  http: (q)->
     q = merge(true, q)
     q.headers = q.headers || {}
     q.headers["Accept"] = "application/json"
@@ -16,35 +15,25 @@ adapter = {
 
     request q, (err, response, body)->
       if (err)
-        q.error(err)
+        q.error(err, response.statusCode, response.getHeader, q)
       else
         q.success(body, response.statusCode, response.getHeader, q)
-}
 
+wrappToErrbackForm = (fhir, fn)->
+  (opt, cb) ->
+    opt = merge true, opt,
+      success: (res)-> cb(null, res)
+      error: (err)-> cb(err, null)
+    fhir[fn](opt)
 
 module.exports = (config)->
-
-  defaultMiddlewares = {
+  defaultMiddlewares =
     http: [auth]
     search: [searchByPatient]
-  }
 
   middlewares = utils.mergeLists(config.middlewares, defaultMiddlewares)
   config = merge(true, config, {middlewares:middlewares})
   fhir = mkFhir(config, adapter)
-
-  errbackform = (fn)->
-    (args...) ->
-      precb = args.slice(0, -1)
-      cb = args.slice(-1)[0]
-      
-      separate = precb.concat(
-        (args...) ->
-          cb.apply null, [null].concat(args)
-        (err)->
-          cb(err)
-      )
-      fhir[fn].apply(null, separate)
 
   ret = [
     "search"
@@ -58,6 +47,6 @@ module.exports = (config)->
     "delete"
     "vread"
     "resolve"
-  ].reduce ((acc, v)-> acc[v] = errbackform(v); acc), {}
+  ].reduce ((acc, v)-> acc[v] = wrappToErrbackForm(fhir, v); acc), {}
   ret.resolveSync = fhir.resolveSync
   ret
