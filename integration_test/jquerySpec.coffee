@@ -53,12 +53,12 @@ describe "jqFhir", ->
       }
     }
 
-    subject.create({content: exampleSecEvent}).then((response)->
-      console.log("Success", response)
-      done()
-    ).fail((err)->
+    subject.create {entry: {content: exampleSecEvent}}
+      .then (response)->
+        console.log("Success", response)
+        done()
+    .fail (err)->
       console.log("Error", err)
       throw new Error("Couldn't create")
-    )
 
 

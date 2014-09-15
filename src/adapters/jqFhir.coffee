@@ -7,8 +7,8 @@ merge = require('merge')
 
 $ = jQuery
 
-adapter = {
-  "http": (q)->
+adapter =
+  http: (q)->
     a = $.ajax {
       type: q.method,
       url: q.url,
@@ -22,14 +22,12 @@ adapter = {
         q.success(data, status, xhr.getResponseHeader)
       a.done(onSuccess)
     a.fail(q.error) if q.error
-}
 
 module.exports = (config)->
 
-  defaultMiddlewares = {
+  defaultMiddlewares =
     http: [auth]
     search: [searchByPatient]
-  }
 
   middlewares = utils.mergeLists(config.middlewares, defaultMiddlewares)
 
