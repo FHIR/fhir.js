@@ -23,7 +23,7 @@ module.exports = function (grunt) {
 
       },
       ngfhir: {
-        entry: "./src/adapters/ngFhir.coffee",
+        entry: "./src/adapters/angularjs.coffee",
         output: {
           path: __dirname + "/dist",
           filename: "ngFhir.js",
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
 
       },
       jqfhir: {
-        entry: "./src/adapters/jqFhir.coffee",
+        entry: "./src/adapters/jquery.coffee",
         node: {
           buffer: "mock"
         },

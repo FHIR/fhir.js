@@ -54,8 +54,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $, adapter, auth, merge, mkFhir, searchByPatient, utils,
-	  __slice = [].slice;
+	var $, adapter, auth, merge, mkFhir, searchByPatient, utils;
 
 	mkFhir = __webpack_require__(1);
 
@@ -72,7 +71,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	$ = jQuery;
 
 	adapter = {
-	  "http": function(q) {
+	  http: function(q) {
 	    var a, onSuccess;
 	    a = $.ajax({
 	      type: q.method,
@@ -108,12 +107,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  defer = function(fname) {
 	    var fn;
 	    fn = fhir[fname];
-	    return function() {
-	      var args, ret;
-	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return function(args) {
+	      var ret;
 	      ret = $.Deferred();
-	      console.log('args list', args.concat([ret.resolve, ret.reject]));
-	      fn.apply(null, args.concat([ret.resolve, ret.reject]));
+	      args.success = ret.resolve;
+	      args.error = ret.reject;
+	      fn(args);
 	      return ret;
 	    };
 	  };
@@ -128,7 +127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cache, conf, crud, fhir, history, search, tags, transaction, utils, wrap;
+	var cache, conf, crud, fhir, history, merge, search, tags, transaction, utils, wrap;
 
 	search = __webpack_require__(6);
 
@@ -146,54 +145,72 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	utils = __webpack_require__(2);
 
+	merge = __webpack_require__(5);
+
 	cache = {};
 
 	fhir = function(cfg, adapter) {
-	  var baseUrl, http, middlewares;
+	  var baseUrl, deps, depsWithCache, http, middlewares;
 	  middlewares = cfg.middlewares || {};
 	  http = wrap(cfg, adapter.http, middlewares.http);
 	  baseUrl = cfg.baseUrl;
+	  deps = function(opt) {
+	    return merge(true, opt, {
+	      baseUrl: baseUrl,
+	      http: http
+	    });
+	  };
+	  depsWithCache = function(opt) {
+	    return merge(true, opt, {
+	      baseUrl: baseUrl,
+	      http: http,
+	      cache: cfg.cache && cache[baseUrl]
+	    });
+	  };
 	  return {
-	    search: function(type, query, cb, err) {
+	    search: function(opt) {
 	      var wrapped;
 	      wrapped = wrap(cfg, search.search, middlewares.search);
-	      return wrapped(baseUrl, http, type, query, cb, err);
+	      return wrapped(merge(true, opt, {
+	        baseUrl: baseUrl,
+	        http: http
+	      }));
 	    },
-	    nextPage: function(bundle, cb, err) {
-	      return search.next(baseUrl, http, bundle, cb, err);
+	    nextPage: function(opt) {
+	      return search.next(deps(opt));
 	    },
-	    prevPage: function(bundle, cb, err) {
-	      return search.prev(baseUrl, http, bundle, cb, err);
+	    prevPage: function(opt) {
+	      return search.prev(deps(opt));
 	    },
-	    conformance: function(cb, err) {
-	      return conf.conformance(baseUrl, http, cb, err);
+	    conformance: function(opt) {
+	      return conf.conformance(deps(opt));
 	    },
-	    profile: function(type, cb, err) {
-	      return conf.profile(baseUrl, http, type, cb, err);
+	    profile: function(opt) {
+	      return conf.profile(deps(opt));
 	    },
-	    transaction: function(bundle, cb, err) {
-	      return transaction(baseUrl, http, bundle, cb, err);
+	    transaction: function(opt) {
+	      return transaction(deps(opt));
 	    },
-	    history: function() {
-	      return history.apply(null, [baseUrl, http].concat(arguments));
+	    history: function(opt) {
+	      return history(deps(opt));
 	    },
-	    create: function(entry, cb, err) {
-	      return crud.create(baseUrl, http, entry, cb, err);
+	    create: function(opt) {
+	      return crud.create(deps(opt));
 	    },
-	    read: function(id, cb, err) {
-	      return crud.read(baseUrl, http, id, cb, err);
+	    read: function(opt) {
+	      return crud.read(deps(opt));
 	    },
-	    update: function(entry, cb, err) {
-	      return crud.update(baseUrl, http, entry, cb, err);
+	    update: function(opt) {
+	      return crud.update(deps(opt));
 	    },
-	    "delete": function(entry, cb, err) {
-	      return crud["delete"](baseUrl, http, entry, cb, err);
+	    "delete": function(opt) {
+	      return crud["delete"](deps(opt));
 	    },
-	    resolve: function(ref, resource, bundle, cb, err) {
-	      return resolve.async(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle, cb, err);
+	    resolve: function(opt) {
+	      return resolve.async(opt)(depsWithCache(opt));
 	    },
-	    resolveSync: function(ref, resource, bundle) {
-	      return resolve.sync(baseUrl, http, cfg.cache && cache[baseUrl], ref, resource, bundle);
+	    resolveSync: function(opt) {
+	      return resolve.sync(opt)(depsWithCache(opt));
 	    }
 	  };
 	};
@@ -593,17 +610,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	search = (function(_this) {
-	  return function(baseUrl, http, type, query, cb, err) {
-	    var queryStr, uri;
+	  return function(_arg) {
+	    var baseUrl, error, http, query, queryStr, success, type, uri;
+	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, query = _arg.query, success = _arg.success, error = _arg.error;
 	    queryStr = queryBuider.query(query);
 	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
-	    return doGet(http, uri, cb, err);
+	    return doGet(http, uri, success, error);
 	  };
 	})(this);
 
 	getRel = function(rel) {
-	  return function(baseUrl, http, bundle, cb, err) {
-	    var l, urls;
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, l, success, urls;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
 	    urls = (function() {
 	      var _i, _len, _ref, _results;
 	      _ref = bundle != null ? bundle.link : void 0;
@@ -617,9 +636,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return _results;
 	    })();
 	    if (urls.length !== 1) {
-	      return err("No " + rel + " link found in bundle");
+	      return error("No " + rel + " link found in bundle");
 	    } else {
-	      return doGet(http, urls[0], cb, err);
+	      return doGet(http, urls[0], success, error);
 	    }
 	  };
 	};
@@ -637,22 +656,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var conformance, profile;
 
-	conformance = function(baseUrl, http, cb, err) {
+	conformance = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/metadata",
-	    success: cb,
-	    error: err
+	    success: success,
+	    error: error
 	  });
 	};
 
 	profile = (function(_this) {
-	  return function(baseUrl, http, type, cb, err) {
+	  return function(_arg) {
+	    var baseUrl, error, http, success, type;
+	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
 	    return http({
 	      method: 'GET',
 	      url: "" + baseUrl + "/Profile/" + type,
-	      success: cb,
-	      error: err
+	      success: success,
+	      error: error
 	    });
 	  };
 	})(this);
@@ -669,13 +692,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	var transaction;
 
 	transaction = (function(_this) {
-	  return function(baseUrl, http, bundle, cb, err) {
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, success;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
 	    return http({
 	      method: 'POST',
 	      url: baseUrl,
 	      data: bundle,
-	      success: cb,
-	      error: err
+	      success: success,
+	      error: error
 	    });
 	  };
 	})(this);
@@ -771,43 +796,46 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var history, historyAll, historyType;
 
-	history = function(baseUrl, http, type, id, cb, err) {
+	history = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/" + type + "/" + id + "/_history",
-	    success: cb,
-	    error: err
+	    success: success,
+	    error: error
 	  });
 	};
 
-	historyType = function(baseUrl, http, type, cb, err) {
+	historyType = function(_arg) {
+	  var baseUrl, error, http, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/" + type + "/_history",
-	    success: cb,
-	    error: err
+	    success: success,
+	    error: error
 	  });
 	};
 
-	historyAll = function(baseUrl, http, cb, err) {
+	historyAll = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/_history",
-	    success: cb,
-	    error: err
+	    success: success,
+	    error: error
 	  });
 	};
 
-	module.exports = function() {
-	  switch (arguments.length) {
-	    case 4:
-	      return historyAll.apply(null, arguments);
-	    case 5:
-	      return historyType.apply(null, arguments);
-	    case 6:
-	      return history.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (baseUrl, http, type?, id?, cb, err)";
+	module.exports = function(q) {
+	  if ((q.id != null) && (q.type != null)) {
+	    return history(q);
+	  } else if (q.type != null) {
+	    return historyType(q);
+	  } else {
+	    return historyAll(q);
 	  }
 	};
 
@@ -842,8 +870,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	exports.create = function(baseUrl, http, entry, cb, err) {
-	  var headers, resource, tagHeader, tags, type;
+	exports.create = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
 	  tags = entry.category || [];
 	  resource = entry.content;
 	  assert(resource, 'entry.content with resource body should be present');
@@ -863,17 +892,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var id;
 	      id = headers('Content-Location');
 	      tags = headerToTags(headers('Category')) || tags;
-	      return cb({
+	      return success({
 	        id: id,
 	        category: tags || [],
 	        content: data || resource
 	      }, config);
 	    },
-	    error: err
+	    error: error
 	  });
 	};
 
-	exports.read = function(baseUrl, http, id, cb, err) {
+	exports.read = function(_arg) {
+	  var baseUrl, error, http, id, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, id = _arg.id, success = _arg.success, error = _arg.error;
 	  console.log("[read] ", id);
 	  return http({
 	    method: 'GET',
@@ -882,18 +913,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var tags;
 	      id = headers && headers('Content-Location') || '??';
 	      tags = headers && headerToTags(headers('Category')) || '??';
-	      return cb({
+	      return success({
 	        id: id,
 	        category: tags || [],
 	        content: data
 	      }, config);
 	    },
-	    error: err
+	    error: error
 	  });
 	};
 
-	exports.update = function(baseUrl, http, entry, cb, err) {
-	  var headers, resource, tagHeader, tags, url;
+	exports.update = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, url;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
 	  console.log("[update] ", entry);
 	  url = entry.id.split("/_history/")[0];
 	  tags = entry.tags;
@@ -913,28 +945,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var id, _tags;
 	      id = headers('Content-Location');
 	      _tags = headerToTags(headers('Category'));
-	      return cb({
+	      return success({
 	        id: id,
 	        category: _tags || tags || [],
 	        content: data
 	      }, config);
 	    },
-	    error: err
+	    error: error
 	  });
 	};
 
-	exports["delete"] = function(baseUrl, http, entry, cb, err) {
+	exports["delete"] = function(_arg) {
+	  var baseUrl, entry, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'DELETE',
 	    url: entry.id,
 	    success: function(data, status, headers, config) {
-	      return cb(entry, config);
+	      return success(entry, config);
 	    },
-	    error: err
+	    error: error
 	  });
 	};
 
-	exports.vread = function(baseUrl, http) {
+	exports.vread = function(_arg) {
+	  var baseUrl, http;
+	  baseUrl = _arg.baseUrl, http = _arg.http;
 	  return console.log('TODO');
 	};
 
