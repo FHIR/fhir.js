@@ -14,6 +14,7 @@ describe 'history', ->
       http: http
       type: 'Alert'
       id: 'test-id'
+      count: 10
       success: (data) ->
         expect(data).toBe('ok')
         done()

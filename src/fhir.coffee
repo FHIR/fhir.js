@@ -12,7 +12,7 @@ cache = {}
 # params:
 #   * cfg - config object - props???
 #   * adapter - main operations
-#      * http - function({method, url, success, error})
+#      * http - function({method, url, params, data, success, error})
 #               call success with (data, status, headersFn, config)
 
 fhir = (cfg, adapter) ->

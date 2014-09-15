@@ -9,18 +9,18 @@ $ = jQuery
 
 adapter =
   http: (q)->
-    a = $.ajax {
+    a = $.ajax
       type: q.method,
       url: q.url,
       headers: q.headers,
       dataType: "json",
       contentType: "application/json",
-      data: q.data}
+      data: q.data || q.params
 
     if q.success
-      onSuccess = (data, status, xhr) ->
+      a.done (data, status, xhr) ->
         q.success(data, status, xhr.getResponseHeader)
-      a.done(onSuccess)
+
     a.fail(q.error) if q.error
 
 module.exports = (config)->

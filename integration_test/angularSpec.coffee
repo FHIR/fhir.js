@@ -31,10 +31,26 @@ describe "ngFhir", ->
   it "search", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
        $fhir.search(type: 'Patient', query: {name: 'maud'})
-         .then (d)->
-           # console.log('Search by patients', d)
-           done()
+         .then (d)-> done()
      ]
+
+  # it "crud2", (done) ->
+  #   $injector.invoke ['$q', '$fhir', ($q, $fhir)->
+  #    entry =
+  #      tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
+  #      content: pt()
+
+  #    fail = (err)-> console.error(err)
+
+  #    create = ()-> $fhir.create(entry: entry, error: fail)
+
+  #    update = (p)->
+  #      def = $q.defer()
+  #      p.success (res)->
+  #        res.content.name[0].family[0] = chance.last
+  #        $fhir.update(entry: res, error: fail).success(def.resolve)
+  #      def
+  #   ]
 
   it "crud", (done) ->
     $injector.invoke ['$fhir', ($fhir)->
@@ -101,12 +117,10 @@ describe "ngFhir", ->
   #          done()
   #    ]
 
-  # it "history", (done) ->
-  #   $injector.invoke ['$fhir', ($fhir)->
-  #      $fhir.history()
-  #        .then (d)->
-  #          console.log('History', d)
-  #          done()
-  #        .error (err)->
-  #          console.log('History', err)
-  #    ]
+  it "history", (done) ->
+    $injector.invoke ['$fhir', ($fhir)->
+       $fhir.history {}
+         .success (d)-> done()
+         .error (err)->
+           console.error('History', err)
+     ]
