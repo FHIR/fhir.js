@@ -1,6 +1,7 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
 fhir = require('../src/adapters/angularjs.coffee')
+merge = require('merge')
 
 Chance = require('chance')
 chance = new Chance()
@@ -9,7 +10,7 @@ angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
 
-pt = ()->
+genPatient = ()->
   resourceType: "Patient"
   text:{ status: "generated", div: "<div>Generated</div>"}
   identifier: [
@@ -24,103 +25,131 @@ pt = ()->
     {use: "official", family: [chance.last()], given: [chance.first(), chance.first()]}
   ]
 
+buildStep = (title, q, fn)->
+  (state)->
+    console.log(title)
+    d = q.defer()
+    next = (data)->
+      console.log("#{title} done!")
+      d.resolve(merge(true, state, data))
+    fn(next, state)
+    p = d.promise
+    p
+
 describe "ngFhir", ->
   $injector = angular.injector(['test'])
-
+  fail = (err)-> console.error(err)
+  q = null
+  subject = null
+  $injector.invoke ['$q','$fhir', ($q, $fhir)-> q=$q; subject=$fhir]
 
   it "search", (done) ->
-    $injector.invoke ['$fhir', ($fhir)->
-       $fhir.search(type: 'Patient', query: {name: 'maud'})
-         .then (d)-> done()
-     ]
+    subject.search(type: 'Patient', query: {name: 'maud'})
+      .then (d)-> done()
 
-  # it "crud2", (done) ->
-  #   $injector.invoke ['$q', '$fhir', ($q, $fhir)->
+  it "crud2", (done) ->
+    createPt = buildStep 'Create Pt', q, (next, st)->
+       _pt = genPatient()
+       subject.create
+         entry:
+           tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
+           content: _pt
+         error: fail
+         success: (res)->
+           expect(res.content.name[0].family).toEqual(_pt.name[0].family)
+           id = res.id.split("/_history/")[0]
+           expect(id).not.toBe(null)
+           next(pt: _pt, pid: id, createdPt: res)
+
+    readPt = buildStep 'Read Pt', q, (next, st)->
+      subject.read
+        id: st.pid
+        error: fail
+        success: (res)->
+          expect(res.content.name[0].family[0])
+            .toEqual(st.pt.name[0].family[0])
+          next(readPt: res)
+
+    updatePt = buildStep 'Update Pt', q, (next, st)->
+      pt = st.createdPt
+      name = chance.last()
+      pt.content.name[0].family[0] = name
+      subject.update
+        entry: pt
+        error: fail
+        success: (res)->
+          expect(res.content.name[0].family[0]).toEqual(name)
+          next(updatedPt: res)
+
+    createPt({})
+      .then(readPt)
+      .then(updatePt)
+      .then done
+
+  # it "crud", (done) ->
+  #    patient = genPatient()
   #    entry =
   #      tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-  #      content: pt()
+  #      content: patient
+  #    success = (res)->
+  #      expect(res.content.name[0].family).toEqual(patient.name[0].family)
+  #      id = res.id.split("/_history/")[0]
 
-  #    fail = (err)-> console.error(err)
+  #      readSuccess = (res)->
+  #        expect(res.content.name[0].family).toEqual(patient.name[0].family)
+  #        family = chance.last() + '-test'
+  #        res.content.name[0].family[0] = family
+  #        updateSuccess = (res)->
+  #          expect(res.content.name[0].family[0]).toEqual(family)
+  #          updateReadSuccess = (res)->
+  #            expect(res.content.name[0].family[0]).toEqual(family)
+  #            deleteSuccess = (res)->
+  #              deleteReadSuccess = (res)->
+  #                console.log(JSON.stringify(res))
+  #                done()
+  #              deleteReadError = ()->
+  #                console.log(JSON.stringify(res))
+  #                done()
+  #              subject.read(id: id, success: deleteReadSuccess, error: deleteReadError)
 
-  #    create = ()-> $fhir.create(entry: entry, error: fail)
+  #            deleteError = (res)->
+  #              console.log(JSON.stringify(res))
+  #              done()
+  #            subject.delete(entry: {id: id}, success: deleteSuccess, error: deleteError)
 
-  #    update = (p)->
-  #      def = $q.defer()
-  #      p.success (res)->
-  #        res.content.name[0].family[0] = chance.last
-  #        $fhir.update(entry: res, error: fail).success(def.resolve)
-  #      def
-  #   ]
+  #          updateReadError = (res)->
+  #            console.log(JSON.stringify(res))
+  #            done()
 
-  it "crud", (done) ->
-    $injector.invoke ['$fhir', ($fhir)->
-       patient = pt()
-       entry =
-         tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-         content: patient
-       success = (res)->
-         expect(res.content.name[0].family).toEqual(patient.name[0].family)
-         id = res.id.split("/_history/")[0]
+  #          subject.read(id: id, success: updateReadSuccess, error: updateReadError)
 
-         readSuccess = (res)->
-           expect(res.content.name[0].family).toEqual(patient.name[0].family)
-           family = chance.last() + '-test'
-           res.content.name[0].family[0] = family
-           updateSuccess = (res)->
-             expect(res.content.name[0].family[0]).toEqual(family)
-             updateReadSuccess = (res)->
-               expect(res.content.name[0].family[0]).toEqual(family)
-               deleteSuccess = (res)->
-                 deleteReadSuccess = (res)->
-                   console.log(JSON.stringify(res))
-                   done()
-                 deleteReadError = ()->
-                   console.log(JSON.stringify(res))
-                   done()
-                 $fhir.read(id: id, success: deleteReadSuccess, error: deleteReadError)
+  #        updateError = (res)->
+  #          console.log(JSON.stringify(res))
+  #          done()
+  #        subject.update(entry: res, success: updateSuccess, error: updateError)
 
-               deleteError = (res)->
-                 console.log(JSON.stringify(res))
-                 done()
-               $fhir.delete(entry: {id: id}, success: deleteSuccess, error: deleteError)
+  #      readError = (res)->
+  #        console.log('Error Patient read', JSON.stringify(res))
+  #        done()
 
-             updateReadError = (res)->
-               console.log(JSON.stringify(res))
-               done()
+  #      subject.read(id: id, success: readSuccess, error: readError)
+  #    error = (res)->
+  #      console.log('Error Patient create', JSON.stringify(res))
+  #      done()
 
-             $fhir.read(id: id, success: updateReadSuccess, error: updateReadError)
+  #    subject.create(entry: entry, success: success, error: error)
 
-           updateError = (res)->
-             console.log(JSON.stringify(res))
-             done()
-           $fhir.update(entry: res, success: updateSuccess, error: updateError)
 
-         readError = (res)->
-           console.log('Error Patient read', JSON.stringify(res))
-           done()
-
-         $fhir.read(id: id, success: readSuccess, error: readError)
-       error = (res)->
-         console.log('Error Patient create', JSON.stringify(res))
-         done()
-
-       $fhir.create(entry: entry, success: success, error: error)
-     ]
+  it "history", (done) ->
+    subject.history {}
+     .success (d)-> done()
+     .error (err)->
+       console.error('History', err)
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'
 
   # it "transaction", (done) ->
-  #   $injector.invoke ['$fhir', ($fhir)->
-  #      $fhir.transaction(bundle)
+  #      subject.transaction(bundle)
   #        .then (d)->
   #          # console.log('Transaction', d)
   #          done()
-  #    ]
-
-  it "history", (done) ->
-    $injector.invoke ['$fhir', ($fhir)->
-       $fhir.history {}
-         .success (d)-> done()
-         .error (err)->
-           console.error('History', err)
-     ]
