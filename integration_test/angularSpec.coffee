@@ -25,16 +25,6 @@ genPatient = ()->
     {use: "official", family: [chance.last()], given: [chance.first(), chance.first()]}
   ]
 
-buildStep = (title, q, fn)->
-  (state)->
-    console.log(title)
-    d = q.defer()
-    next = (data)->
-      console.log("#{title} done!")
-      d.resolve(merge(true, state, data))
-    fn(next, state)
-    p = d.promise
-    p
 
 describe "ngFhir", ->
   $injector = angular.injector(['test'])
@@ -42,13 +32,23 @@ describe "ngFhir", ->
   q = null
   subject = null
   $injector.invoke ['$q','$fhir', ($q, $fhir)-> q=$q; subject=$fhir]
+  buildStep = (title, fn)->
+    (state)->
+      console.log(title)
+      d = q.defer()
+      next = (data)->
+        console.log("#{title} done!")
+        d.resolve(merge(true, state, data))
+      fn(next, state)
+      p = d.promise
+      p
 
   it "search", (done) ->
     subject.search(type: 'Patient', query: {name: 'maud'})
       .then (d)-> done()
 
-  it "crud2", (done) ->
-    createPt = buildStep 'Create Pt', q, (next, st)->
+  it "CRUD", (done) ->
+    createPt = buildStep 'Create Pt', (next, st)->
        _pt = genPatient()
        subject.create
          entry:
@@ -61,7 +61,7 @@ describe "ngFhir", ->
            expect(id).not.toBe(null)
            next(pt: _pt, pid: id, createdPt: res)
 
-    readPt = buildStep 'Read Pt', q, (next, st)->
+    readPt = buildStep 'Read Pt', (next, st)->
       subject.read
         id: st.pid
         error: fail
@@ -70,7 +70,7 @@ describe "ngFhir", ->
             .toEqual(st.pt.name[0].family[0])
           next(readPt: res)
 
-    updatePt = buildStep 'Update Pt', q, (next, st)->
+    updatePt = buildStep 'Update Pt', (next, st)->
       pt = st.createdPt
       name = chance.last()
       pt.content.name[0].family[0] = name
@@ -85,6 +85,12 @@ describe "ngFhir", ->
       .then(readPt)
       .then(updatePt)
       .then done
+
+  it "history", (done) ->
+    subject.history {}
+     .success (d)-> done()
+     .error (err)->
+       console.error('History', err)
 
   # it "crud", (done) ->
   #    patient = genPatient()
@@ -140,11 +146,6 @@ describe "ngFhir", ->
   #    subject.create(entry: entry, success: success, error: error)
 
 
-  it "history", (done) ->
-    subject.history {}
-     .success (d)-> done()
-     .error (err)->
-       console.error('History', err)
 
   # bundle = '{"resourceType":"Bundle","entry":[]}'
 
