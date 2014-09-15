@@ -17,7 +17,7 @@ module.exports = function(config) {
       'test/*.coffee'
     ],
 
-   // list of files to exclude
+    // list of files to exclude
     exclude: [ '**/*.swp' ],
 
 
@@ -28,6 +28,9 @@ module.exports = function(config) {
 
     webpack: {
       cache: true,
+      resolve: {
+        extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
+      },
       module: {
         loaders: [
           { test: /\.coffee$/, loader: "coffee-loader" }

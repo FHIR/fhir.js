@@ -189,7 +189,7 @@ angular.module('app', ['ng-fhir'])
          $scope.patients = bundle.entry
 ```
 
-## jQuery adapter: `ngFhir`
+## jQuery adapter: `jqFhir`
 
 jQuery build can be found at `dist/jqFhir.js`
 
@@ -215,8 +215,29 @@ fhir.search('Patient', {name: 'maud'})
 })
 ```
 
+## Node.js adapter: `npm install fhir.ns`
+
+Via NPM you can `npm install fhir.js`. (If you want to work on the source code,
+you can compile coffee to js via `npm install`, and use `./lib/adapters/node`
+as an entrypoint.)
+
+```
+var mkFhir = require('fhir.js');
+
+var client = mkFhir({
+  baseUrl: 'http://try-fhirplace.hospital-systems.com'
+});
+
+client.search( 'Patient', { 'birthdate': '1974' }, function(err, bundle) {
+  var count = (bundle.entry && bundle.entry.length) || 0;
+  console.log("# Patients born in 1974: ", count); 
+});
+
+```
+
 ## TODO
 
+* npm package
 * bower package
 
 ## Contribute

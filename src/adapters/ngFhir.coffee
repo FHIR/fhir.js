@@ -1,4 +1,4 @@
-mkFhir = require('../fhir.coffee')
+mkFhir = require('../fhir')
 
 implementXhr = ($http)->
   (q)->

@@ -73,14 +73,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	adapter = {
 	  "http": function(q) {
-	    var a;
+	    var a, onSuccess;
 	    a = $.ajax({
 	      type: q.method,
 	      url: q.url,
-	      headers: q.headers
+	      headers: q.headers,
+	      dataType: "json",
+	      contentType: "application/json",
+	      data: q.data
 	    });
 	    if (q.success) {
-	      a.done(q.success);
+	      onSuccess = function(data, status, xhr) {
+	        return q.success(data, status, xhr.getResponseHeader);
+	      };
+	      a.done(onSuccess);
 	    }
 	    if (q.error) {
 	      return a.fail(q.error);
@@ -364,6 +370,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.relativeUrl = relativeUrl;
 
+	exports.resourceIdToUrl = function(id, baseUrl, type) {
+	  baseUrl = baseUrl.replace(/\/$/, '');
+	  id = id.replace(/^\//, '');
+	  if (id.indexOf('/') < 0) {
+	    return "" + baseUrl + "/" + type + "/" + id;
+	  } else if (id.indexOf(baseUrl) !== 0) {
+	    return "" + baseUrl + "/" + id;
+	  } else {
+	    return id;
+	  }
+	};
+
 
 /***/ },
 /* 3 */
@@ -548,7 +566,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var doGet, getRel, queryBuider, search;
+	var doGet, getRel, queryBuider, search,
+	  __slice = [].slice;
 
 	queryBuider = __webpack_require__(13);
 
@@ -556,14 +575,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return http({
 	    method: 'GET',
 	    url: uri,
-	    success: function(data) {
+	    success: function() {
+	      var args;
+	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	      if (cb) {
-	        return cb(data);
+	        return cb.apply(null, args);
 	      }
 	    },
-	    error: function(e) {
+	    error: function() {
+	      var args;
+	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	      if (err) {
-	        return err(e);
+	        return err.apply(null, args);
 	      }
 	    }
 	  });

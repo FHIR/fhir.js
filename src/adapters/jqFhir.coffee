@@ -1,16 +1,26 @@
-mkFhir = require('../fhir.coffee')
+mkFhir = require('../fhir')
 merge = require('merge')
-utils = require('../utils.coffee')
-auth = require('../middlewares/httpAuthentication.coffee')
-searchByPatient = require('../middlewares/searchByPatient.coffee')
+utils = require('../utils')
+auth = require('../middlewares/httpAuthentication')
+searchByPatient = require('../middlewares/searchByPatient')
 merge = require('merge')
 
 $ = jQuery
 
 adapter = {
   "http": (q)->
-    a = $.ajax {type: q.method, url: q.url, headers: q.headers}
-    a.done(q.success) if q.success
+    a = $.ajax {
+      type: q.method,
+      url: q.url,
+      headers: q.headers,
+      dataType: "json",
+      contentType: "application/json",
+      data: q.data}
+
+    if q.success
+      onSuccess = (data, status, xhr) ->
+        q.success(data, status, xhr.getResponseHeader)
+      a.done(onSuccess)
     a.fail(q.error) if q.error
 }
 

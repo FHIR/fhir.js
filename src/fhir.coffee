@@ -1,11 +1,11 @@
-search = require("./search.coffee")
-conf = require("./conformance.coffee")
-transaction = require("./transaction.coffee")
-tags = require("./tags.coffee")
-history = require("./history.coffee")
-crud = require("./resource.coffee")
-wrap = require("./wrap.coffee")
-utils = require("./utils.coffee")
+search = require("./search")
+conf = require("./conformance")
+transaction = require("./transaction")
+tags = require("./tags")
+history = require("./history")
+crud = require("./resource")
+wrap = require("./wrap")
+utils = require("./utils")
 cache = {}
 # construct fhir object
 # params:

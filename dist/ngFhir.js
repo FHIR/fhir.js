@@ -181,7 +181,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var doGet, getRel, queryBuider, search;
+	var doGet, getRel, queryBuider, search,
+	  __slice = [].slice;
 
 	queryBuider = __webpack_require__(10);
 
@@ -189,14 +190,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return http({
 	    method: 'GET',
 	    url: uri,
-	    success: function(data) {
+	    success: function() {
+	      var args;
+	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	      if (cb) {
-	        return cb(data);
+	        return cb.apply(null, args);
 	      }
 	    },
-	    error: function(e) {
+	    error: function() {
+	      var args;
+	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	      if (err) {
-	        return err(e);
+	        return err.apply(null, args);
 	      }
 	    }
 	  });
@@ -737,6 +742,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.relativeUrl = relativeUrl;
+
+	exports.resourceIdToUrl = function(id, baseUrl, type) {
+	  baseUrl = baseUrl.replace(/\/$/, '');
+	  id = id.replace(/^\//, '');
+	  if (id.indexOf('/') < 0) {
+	    return "" + baseUrl + "/" + type + "/" + id;
+	  } else if (id.indexOf(baseUrl) !== 0) {
+	    return "" + baseUrl + "/" + id;
+	  } else {
+	    return id;
+	  }
+	};
 
 
 /***/ },
