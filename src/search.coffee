@@ -1,13 +1,11 @@
 queryBuider = require('./query')
 
-doGet = (http, uri, cb, err)->
+doGet = (http, uri, success, error)->
   http
     method: 'GET',
     url: uri,
-    success: (args...)->
-      cb.apply(null, args) if cb
-    error: (args...)->
-      err.apply(null, args) if err
+    success: success or ()->return
+    error: error or ()->return
 
 search = ({baseUrl, http, type, query, success, error}) =>
   # TODO: suport passing profile as type and query validation

@@ -72,20 +72,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	adapter = {
 	  http: function(q) {
-	    var a, onSuccess;
+	    var a;
 	    a = $.ajax({
 	      type: q.method,
 	      url: q.url,
 	      headers: q.headers,
 	      dataType: "json",
 	      contentType: "application/json",
-	      data: q.data
+	      data: q.data || q.params
 	    });
 	    if (q.success) {
-	      onSuccess = function(data, status, xhr) {
+	      a.done(function(data, status, xhr) {
 	        return q.success(data, status, xhr.getResponseHeader);
-	      };
-	      a.done(onSuccess);
+	      });
 	    }
 	    if (q.error) {
 	      return a.fail(q.error);
@@ -583,29 +582,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var doGet, getRel, queryBuider, search,
-	  __slice = [].slice;
+	var doGet, getRel, queryBuider, search;
 
 	queryBuider = __webpack_require__(13);
 
-	doGet = function(http, uri, cb, err) {
+	doGet = function(http, uri, success, error) {
 	  return http({
 	    method: 'GET',
 	    url: uri,
-	    success: function() {
-	      var args;
-	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	      if (cb) {
-	        return cb.apply(null, args);
-	      }
-	    },
-	    error: function() {
-	      var args;
-	      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	      if (err) {
-	        return err.apply(null, args);
-	      }
-	    }
+	    success: success || function() {},
+	    error: error || function() {}
 	  });
 	};
 
@@ -794,36 +780,51 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var history, historyAll, historyType;
+	var buildParams, history, historyAll, historyType;
+
+	buildParams = function(count, since) {
+	  var prm;
+	  prm = {};
+	  if (since != null) {
+	    prm._since = since;
+	  }
+	  if (count != null) {
+	    prm._count = count;
+	  }
+	  return prm;
+	};
 
 	history = function(_arg) {
-	  var baseUrl, error, http, id, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  var baseUrl, count, error, http, id, since, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/" + type + "/" + id + "/_history",
+	    params: buildParams(count, since),
 	    success: success,
 	    error: error
 	  });
 	};
 
 	historyType = function(_arg) {
-	  var baseUrl, error, http, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
+	  var baseUrl, count, error, http, since, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/" + type + "/_history",
+	    params: buildParams(count, since),
 	    success: success,
 	    error: error
 	  });
 	};
 
 	historyAll = function(_arg) {
-	  var baseUrl, error, http, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
+	  var baseUrl, count, error, http, since, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
 	    url: "" + baseUrl + "/_history",
+	    params: buildParams(count, since),
 	    success: success,
 	    error: error
 	  });
