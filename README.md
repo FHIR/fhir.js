@@ -88,8 +88,9 @@ Structure of requestObj:
 
 Here are implementations for:
 
-* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/ngFhirImpl.coffee)
-* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/coffee/adapters/jqFhirImpl.coffee)
+* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/angularjs.coffee)
+* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.coffee)
+* [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.coffee)
 
 ### Conformance & Profiles
 
