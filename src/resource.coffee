@@ -74,9 +74,11 @@ exports.update = ({baseUrl, http, entry, success ,error})->
     error: error
 
 exports.delete = ({baseUrl, http, entry, success, error})->
+  console.log("[delete] ", entry)
+  url = entry.id.split('_history')[0]
   http
     method: 'DELETE'
-    url: entry.id
+    url: url
     success: (data, status, headers, config)->
       success(entry, config)
     error: error

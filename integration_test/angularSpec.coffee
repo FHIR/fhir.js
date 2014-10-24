@@ -6,6 +6,8 @@ merge = require('merge')
 Chance = require('chance')
 chance = new Chance()
 
+tu = require('../src/testUtils.coffee')
+
 angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
@@ -32,122 +34,67 @@ describe "ngFhir", ->
   q = null
   subject = null
   $injector.invoke ['$q','$fhir', ($q, $fhir)-> q=$q; subject=$fhir]
-  buildStep = (title, fn)->
-    (state)->
-      console.log(title)
-      d = q.defer()
-      next = (data)->
-        console.log("#{title} done!")
-        d.resolve(merge(true, state, data))
-      fn(next, state)
-      p = d.promise
-      p
+
+  buildStep =  tu.stepBuilder(q)
+  checkStep =  tu.checkStep(q)
 
   it "search", (done) ->
     subject.search(type: 'Patient', query: {name: 'maud'})
       .then (d)-> done()
 
   it "CRUD", (done) ->
-    createPt = buildStep 'Create Pt', (next, st)->
-       _pt = genPatient()
+    preparePt = buildStep 'pt', (next, st)-> next(genPatient())
+
+    createPt = buildStep 'createPt', (next, st)->
        subject.create
          entry:
            tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-           content: _pt
+           content: st.pt
          error: fail
          success: (res)->
-           expect(res.content.name[0].family).toEqual(_pt.name[0].family)
            id = res.id.split("/_history/")[0]
-           expect(id).not.toBe(null)
-           next(pt: _pt, pid: id, createdPt: res)
+           st.pid = id
+           next(res)
 
-    readPt = buildStep 'Read Pt', (next, st)->
-      subject.read
-        id: st.pid
-        error: fail
-        success: (res)->
-          expect(res.content.name[0].family[0])
-            .toEqual(st.pt.name[0].family[0])
-          next(readPt: res)
+    checkCreatePt = checkStep 'createPt', (st, cpt)->
+      expect(cpt.pid).not.toBe(null)
 
-    updatePt = buildStep 'Update Pt', (next, st)->
-      pt = st.createdPt
-      name = chance.last()
-      pt.content.name[0].family[0] = name
-      subject.update
-        entry: pt
-        error: fail
-        success: (res)->
-          expect(res.content.name[0].family[0]).toEqual(name)
-          next(updatedPt: res)
+      expect(cpt.content.name[0].family)
+        .toEqual(st.pt.name[0].family)
 
-    createPt({})
-      .then(readPt)
-      .then(updatePt)
+    readPt = buildStep 'readPt', (next, st)->
+      subject.read id: st.pid, error: fail, success: next
+
+    checkReadPt = checkStep 'readPt', (st, readPt)->
+      expect(readPt.content.name[0].family[0])
+        .toEqual(st.pt.name[0].family[0])
+
+    updatePt = buildStep 'updatePt', (next, st)->
+      pt = st.createPt
+      pt.content.name[0].family[0] = chance.last()
+      subject.update entry: pt, error: fail, success: next
+
+    checkUpdatePt = checkStep 'updatePt', (st, updatePt)->
+      expect(updatePt.content.name[0].family[0])
+        .toEqual(st.createPt.content.name[0].family[0])
+
+    deletePt = buildStep 'deletePt', (next, st)->
+      subject.delete entry: {id: st.createPt.id}, error: fail, success: next
+
+    preparePt({})
+      .then createPt
+      .then checkCreatePt
+      .then readPt
+      .then checkReadPt
+      .then updatePt
+      .then checkUpdatePt
+      .then deletePt
       .then done
 
   it "history", (done) ->
     subject.history {}
-     .success (d)-> done()
-     .error (err)->
-       console.error('History', err)
-
-  # it "crud", (done) ->
-  #    patient = genPatient()
-  #    entry =
-  #      tags: [{term: 'fhir.js', schema: 'fhir.js', label: 'fhir.js'}],
-  #      content: patient
-  #    success = (res)->
-  #      expect(res.content.name[0].family).toEqual(patient.name[0].family)
-  #      id = res.id.split("/_history/")[0]
-
-  #      readSuccess = (res)->
-  #        expect(res.content.name[0].family).toEqual(patient.name[0].family)
-  #        family = chance.last() + '-test'
-  #        res.content.name[0].family[0] = family
-  #        updateSuccess = (res)->
-  #          expect(res.content.name[0].family[0]).toEqual(family)
-  #          updateReadSuccess = (res)->
-  #            expect(res.content.name[0].family[0]).toEqual(family)
-  #            deleteSuccess = (res)->
-  #              deleteReadSuccess = (res)->
-  #                console.log(JSON.stringify(res))
-  #                done()
-  #              deleteReadError = ()->
-  #                console.log(JSON.stringify(res))
-  #                done()
-  #              subject.read(id: id, success: deleteReadSuccess, error: deleteReadError)
-
-  #            deleteError = (res)->
-  #              console.log(JSON.stringify(res))
-  #              done()
-  #            subject.delete(entry: {id: id}, success: deleteSuccess, error: deleteError)
-
-  #          updateReadError = (res)->
-  #            console.log(JSON.stringify(res))
-  #            done()
-
-  #          subject.read(id: id, success: updateReadSuccess, error: updateReadError)
-
-  #        updateError = (res)->
-  #          console.log(JSON.stringify(res))
-  #          done()
-  #        subject.update(entry: res, success: updateSuccess, error: updateError)
-
-  #      readError = (res)->
-  #        console.log('Error Patient read', JSON.stringify(res))
-  #        done()
-
-  #      subject.read(id: id, success: readSuccess, error: readError)
-  #    error = (res)->
-  #      console.log('Error Patient create', JSON.stringify(res))
-  #      done()
-
-  #    subject.create(entry: entry, success: success, error: error)
-
-
-
-  # bundle = '{"resourceType":"Bundle","entry":[]}'
+     .success done
+     .error (err)-> console.error('History', err)
 
   # it "transaction", (done) ->
   #      subject.transaction(bundle)
