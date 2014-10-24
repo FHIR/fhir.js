@@ -7,6 +7,8 @@ describe 'history', ->
     http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/Alert/test-id/_history')
+      expect(q.params._count).toBe(10)
+      expect(q.params._since).toBe('2000-01-01')
       q.success('ok')
 
     history
@@ -15,6 +17,7 @@ describe 'history', ->
       type: 'Alert'
       id: 'test-id'
       count: 10
+      since: '2000-01-01'
       success: (data) ->
         expect(data).toBe('ok')
         done()
