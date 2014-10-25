@@ -7,7 +7,7 @@ ltype = utils.type
 wrap = (cfg, search)->
 
   resourceBoundary = (stack) ->
-    res = (acc, val) -> acc ? (if val?.resourceType then val else null)
+    res = (acc, val) -> acc ? (if val?.resourceType and val?.contained then val else null)
     stack.reduce(res, null)
 
   (params) ->

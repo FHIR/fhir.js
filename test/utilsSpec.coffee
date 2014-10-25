@@ -61,4 +61,8 @@ describe "utils", ->
     expect(subj("123", "BASE", "Patient"))
       .toEqual("BASE/Patient/123")
 
+  it "can postwalk walk a JSON structure", ->
+    subj = utils.postwalk
+    untrue = (v) -> if v == true then false else v
+    expect(subj(untrue, {a: [1, 2, true]}).a[2]).toEqual(false)
 
