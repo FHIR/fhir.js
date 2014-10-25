@@ -54,7 +54,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cache, conf, crud, fhir, history, merge, search, tags, transaction, utils, wrap;
+	var cache, conf, crud, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
 
 	search = __webpack_require__(1);
 
@@ -72,7 +72,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	utils = __webpack_require__(8);
 
-	merge = __webpack_require__(9);
+	resolve = __webpack_require__(9);
+
+	merge = __webpack_require__(10);
 
 	cache = {};
 
@@ -151,7 +153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(10);
+	queryBuider = __webpack_require__(11);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -524,11 +526,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports["delete"] = function(_arg) {
-	  var baseUrl, entry, error, http, success;
+	  var baseUrl, entry, error, http, success, url;
 	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  console.log("[delete] ", entry);
+	  url = entry.id.split('_history')[0];
 	  return http({
 	    method: 'DELETE',
-	    url: entry.id,
+	    url: url,
 	    success: function(data, status, headers, config) {
 	      return success(entry, config);
 	    },
@@ -567,10 +571,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, reduceMap, relativeUrl, tagsToHeader, trim, type,
+	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(9);
+	merge = __webpack_require__(10);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -744,9 +748,153 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
+	walk = function(inner, outer, data, context) {
+	  var keysToMap, remapped;
+	  switch (type(data)) {
+	    case 'array':
+	      return outer(data.map(function(item) {
+	        return inner(item, [data, context]);
+	      }), context);
+	    case 'object':
+	      keysToMap = function(acc, _arg) {
+	        var k, v;
+	        k = _arg[0], v = _arg[1];
+	        acc[k] = inner(v, [data].concat(context));
+	        return acc;
+	      };
+	      remapped = reduceMap(data, keysToMap, {});
+	      return outer(remapped, context);
+	    default:
+	      return outer(data, context);
+	  }
+	};
+
+	exports.walk = walk;
+
+	postwalk = function(f, data, context) {
+	  if (!data) {
+	    return function(data, context) {
+	      return postwalk(f, data, context);
+	    };
+	  } else {
+	    return walk(postwalk(f), f, data, context);
+	  }
+	};
+
+	exports.postwalk = postwalk;
+
 
 /***/ },
 /* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var CONTAINED, async, resolveContained, sync, utils;
+
+	utils = __webpack_require__(8);
+
+	CONTAINED = /^#(.*)/;
+
+	resolveContained = function(ref, resource) {
+	  var cid, match, r, ret;
+	  cid = ref.match(CONTAINED)[1];
+	  match = (function() {
+	    var _i, _len, _ref, _results;
+	    _ref = resource != null ? resource.contained : void 0;
+	    _results = [];
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      r = _ref[_i];
+	      if ((r.id || r._id) === cid) {
+	        _results.push(r);
+	      }
+	    }
+	    return _results;
+	  })();
+	  ret = match[0] || null;
+	  if (ret) {
+	    return {
+	      content: ret
+	    };
+	  } else {
+	    return null;
+	  }
+	};
+
+	sync = function(_arg) {
+	  var abs, baseUrl, bundle, bundled, cache, e, http, ref, reference, resource;
+	  baseUrl = _arg.baseUrl, http = _arg.http, cache = _arg.cache, reference = _arg.reference, resource = _arg.resource, bundle = _arg.bundle;
+	  ref = reference;
+	  if (!ref.reference) {
+	    return null;
+	  }
+	  if (ref.reference.match(CONTAINED)) {
+	    return resolveContained(ref.reference, resource);
+	  }
+	  abs = utils.absoluteUrl(baseUrl, ref.reference);
+	  bundled = (function() {
+	    var _i, _len, _ref, _results;
+	    _ref = (bundle != null ? bundle.entry : void 0) || [];
+	    _results = [];
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      e = _ref[_i];
+	      if (e.id === abs) {
+	        _results.push(e);
+	      }
+	    }
+	    return _results;
+	  })();
+	  return bundled[0] || (cache != null ? cache[abs] : void 0) || null;
+	};
+
+	async = function(opt) {
+	  var abs, baseUrl, bundle, cache, didSync, error, http, ref, reference, resource, success;
+	  baseUrl = opt.baseUrl, http = opt.http, cache = opt.cache, reference = opt.reference, resource = opt.resource, bundle = opt.bundle, success = opt.success, error = opt.error;
+	  ref = reference;
+	  didSync = sync(opt);
+	  if (didSync) {
+	    return setTimeout(function() {
+	      if (success) {
+	        return success(didSync);
+	      }
+	    });
+	  }
+	  if (!ref.reference) {
+	    return setTimeout(function() {
+	      if (error) {
+	        return error("No reference found");
+	      }
+	    });
+	  }
+	  if (ref.reference.match(CONTAINED)) {
+	    return setTimeout(function() {
+	      if (error) {
+	        return error("Contained resource not found");
+	      }
+	    });
+	  }
+	  abs = utils.absoluteUrl(baseUrl, ref.reference);
+	  return http({
+	    method: 'GET',
+	    url: abs,
+	    success: function(data) {
+	      if (success) {
+	        return success(data);
+	      }
+	    },
+	    error: function(e) {
+	      if (error) {
+	        return error(e);
+	      }
+	    }
+	  });
+	};
+
+	module.exports.async = async;
+
+	module.exports.sync = sync;
+
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -830,10 +978,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
@@ -999,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {
