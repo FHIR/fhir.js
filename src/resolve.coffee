@@ -5,7 +5,11 @@ CONTAINED = /^#(.*)/
 resolveContained = (ref, resource)->
   cid = ref.match(CONTAINED)[1]
   match = (r for r in resource?.contained when (r.id or r._id) is cid)
-  match[0] or null
+  ret = match[0] or null
+  if ret
+    {content: ret}
+  else
+    null
 
 # Resolve a reference synchronously, by looking in:
 # 1. containing resource
@@ -14,7 +18,6 @@ resolveContained = (ref, resource)->
 # If anything goes wrong, return null.
 sync = ({baseUrl, http, cache, reference, resource, bundle})->
   ref = reference
-  console.log(ref)
   return null unless ref.reference
 
   if ref.reference.match(CONTAINED)

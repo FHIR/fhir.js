@@ -2,7 +2,7 @@ searchByPatient = require('../src/middlewares/searchByPatient.coffee')
 
 describe "Search by patient:", ()->
   pid = "123"
-  justQuery = (a, b, c, query, d, e)-> query
+  justQuery = ({query})-> query
 
   bound = searchByPatient({
       boundToPatient: true
@@ -19,7 +19,7 @@ describe "Search by patient:", ()->
      bound
    else
      notbound
-   fn(null, null, type, {}, null, null)
+   fn({type: type, query: {}})
 
   it "acts as a no-op when boundToPatient is falsy", ()->
     expect(byType(false, "Observation")).toEqual({})

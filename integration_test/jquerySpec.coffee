@@ -13,6 +13,14 @@ describe "jquery", ->
       .done (d)-> done()
       .fail (d)-> throw "failed seach"
 
+  it "can convert results to an in-memory graph", (done) ->
+    subject.search(type: 'Observation', graph: true, query: {$include: {Observation: 'subject'}})
+      .done (d)->
+        expect(d[0].subject.resourceType).toBe('Patient')
+        done()
+      .fail (d)-> throw "failed seach"
+
+
   it "can post", (done) ->
     exampleSecEvent = {
       "resourceType": "SecurityEvent",
@@ -55,10 +63,8 @@ describe "jquery", ->
 
     subject.create {entry: {content: exampleSecEvent}}
       .then (response)->
-        console.log("Success", response)
         done()
     .fail (err)->
-      console.log("Error", err)
       throw new Error("Couldn't create")
 
 

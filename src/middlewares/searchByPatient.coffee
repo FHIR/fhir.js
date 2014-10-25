@@ -15,7 +15,8 @@ withPatient = (cfg, type, q) ->
   query
 
 wrap = (cfg, search)->
-  (baseUrl, http, type, query, cb, err) ->
-    search(baseUrl, http, type, withPatient(cfg, type, query), cb, err)
+  (params) ->
+    {baseUrl, http, type, query, success, error} = params
+    search(merge(true, params, {query: withPatient(cfg, type, query)}))
 
 module.exports = wrap

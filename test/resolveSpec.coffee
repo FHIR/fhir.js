@@ -33,7 +33,7 @@ describe "resolve synchronous", ->
       cache: cache
       reference: rx.medication
       resource: rx
-    expect(resolved).toEqual(rx.contained[0])
+    expect(resolved.content).toEqual(rx.contained[0])
 
   it "resolves a missing bundled resource as null", ->
     resolved = subject.sync
@@ -78,7 +78,7 @@ describe "resolve async", ->
   it "resolves a contained resource", (done)->
     http = (q)->(throw "should not be called")
     cb = (r)->
-      expect(r).toEqual(rx.contained[0])
+      expect(r.content).toEqual(rx.contained[0])
       done()
     subject.async
       baseUrl: 'BASE'

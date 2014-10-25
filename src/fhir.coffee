@@ -6,6 +6,7 @@ history = require("./history")
 crud = require("./resource")
 wrap = require("./wrap")
 utils = require("./utils")
+resolve = require('./resolve')
 merge = require('merge')
 cache = {}
 # construct fhir object

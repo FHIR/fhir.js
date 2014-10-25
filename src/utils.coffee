@@ -116,3 +116,25 @@ exports.resourceIdToUrl = (id, baseUrl, type)->
     "#{baseUrl}/#{id}"
   else
     id
+
+walk = (inner, outer, data, context) ->
+  switch type(data)
+    when 'array'
+      outer(data.map((item)->inner(item, [data, context])), context)
+    when 'object'
+      keysToMap = (acc, [k, v])->
+        acc[k] = inner(v, [data].concat(context))
+        acc
+      remapped = reduceMap(data, keysToMap, {})
+      outer(remapped, context)
+    else
+      outer(data, context)
+
+exports.walk = walk
+
+postwalk = (f, data, context) ->
+  if (!data)
+    ((data, context)-> postwalk(f, data, context))
+  else walk(postwalk(f), f, data, context)
+
+exports.postwalk = postwalk

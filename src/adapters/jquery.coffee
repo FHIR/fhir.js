@@ -3,6 +3,7 @@ merge = require('merge')
 utils = require('../utils')
 auth = require('../middlewares/httpAuthentication')
 searchByPatient = require('../middlewares/searchByPatient')
+searchResultsAsGraph = require('../middlewares/searchResultsAsGraph')
 merge = require('merge')
 
 $ = jQuery
@@ -21,13 +22,15 @@ adapter =
       a.done (data, status, xhr) ->
         q.success(data, status, xhr.getResponseHeader)
 
-    a.fail(q.error) if q.error
+    if q.error
+      a.fail ()->
+        q.error.call(null, arguments)
 
 module.exports = (config)->
 
   defaultMiddlewares =
     http: [auth]
-    search: [searchByPatient]
+    search: [searchByPatient, searchResultsAsGraph]
 
   middlewares = utils.mergeLists(config.middlewares, defaultMiddlewares)
 
