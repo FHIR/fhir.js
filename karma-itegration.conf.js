@@ -26,7 +26,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 
-    preprocessors: { '**/*.coffee': ['webpack'] },
+    preprocessors: { '**/*.coffee': ['webpack', 'sourcemap'] },
 
     webpack: {
       cache: true,
@@ -37,7 +37,8 @@ module.exports = function(config) {
         loaders: [
           { test: /\.coffee$/, loader: "coffee-loader" }
         ]
-      }
+      },
+      devtool: "inline-source-map"
     },
 
     webpackServer: {
