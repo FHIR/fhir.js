@@ -119,10 +119,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return ret;
 	    };
 	  };
-	  return ["search", "conformance", "profile", "transaction", "history", "create", "read", "update", "delete", "vread"].reduce((function(acc, v) {
+	  return ["search", "conformance", "profile", "transaction", "history", "create", "read", "update", "delete", "vread", "resolve"].reduce((function(acc, v) {
 	    acc[v] = defer(v);
 	    return acc;
-	  }), {});
+	  }), {
+	    "resolveSync": fhir["resolveSync"]
+	  });
 	};
 
 
@@ -212,10 +214,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return crud["delete"](deps(opt));
 	    },
 	    resolve: function(opt) {
-	      return resolve.async(opt)(depsWithCache(opt));
+	      return resolve.async(depsWithCache(opt));
 	    },
 	    resolveSync: function(opt) {
-	      return resolve.sync(opt)(depsWithCache(opt));
+	      return resolve.sync(depsWithCache(opt));
 	    }
 	  };
 	};
@@ -555,7 +557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  resourceBoundary = function(stack) {
 	    var res;
 	    res = function(acc, val) {
-	      return acc != null ? acc : ((val != null ? val.resourceType : void 0) ? val : null);
+	      return acc != null ? acc : ((val != null ? val.resourceType : void 0) && (val != null ? val.contained : void 0) ? val : null);
 	    };
 	    return stack.reduce(res, null);
 	  };
@@ -1013,7 +1015,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  console.log("[read] ", id);
 	  return http({
 	    method: 'GET',
-	    url: id,
+	    url: utils.absoluteUrl(baseUrl, id),
 	    success: function(data, status, headers, config) {
 	      var tags;
 	      id = headers && headers('Content-Location') || '??';

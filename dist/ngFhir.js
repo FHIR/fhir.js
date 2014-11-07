@@ -186,10 +186,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return crud["delete"](deps(opt));
 	    },
 	    resolve: function(opt) {
-	      return resolve.async(opt)(depsWithCache(opt));
+	      return resolve.async(depsWithCache(opt));
 	    },
 	    resolveSync: function(opt) {
-	      return resolve.sync(opt)(depsWithCache(opt));
+	      return resolve.sync(depsWithCache(opt));
 	    }
 	  };
 	};
@@ -528,7 +528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  console.log("[read] ", id);
 	  return http({
 	    method: 'GET',
-	    url: id,
+	    url: utils.absoluteUrl(baseUrl, id),
 	    success: function(data, status, headers, config) {
 	      var tags;
 	      id = headers && headers('Content-Location') || '??';
