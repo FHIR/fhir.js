@@ -58,4 +58,7 @@ module.exports = (config)->
     "update"
     "delete"
     "vread"
-  ].reduce ((acc, v)-> acc[v] = defer(v); acc), {}
+    "resolve"
+  ].reduce ((acc, v)-> acc[v] = defer(v); acc), {
+    "resolveSync": fhir["resolveSync"]
+  }

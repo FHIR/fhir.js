@@ -46,7 +46,7 @@ exports.read = ({baseUrl, http, id, success, error})->
   console.log("[read] ", id)
   http
     method: 'GET'
-    url: id
+    url: utils.absoluteUrl(baseUrl, id)
     success: (data, status, headers, config)->
       id = headers and headers('Content-Location') or '??'
       tags = headers and headerToTags(headers('Category')) or '??'

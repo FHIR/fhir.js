@@ -63,9 +63,9 @@ fhir = (cfg, adapter) ->
     crud["delete"] deps(opt)
 
   resolve: (opt) ->
-    resolve.async(opt) depsWithCache(opt)
+    resolve.async depsWithCache(opt)
 
   resolveSync: (opt) ->
-    resolve.sync(opt) depsWithCache(opt)
+    resolve.sync depsWithCache(opt)
 
 module.exports = fhir

@@ -67,4 +67,17 @@ describe "jquery", ->
     .fail (err)->
       throw new Error("Couldn't create")
 
-
+  it "can resolve refs", (done) ->
+    subject.search
+      type: 'MedicationPrescription'
+      query:
+        $include:
+          MedicationPrescription: 'medication'
+    .then (rxs)->
+      rx = rxs.entry[0].content
+      med = subject.resolveSync
+        reference: rx.medication
+        resource: rx
+        bundle: rx
+      expect(med.content).toBeTruthy()
+      done()

@@ -35,26 +35,29 @@ describe "search:", ->
         expect(q.url).toBe('BASE/Patient')
         expect(q.data).toBe(JSON.stringify(entry.content))
         expect(q.headers['Category']).toBe('term; scheme="sch"; label="lbl"')
-
         done()
 
-  it "read", (done)->
+  simpleRead = (id, done) ->
     entry = {content: {resourceType: 'Patient'}, category: tags}
     http = (x)-> x.success(entry.content, 200, headers, x)
 
     res.read
       baseUrl: 'BASE'
       http: http
-      id: 'BASE/Patient/5'
+      id: id
       success: (res, q)->
         expect(res).not.toBe(null)
         expect(res.id).toBe('BASE/Patient/5')
         expect(res.category).toEqual(tags)
-
         expect(q.method).toBe('GET')
         expect(q.url).toBe('BASE/Patient/5')
-
         done()
+
+  it "read", (done)->
+    simpleRead('BASE/Patient/5', done)
+
+  it "read relative", (done)->
+    simpleRead('Patient/5', done)
 
   it "update", (done)->
     entry = {id: 'BASE/Patient/5', content: {resourceType: 'Patient'}, category: tags}
@@ -68,7 +71,6 @@ describe "search:", ->
         expect(res).not.toBe(null)
         expect(res.id).toBe('BASE/Patient/5')
         expect(res.category).toEqual(tags)
-
         expect(q.method).toBe('PUT')
         expect(q.url).toBe('BASE/Patient/5')
 
