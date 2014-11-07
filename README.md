@@ -194,6 +194,8 @@ angular.module('app', ['ng-fhir'])
 
 jQuery build can be found at `dist/jqFhir.js`
 
+[Example app](http://embed.plnkr.co/e4BKr0M07q4FVVQeP6f4/)
+
 
 Usage:
 
