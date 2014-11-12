@@ -1,66 +1,123 @@
 # READ OPERATIONS
 # =============================================================
 
-tagsAll = ()->
-  console.log('impl me')
+tagsAll = ({baseUrl, http, success, error})->
+  http
+    method: 'GET'
+    url: "#{baseUrl}/_tags"
+    success: success
+    error: error
 
-tagsResourceType = (type)->
-  console.log('impl me')
+tagsResourceType = ({baseUrl, http, type, success, error})->
+  http
+    method: 'GET'
+    url: "#{baseUrl}/#{type}/_tags"
+    success: success
+    error: error
 
-tagsResource = (type, id)->
-  console.log('impl me')
+tagsResource = ({baseUrl, http, type, id, success, error})->
+  http
+    method: 'GET'
+    url: "#{baseUrl}/#{type}/#{id}/_tags"
+    success: success
+    error: error
 
-tagsResourceVersion = (type, id, vid)->
-  console.log('impl me')
-
+tagsResourceVersion = ({baseUrl, http, type, id, vid, success, error})->
+  http
+    method: 'GET'
+    url: "#{baseUrl}/#{type}/#{id}/_history/#{vid}/_tags"
+    success: success
+    error: error
 
 # read tags
 # tags() - read all tags
-# tags('Patient') - read tags for all Patient resource
-# tags('Patient', 'pt1111') - read tags for concrete resource
-# tags('Patient', 'pt1111', 'v1') - read tags for concrete version of resource
-tags = ()->
-  switch arguments.length
-    when 0 then tagsAll()
-    when 1 then tagsResourceType.apply(null, arguments)
-    when 2 then tagsResource.apply(null, arguments)
-    when 3 then tagsResourceVersion.apply(null, arguments)
-    else throw "wrong arity"
+# tags(type: 'Patient') - read tags for all Patient resource
+# tags(type: 'Patient', id: 'pt1111') - read tags for concrete resource
+# tags(type: 'Patient', id: 'pt1111', vid: 'v1') - read tags for concrete version of resource
+
+tags = (q)->
+  if q.vid? and q.id? and q.type?
+    tagsResourceVersion(q)
+  else if q.id? and q.type?
+    tagsResource(q)
+  else if q.id? and q.type?
+    tagsResourceType(q)
+  else
+    tagsAll(q)
 
 # Affix
 # =============================================================
 
-affixTagsToResource = (type, id, tags)->
-  console.log('impl me')
+buildTags = (tags)->
+  tags.filter((i)-> $.trim(i.term))
+    .map((i)-> "#{i.term}; scheme=\"#{i.scheme}\"; label=\"#{i.label}\"")
+    .join(",")
 
-affixTagsToResourceVersion = (type, id, vid, tags)->
-  console.log('impl me')
+affixTagsToResource = ({baseUrl, http, type, id, tags, success, error})->
+  headers = {}
+  tagHeader = buildTags(tags)
+  if tagHeader
+    headers["Category"] =  tagHeader
+    http
+      method: 'POST'
+      url: "#{baseUrl}/#{type}/#{id}/_tags"
+    headers: headers
+    success: success
+    error: error
+  else
+    console.log('Empty tags')
+
+affixTagsToResourceVersion = ({baseUrl, http, type, id, vid, tags, success, error})->
+  headers = {}
+  tagHeader = buildTags(tags)
+  if tagHeader
+    headers["Category"] =  tagHeader
+    http
+      method: 'POST'
+      url: "#{baseUrl}/#{type}/#{id}/_history/#{vid}/_tags"
+    headers: headers
+    success: success
+    error: error
+  else
+    console.log('Empty tags')
 
 # affix tags
-# affixTags('Patient', 'pt1111', tags)
-affixTags = ()->
-  switch arguments.length
-    when 3 then affixTagsToResource.apply(null, arguments)
-    when 4 then affixTagsToResourceVersion.apply(null, arguments)
-    else throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)"
+# affixTags(type: 'Patient', id: 'pt1111', tags: tags)
+affixTags = (q)->
+  if q.vid? and q.id? and q.type?
+    affixTagsToResourceVersion(q)
+  else if q.id? and q.type?
+    affixTagsToResource(q)
+  else
+    throw 'wrong arguments'
 
 # Remove
 # =============================================================
 
-removeTagsFromResource = (type, id)->
-  console.log('impl me')
+removeTagsFromResource = ({baseUrl, http, type, id, success, error})->
+  http
+    method: 'POST'
+    url: "#{baseUrl}/#{type}/#{id}/_tags/_delete"
+    success: success
+    error: error
 
-removeTagsFromResourceVerson = (type, id, vid)->
-  console.log('impl me')
+removeTagsFromResourceVersion = ({baseUrl, http, type, id, vid, success, error})->
+  http
+    method: 'POST'
+    url: "#{baseUrl}/#{type}/#{id}/_history/#{vid}/_tags"
+    success: success
+    error: error
 
 # remove tags
 # affixTags('Patient', 'pt1111', tags)
-removeTags = ()->
-  switch arguments.length
-    when 2 then removeTagsFromResource.apply(null, arguments)
-    when 3 then removeTagsFromResourceVerson.apply(null, arguments)
-    else throw "wrong arity: expected (type,id) or (type,id,vid)"
-
+removeTags = (q)->
+  if q.vid? and q.id? and q.type?
+    removeTagsFromResourceVersion(q)
+  else if q.id? and q.type?
+    removeTagsFromResource(q)
+  else
+    throw 'wrong arguments'
+x
 # Exports
 exports.tags = tags
 exports.affixTags = affixTags

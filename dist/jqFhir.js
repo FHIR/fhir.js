@@ -448,7 +448,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(16).btoa;
+	btoa = __webpack_require__(15).btoa;
 
 	merge = __webpack_require__(6);
 
@@ -690,7 +690,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(15);
+	queryBuider = __webpack_require__(16);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -804,76 +804,157 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
+	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
 
-	tagsAll = function() {
-	  return console.log('impl me');
+	tagsAll = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResourceType = function(type) {
-	  return console.log('impl me');
+	tagsResourceType = function(_arg) {
+	  var baseUrl, error, http, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResource = function(type, id) {
-	  return console.log('impl me');
+	tagsResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResourceVersion = function(type, id, vid) {
-	  return console.log('impl me');
+	tagsResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tags = function() {
-	  switch (arguments.length) {
-	    case 0:
-	      return tagsAll();
-	    case 1:
-	      return tagsResourceType.apply(null, arguments);
-	    case 2:
-	      return tagsResource.apply(null, arguments);
-	    case 3:
-	      return tagsResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity";
+	tags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return tagsResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResource(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResourceType(q);
+	  } else {
+	    return tagsAll(q);
 	  }
 	};
 
-	affixTagsToResource = function(type, id, tags) {
-	  return console.log('impl me');
+	buildTags = function(tags) {
+	  return tags.filter(function(i) {
+	    return $.trim(i.term);
+	  }).map(function(i) {
+	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	  }).join(",");
 	};
 
-	affixTagsToResourceVersion = function(type, id, vid, tags) {
-	  return console.log('impl me');
-	};
-
-	affixTags = function() {
-	  switch (arguments.length) {
-	    case 3:
-	      return affixTagsToResource.apply(null, arguments);
-	    case 4:
-	      return affixTagsToResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";
+	affixTagsToResource = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    http({
+	      method: 'POST',
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags"
+	    });
+	    return {
+	      headers: headers,
+	      success: success,
+	      error: error
+	    };
+	  } else {
+	    return console.log('Empty tags');
 	  }
 	};
 
-	removeTagsFromResource = function(type, id) {
-	  return console.log('impl me');
-	};
-
-	removeTagsFromResourceVerson = function(type, id, vid) {
-	  return console.log('impl me');
-	};
-
-	removeTags = function() {
-	  switch (arguments.length) {
-	    case 2:
-	      return removeTagsFromResource.apply(null, arguments);
-	    case 3:
-	      return removeTagsFromResourceVerson.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id) or (type,id,vid)";
+	affixTagsToResourceVersion = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    http({
+	      method: 'POST',
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags"
+	    });
+	    return {
+	      headers: headers,
+	      success: success,
+	      error: error
+	    };
+	  } else {
+	    return console.log('Empty tags');
 	  }
 	};
+
+	affixTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return affixTagsToResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return affixTagsToResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	removeTagsFromResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags/_delete",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTagsFromResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return removeTagsFromResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return removeTagsFromResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	x;
 
 	exports.tags = tags;
 
@@ -1217,6 +1298,73 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
+	;(function () {
+
+	  var object = true ? exports : this; // #8: web workers
+	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+	  function InvalidCharacterError(message) {
+	    this.message = message;
+	  }
+	  InvalidCharacterError.prototype = new Error;
+	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
+
+	  // encoder
+	  // [https://gist.github.com/999166] by [https://github.com/nignag]
+	  object.btoa || (
+	  object.btoa = function (input) {
+	    var str = String(input);
+	    for (
+	      // initialize result and counter
+	      var block, charCode, idx = 0, map = chars, output = '';
+	      // if the next str index does not exist:
+	      //   change the mapping table to "="
+	      //   check if d has no fractional digits
+	      str.charAt(idx | 0) || (map = '=', idx % 1);
+	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+	    ) {
+	      charCode = str.charCodeAt(idx += 3/4);
+	      if (charCode > 0xFF) {
+	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+	      }
+	      block = block << 8 | charCode;
+	    }
+	    return output;
+	  });
+
+	  // decoder
+	  // [https://gist.github.com/1020396] by [https://github.com/atk]
+	  object.atob || (
+	  object.atob = function (input) {
+	    var str = String(input).replace(/=+$/, '');
+	    if (str.length % 4 == 1) {
+	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+	    }
+	    for (
+	      // initialize result and counters
+	      var bc = 0, bs, buffer, idx = 0, output = '';
+	      // get next character
+	      buffer = str.charAt(idx++);
+	      // character found in table? initialize bit storage and add its ascii value;
+	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
+	        // and if not first of each 4 characters,
+	        // convert the first 8 bits to one ascii character
+	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
+	    ) {
+	      // try to find character in table (0-63, not found => -1)
+	      buffer = chars.indexOf(buffer);
+	    }
+	    return output;
+	  });
+
+	}());
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
 	utils = __webpack_require__(2);
@@ -1377,73 +1525,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports._query = linearizeParams;
 
 	exports.query = buildSearchParams;
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	;(function () {
-
-	  var object = true ? exports : this; // #8: web workers
-	  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-	  function InvalidCharacterError(message) {
-	    this.message = message;
-	  }
-	  InvalidCharacterError.prototype = new Error;
-	  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-	  // encoder
-	  // [https://gist.github.com/999166] by [https://github.com/nignag]
-	  object.btoa || (
-	  object.btoa = function (input) {
-	    var str = String(input);
-	    for (
-	      // initialize result and counter
-	      var block, charCode, idx = 0, map = chars, output = '';
-	      // if the next str index does not exist:
-	      //   change the mapping table to "="
-	      //   check if d has no fractional digits
-	      str.charAt(idx | 0) || (map = '=', idx % 1);
-	      // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-	      output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-	    ) {
-	      charCode = str.charCodeAt(idx += 3/4);
-	      if (charCode > 0xFF) {
-	        throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-	      }
-	      block = block << 8 | charCode;
-	    }
-	    return output;
-	  });
-
-	  // decoder
-	  // [https://gist.github.com/1020396] by [https://github.com/atk]
-	  object.atob || (
-	  object.atob = function (input) {
-	    var str = String(input).replace(/=+$/, '');
-	    if (str.length % 4 == 1) {
-	      throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-	    }
-	    for (
-	      // initialize result and counters
-	      var bc = 0, bs, buffer, idx = 0, output = '';
-	      // get next character
-	      buffer = str.charAt(idx++);
-	      // character found in table? initialize bit storage and add its ascii value;
-	      ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-	        // and if not first of each 4 characters,
-	        // convert the first 8 bits to one ascii character
-	        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-	    ) {
-	      // try to find character in table (0-63, not found => -1)
-	      buffer = chars.indexOf(buffer);
-	    }
-	    return output;
-	  });
-
-	}());
 
 
 /***/ },

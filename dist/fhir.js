@@ -267,76 +267,157 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var affixTags, affixTagsToResource, affixTagsToResourceVersion, removeTags, removeTagsFromResource, removeTagsFromResourceVerson, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
+	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
 
-	tagsAll = function() {
-	  return console.log('impl me');
+	tagsAll = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResourceType = function(type) {
-	  return console.log('impl me');
+	tagsResourceType = function(_arg) {
+	  var baseUrl, error, http, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResource = function(type, id) {
-	  return console.log('impl me');
+	tagsResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tagsResourceVersion = function(type, id, vid) {
-	  return console.log('impl me');
+	tagsResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
 	};
 
-	tags = function() {
-	  switch (arguments.length) {
-	    case 0:
-	      return tagsAll();
-	    case 1:
-	      return tagsResourceType.apply(null, arguments);
-	    case 2:
-	      return tagsResource.apply(null, arguments);
-	    case 3:
-	      return tagsResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity";
+	tags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return tagsResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResource(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResourceType(q);
+	  } else {
+	    return tagsAll(q);
 	  }
 	};
 
-	affixTagsToResource = function(type, id, tags) {
-	  return console.log('impl me');
+	buildTags = function(tags) {
+	  return tags.filter(function(i) {
+	    return $.trim(i.term);
+	  }).map(function(i) {
+	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	  }).join(",");
 	};
 
-	affixTagsToResourceVersion = function(type, id, vid, tags) {
-	  return console.log('impl me');
-	};
-
-	affixTags = function() {
-	  switch (arguments.length) {
-	    case 3:
-	      return affixTagsToResource.apply(null, arguments);
-	    case 4:
-	      return affixTagsToResourceVersion.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id,tags) or (type,id,vid,tags)";
+	affixTagsToResource = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    http({
+	      method: 'POST',
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags"
+	    });
+	    return {
+	      headers: headers,
+	      success: success,
+	      error: error
+	    };
+	  } else {
+	    return console.log('Empty tags');
 	  }
 	};
 
-	removeTagsFromResource = function(type, id) {
-	  return console.log('impl me');
-	};
-
-	removeTagsFromResourceVerson = function(type, id, vid) {
-	  return console.log('impl me');
-	};
-
-	removeTags = function() {
-	  switch (arguments.length) {
-	    case 2:
-	      return removeTagsFromResource.apply(null, arguments);
-	    case 3:
-	      return removeTagsFromResourceVerson.apply(null, arguments);
-	    default:
-	      throw "wrong arity: expected (type,id) or (type,id,vid)";
+	affixTagsToResourceVersion = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    http({
+	      method: 'POST',
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags"
+	    });
+	    return {
+	      headers: headers,
+	      success: success,
+	      error: error
+	    };
+	  } else {
+	    return console.log('Empty tags');
 	  }
 	};
+
+	affixTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return affixTagsToResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return affixTagsToResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	removeTagsFromResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags/_delete",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTagsFromResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return removeTagsFromResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return removeTagsFromResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	x;
 
 	exports.tags = tags;
 
