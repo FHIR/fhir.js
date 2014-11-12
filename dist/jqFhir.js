@@ -963,11 +963,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	module.exports.tags = tags;
+	exports.tags = tags;
 
-	module.exports.affixTags = affixTags;
+	exports.affixTags = affixTags;
 
-	module.exports.removeTags = removeTags;
+	exports.removeTags = removeTags;
 
 
 /***/ },

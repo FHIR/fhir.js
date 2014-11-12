@@ -23,4 +23,7 @@ angular.module('ng-fhir').provider '$fhir', ()->
       read: fhir.read
       update: fhir.update
       delete: fhir.delete
+      tags: fhir.tags
+      affixTags: fhir.affixTags
+      removeTags: fhir.removeTags
       vread: fhir.vread

@@ -119,6 +119,6 @@ removeTags = (q)->
     throw 'wrong arguments'
 
 # Exports
-module.exports.tags = tags
-module.exports.affixTags = affixTags
-module.exports.removeTags = removeTags
+exports.tags = tags
+exports.affixTags = affixTags
+exports.removeTags = removeTags

@@ -93,6 +93,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        read: fhir.read,
 	        update: fhir.update,
 	        "delete": fhir["delete"],
+	        tags: fhir.tags,
+	        affixTags: fhir.affixTags,
+	        removeTags: fhir.removeTags,
 	        vread: fhir.vread
 	      };
 	    }
@@ -476,11 +479,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	module.exports.tags = tags;
+	exports.tags = tags;
 
-	module.exports.affixTags = affixTags;
+	exports.affixTags = affixTags;
 
-	module.exports.removeTags = removeTags;
+	exports.removeTags = removeTags;
 
 
 /***/ },
