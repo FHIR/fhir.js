@@ -417,8 +417,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	x;
-
 	exports.tags = tags;
 
 	exports.affixTags = affixTags;

@@ -117,7 +117,7 @@ removeTags = (q)->
     removeTagsFromResource(q)
   else
     throw 'wrong arguments'
-x
+
 # Exports
 exports.tags = tags
 exports.affixTags = affixTags
