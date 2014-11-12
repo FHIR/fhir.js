@@ -476,11 +476,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	exports.tags = tags;
+	module.exports.tags = tags;
 
-	exports.affixTags = affixTags;
+	module.exports.affixTags = affixTags;
 
-	exports.removeTags = removeTags;
+	module.exports.removeTags = removeTags;
 
 
 /***/ },
