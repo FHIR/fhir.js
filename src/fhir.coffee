@@ -53,6 +53,9 @@ fhir = (cfg, adapter) ->
   create: (opt) ->
     crud.create deps(opt)
 
+  validate: (opt) ->
+    crud.validate deps(opt)
+
   read: (opt) ->
     crud.read deps(opt)
 

@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	resolve = __webpack_require__(9);
 
-	merge = __webpack_require__(11);
+	merge = __webpack_require__(10);
 
 	cache = {};
 
@@ -126,6 +126,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    create: function(opt) {
 	      return crud.create(deps(opt));
 	    },
+	    validate: function(opt) {
+	      return crud.validate(deps(opt));
+	    },
 	    read: function(opt) {
 	      return crud.read(deps(opt));
 	    },
@@ -162,7 +165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(10);
+	queryBuider = __webpack_require__(11);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -556,6 +559,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	};
 
+	exports.validate = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  tags = entry.category || [];
+	  resource = entry.content;
+	  assert(resource, 'entry.content with resource body should be present');
+	  type = resource.resourceType;
+	  assert(type, 'entry.content.resourceType with resourceType should be present');
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader.length > 0) {
+	    headers["Category"] = tagHeader;
+	  }
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/_validate",
+	    data: toJson(resource),
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category')) || tags;
+	      return success({
+	        id: id,
+	        category: tags || [],
+	        content: data || resource
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
 	exports.read = function(_arg) {
 	  var baseUrl, error, http, id, success;
 	  baseUrl = _arg.baseUrl, http = _arg.http, id = _arg.id, success = _arg.success, error = _arg.error;
@@ -658,7 +693,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(11);
+	merge = __webpack_require__(10);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -981,6 +1016,93 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * @name JavaScript/NodeJS Merge v1.1.3
+	 * @author yeikos
+	 * @repository https://github.com/yeikos/js.merge
+
+	 * Copyright 2014 yeikos - MIT license
+	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
+	 */
+
+	;(function(isNode) {
+
+		function merge() {
+
+			var items = Array.prototype.slice.call(arguments),
+				result = items.shift(),
+				deep = (result === true),
+				size = items.length,
+				item, index, key;
+
+			if (deep || typeOf(result) !== 'object')
+
+				result = {};
+
+			for (index=0;index<size;++index)
+
+				if (typeOf(item = items[index]) === 'object')
+
+					for (key in item)
+
+						result[key] = deep ? clone(item[key]) : item[key];
+
+			return result;
+
+		}
+
+		function clone(input) {
+
+			var output = input,
+				type = typeOf(input),
+				index, size;
+
+			if (type === 'array') {
+
+				output = [];
+				size = input.length;
+
+				for (index=0;index<size;++index)
+
+					output[index] = clone(input[index]);
+
+			} else if (type === 'object') {
+
+				output = {};
+
+				for (index in input)
+
+					output[index] = clone(input[index]);
+
+			}
+
+			return output;
+
+		}
+
+		function typeOf(input) {
+
+			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+		}
+
+		if (isNode) {
+
+			module.exports = merge;
+
+		} else {
+
+			window.merge = merge;
+
+		}
+
+	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
 	utils = __webpack_require__(8);
@@ -1142,93 +1264,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.query = buildSearchParams;
 
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(module) {/*!
-	 * @name JavaScript/NodeJS Merge v1.1.3
-	 * @author yeikos
-	 * @repository https://github.com/yeikos/js.merge
-
-	 * Copyright 2014 yeikos - MIT license
-	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
-	 */
-
-	;(function(isNode) {
-
-		function merge() {
-
-			var items = Array.prototype.slice.call(arguments),
-				result = items.shift(),
-				deep = (result === true),
-				size = items.length,
-				item, index, key;
-
-			if (deep || typeOf(result) !== 'object')
-
-				result = {};
-
-			for (index=0;index<size;++index)
-
-				if (typeOf(item = items[index]) === 'object')
-
-					for (key in item)
-
-						result[key] = deep ? clone(item[key]) : item[key];
-
-			return result;
-
-		}
-
-		function clone(input) {
-
-			var output = input,
-				type = typeOf(input),
-				index, size;
-
-			if (type === 'array') {
-
-				output = [];
-				size = input.length;
-
-				for (index=0;index<size;++index)
-
-					output[index] = clone(input[index]);
-
-			} else if (type === 'object') {
-
-				output = {};
-
-				for (index in input)
-
-					output[index] = clone(input[index]);
-
-			}
-
-			return output;
-
-		}
-
-		function typeOf(input) {
-
-			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
-
-		}
-
-		if (isNode) {
-
-			module.exports = merge;
-
-		} else {
-
-			window.merge = merge;
-
-		}
-
-	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
 
 /***/ },
 /* 12 */

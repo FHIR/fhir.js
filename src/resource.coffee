@@ -42,6 +42,29 @@ exports.create = ({baseUrl, http, entry, success, error})->
       success({id: id, category: (tags || []), content: (data || resource)}, config)
     error: error
 
+exports.validate = ({baseUrl, http, entry, success, error})->
+  tags = entry.category || []
+  resource = entry.content
+  assert(resource, 'entry.content with resource body should be present')
+
+  type = resource.resourceType
+  assert(type, 'entry.content.resourceType with resourceType should be present')
+
+  headers = {}
+  tagHeader = tagsToHeader(tags)
+  headers["Category"] = tagHeader if tagHeader.length > 0
+
+  http
+    method: 'POST'
+    url: "#{baseUrl}/#{type}/_validate"
+    data: toJson(resource)
+    headers: headers
+    success: (data, status, headers, config)->
+      id = headers('Content-Location')
+      tags = headerToTags(headers('Category')) || tags
+      success({id: id, category: (tags || []), content: (data || resource)}, config)
+    error: error
+
 exports.read = ({baseUrl, http, id, success, error})->
   console.log("[read] ", id)
   http

@@ -204,6 +204,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    create: function(opt) {
 	      return crud.create(deps(opt));
 	    },
+	    validate: function(opt) {
+	      return crud.validate(deps(opt));
+	    },
 	    read: function(opt) {
 	      return crud.read(deps(opt));
 	    },
@@ -1077,6 +1080,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return http({
 	    method: 'POST',
 	    url: "" + baseUrl + "/" + type,
+	    data: toJson(resource),
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category')) || tags;
+	      return success({
+	        id: id,
+	        category: tags || [],
+	        content: data || resource
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports.validate = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  tags = entry.category || [];
+	  resource = entry.content;
+	  assert(resource, 'entry.content with resource body should be present');
+	  type = resource.resourceType;
+	  assert(type, 'entry.content.resourceType with resourceType should be present');
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader.length > 0) {
+	    headers["Category"] = tagHeader;
+	  }
+	  return http({
+	    method: 'POST',
+	    url: "" + baseUrl + "/" + type + "/_validate",
 	    data: toJson(resource),
 	    headers: headers,
 	    success: function(data, status, headers, config) {
