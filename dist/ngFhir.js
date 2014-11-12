@@ -402,15 +402,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  tagHeader = buildTags(tags);
 	  if (tagHeader) {
 	    headers["Category"] = tagHeader;
-	    http({
+	    return http({
 	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags"
-	    });
-	    return {
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
 	      headers: headers,
 	      success: success,
 	      error: error
-	    };
+	    });
 	  } else {
 	    return console.log('Empty tags');
 	  }
@@ -423,15 +421,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  tagHeader = buildTags(tags);
 	  if (tagHeader) {
 	    headers["Category"] = tagHeader;
-	    http({
+	    return http({
 	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags"
-	    });
-	    return {
+	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
 	      headers: headers,
 	      success: success,
 	      error: error
-	    };
+	    });
 	  } else {
 	    return console.log('Empty tags');
 	  }

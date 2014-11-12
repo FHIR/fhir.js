@@ -61,9 +61,9 @@ affixTagsToResource = ({baseUrl, http, type, id, tags, success, error})->
     http
       method: 'POST'
       url: "#{baseUrl}/#{type}/#{id}/_tags"
-    headers: headers
-    success: success
-    error: error
+      headers: headers
+      success: success
+      error: error
   else
     console.log('Empty tags')
 
@@ -75,9 +75,9 @@ affixTagsToResourceVersion = ({baseUrl, http, type, id, vid, tags, success, erro
     http
       method: 'POST'
       url: "#{baseUrl}/#{type}/#{id}/_history/#{vid}/_tags"
-    headers: headers
-    success: success
-    error: error
+      headers: headers
+      success: success
+      error: error
   else
     console.log('Empty tags')
 
