@@ -62,6 +62,15 @@ fhir = (cfg, adapter) ->
   delete: (opt) ->
     crud["delete"] deps(opt)
 
+  tags: (opt)->
+    tags.tags deps(opt)
+
+  affixTags: (opt)->
+    tags.affixTags deps(opt)
+
+  removeTags: (opt)->
+    tags.removeTags deps(opt)
+
   resolve: (opt) ->
     resolve.async depsWithCache(opt)
 

@@ -135,6 +135,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    "delete": function(opt) {
 	      return crud["delete"](deps(opt));
 	    },
+	    tags: function(opt) {
+	      return tags.tags(deps(opt));
+	    },
+	    affixTags: function(opt) {
+	      return tags.affixTags(deps(opt));
+	    },
+	    removeTags: function(opt) {
+	      return tags.removeTags(deps(opt));
+	    },
 	    resolve: function(opt) {
 	      return resolve.async(depsWithCache(opt));
 	    },
