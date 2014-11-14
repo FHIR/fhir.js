@@ -120,5 +120,6 @@ removeTags = (q)->
 
 # Exports
 exports.tags = tags
+exports.tagsAll = tagsAll
 exports.affixTags = affixTags
 exports.removeTags = removeTags
