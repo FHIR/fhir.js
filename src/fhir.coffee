@@ -68,6 +68,9 @@ fhir = (cfg, adapter) ->
   tags: (opt)->
     tags.tags deps(opt)
 
+  tagsAll: (opt)->
+    tags.tagsAll deps(opt)
+
   affixTags: (opt)->
     tags.affixTags deps(opt)
 
