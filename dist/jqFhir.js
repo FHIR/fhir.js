@@ -119,7 +119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return ret;
 	    };
 	  };
-	  return ["search", "conformance", "profile", "transaction", "history", "create", "read", "update", "delete", "vread", "resolve"].reduce((function(acc, v) {
+	  return ["search", "conformance", "document", "profile", "transaction", "history", "create", "read", "update", "delete", "vread", "resolve"].reduce((function(acc, v) {
 	    acc[v] = defer(v);
 	    return acc;
 	  }), {
@@ -132,25 +132,27 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cache, conf, crud, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
+	var cache, conf, crud, document, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
 
 	search = __webpack_require__(7);
 
 	conf = __webpack_require__(8);
 
-	transaction = __webpack_require__(9);
+	document = __webpack_require__(9);
 
-	tags = __webpack_require__(10);
+	transaction = __webpack_require__(10);
 
-	history = __webpack_require__(11);
+	tags = __webpack_require__(11);
 
-	crud = __webpack_require__(12);
+	history = __webpack_require__(12);
 
-	wrap = __webpack_require__(13);
+	crud = __webpack_require__(13);
+
+	wrap = __webpack_require__(14);
 
 	utils = __webpack_require__(2);
 
-	resolve = __webpack_require__(14);
+	resolve = __webpack_require__(15);
 
 	merge = __webpack_require__(6);
 
@@ -191,6 +193,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    conformance: function(opt) {
 	      return conf.conformance(deps(opt));
+	    },
+	    document: function(opt) {
+	      return conf.document(deps(opt));
 	    },
 	    profile: function(opt) {
 	      return conf.profile(deps(opt));
@@ -460,7 +465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
 
-	btoa = __webpack_require__(16).btoa;
+	btoa = __webpack_require__(17).btoa;
 
 	merge = __webpack_require__(6);
 
@@ -556,7 +561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var ltype, merge, resolve, utils, wrap;
 
-	resolve = __webpack_require__(14);
+	resolve = __webpack_require__(15);
 
 	merge = __webpack_require__(6);
 
@@ -694,7 +699,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)(module)))
 
 /***/ },
 /* 7 */
@@ -702,7 +707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(15);
+	queryBuider = __webpack_require__(16);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -793,6 +798,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var document;
+
+	document = (function(_this) {
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, success;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
+	    return http({
+	      method: 'POST',
+	      url: baseUrl + '/Document',
+	      data: bundle,
+	      success: success,
+	      error: error
+	    });
+	  };
+	})(this);
+
+	module.exports = document;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var transaction;
 
 	transaction = (function(_this) {
@@ -813,7 +841,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -970,7 +998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var buildParams, history, historyAll, historyType;
@@ -1035,7 +1063,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
@@ -1204,7 +1232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var wrap;
@@ -1224,7 +1252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CONTAINED, async, resolveContained, sync, utils;
@@ -1333,7 +1361,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
@@ -1499,7 +1527,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	;(function () {
@@ -1566,7 +1594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

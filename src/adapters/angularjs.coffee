@@ -16,6 +16,7 @@ angular.module('ng-fhir').provider '$fhir', ()->
 
       search: fhir.search
       conformance: fhir.conformance
+      document: fhir.document
       profile: fhir.profile
       transaction: fhir.transaction
       history: fhir.history
