@@ -219,9 +219,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tags: function(opt) {
 	      return tags.tags(deps(opt));
 	    },
-	    tagsAll: function(opt) {
-	      return tags.tagsAll(deps(opt));
-	    },
 	    affixTags: function(opt) {
 	      return tags.affixTags(deps(opt));
 	    },
@@ -966,8 +963,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.tags = tags;
-
-	exports.tagsAll = tagsAll;
 
 	exports.affixTags = affixTags;
 
