@@ -867,7 +867,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return tagsResourceVersion(q);
 	  } else if ((q.id != null) && (q.type != null)) {
 	    return tagsResource(q);
-	  } else if ((q.id != null) && (q.type != null)) {
+	  } else if (q.type != null) {
 	    return tagsResourceType(q);
 	  } else {
 	    return tagsAll(q);

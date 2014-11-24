@@ -40,7 +40,7 @@ tags = (q)->
     tagsResourceVersion(q)
   else if q.id? and q.type?
     tagsResource(q)
-  else if q.id? and q.type?
+  else if q.type?
     tagsResourceType(q)
   else
     tagsAll(q)
