@@ -13,9 +13,32 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
+    //
+    // NOTE: YUI loads JS files async in its own sandbox so we need
+    // to preload all the resources into Karma because Karma context
+    // cant async load.
     files: [
       'bower_components/angular/angular.min.js',
       'bower_components/jquery/dist/jquery.js',
+      'bower_components/yui/build/yui/yui.js',
+      'bower_components/yui/build/io-base/io-base.js',
+      'bower_components/yui/build/event-custom-base/event-custom-base-min.js',
+      'bower_components/yui/build/querystring-stringify-simple/querystring-stringify-simple-min.js',
+      'bower_components/yui/build/datatype-xml-parse/datatype-xml-parse-min.js',
+      'bower_components/yui/build/io-xdr/io-xdr-min.js',
+      'bower_components/yui/build/event-base/event-base-min.js',
+      'bower_components/yui/build/dom-core/dom-core-min.js',
+      'bower_components/yui/build/dom-base/dom-base-min.js',
+      'bower_components/yui/build/selector-native/selector-native-min.js',
+      'bower_components/yui/build/selector/selector-min.js',
+      'bower_components/yui/build/node-core/node-core-min.js',
+      'bower_components/yui/build/dom-style/dom-style-min.js',
+      'bower_components/yui/build/node-base/node-base-min.js',
+      'bower_components/yui/build/io-form/io-form-min.js',
+      'bower_components/yui/build/io-upload-iframe/io-upload-iframe-min.js',
+      'bower_components/yui/build/queue-promote/queue-promote-min.js',
+      'bower_components/yui/build/io-queue/io-queue-min.js',
+      'bower_components/yui/build/oop/oop-min.js',
       'integration_test/**/*.coffee'
     ],
 

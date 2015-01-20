@@ -54,8 +54,21 @@ module.exports = function (grunt) {
         resolve: {
           extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
         },
+      },
+      yuifhir: {
+        entry: "./src/adapters/yui.coffee",
+        output: {
+          path: __dirname + "/dist",
+          filename: "yuiFhir.js",
+          library: "yuiFhir",
+          libraryTarget: "umd"
+        },
+        module: {loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]},
+        resolve: {
+          extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
+        },
 
-      }
+      },
     }
   });
 
