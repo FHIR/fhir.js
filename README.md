@@ -58,7 +58,7 @@ var cfg = {
   // FHIR server base url
   baseUrl: 'http://myfhirserver.com',
   auth: {
-     bearer: 'tocken',
+     bearer: 'token',
      // OR for basic auth
      user: 'user',
      pass: 'secret'
@@ -91,6 +91,7 @@ Here are implementations for:
 * [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/angularjs.coffee)
 * [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.coffee)
 * [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.coffee)
+* [YUI adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/yui.coffee)
 
 ### Conformance & Profiles
 
@@ -233,11 +234,33 @@ var client = mkFhir({
 
 client.search( 'Patient', { 'birthdate': '1974' }, function(err, bundle) {
   var count = (bundle.entry && bundle.entry.length) || 0;
-  console.log("# Patients born in 1974: ", count); 
+  console.log("# Patients born in 1974: ", count);
 });
 
 ```
 
+## YUI adapter: `yuiFhir`
+
+YUI build can be found at `dist/yuiFhir.js`
+
+NOTE: The current implementation creates a YUI sandbox per request which is expensive.
+
+Usage:
+
+```html
+<script src="./yui-???.min.js"> </script>
+<script src="./yuiFhir.js"> </script>
+```
+
+```javascript
+// create fhir instance
+var fhir = jqFhir({
+    baseUrl: 'https://ci-api.fhir.me',
+    auth: {user: 'client', pass: 'secret'}
+})
+
+fhir.search(type: 'Patient', query: {name: 'maud'}, success: function(bundle) {}, error: function() {})
+```
 ## TODO
 
 * npm package

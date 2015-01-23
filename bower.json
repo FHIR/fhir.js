@@ -4,11 +4,12 @@
   "authors": [
     "Maksym Bodnarchuk <bodnarchuk@gmail.com>",
     "Nikolay Ryzhikov <niquola@gmail.com>",
-    "Josh Mandel <joshua.mandel@childrens.harvard.edu>"
+    "Josh Mandel <joshua.mandel@childrens.harvard.edu>",
+    "Colm Brady <colm.brady@orionhealth.com>"
   ],
   "description": "FHIR javascript API",
-  "keywords": ["fhir", "angular", "jquery"],
-  "main": ["fhir.js", "jqFhir.js", "ngFhir.js"],
+  "keywords": ["fhir", "angular", "jquery","yui"],
+  "main": ["fhir.js", "jqFhir.js", "ngFhir.js","yuiFhir.js"],
   "ignore": [
     "coffee",
     "integration_test",
@@ -18,7 +19,6 @@
     "karma.conf.js",
     "karma-itegration.conf.js",
     "package.json"
-
   ],
   "license": "MIT",
   "dependencies": {
@@ -26,6 +26,7 @@
     "jquery": "~2.1.1"
   },
   "devDependencies": {
-    "angular": "~1.2.0"
+    "angular": "~1.2.0",
+    "yui": "~3.17.1"
   }
 }
