@@ -1,5 +1,6 @@
 search = require("./search")
 conf = require("./conformance")
+document = require("./document")
 transaction = require("./transaction")
 tags = require("./tags")
 history = require("./history")
@@ -41,6 +42,9 @@ fhir = (cfg, adapter) ->
   conformance: (opt) ->
     conf.conformance deps(opt)
 
+  document: (opt) ->
+    conf.document deps(opt)
+
   profile: (opt)->
     conf.profile deps(opt)
 
@@ -67,9 +71,6 @@ fhir = (cfg, adapter) ->
 
   tags: (opt)->
     tags.tags deps(opt)
-
-  tagsAll: (opt)->
-    tags.tagsAll deps(opt)
 
   affixTags: (opt)->
     tags.affixTags deps(opt)

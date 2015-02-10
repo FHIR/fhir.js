@@ -54,27 +54,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var cache, conf, crud, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
+	var cache, conf, crud, document, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
 
 	search = __webpack_require__(1);
 
 	conf = __webpack_require__(2);
 
-	transaction = __webpack_require__(3);
+	document = __webpack_require__(3);
 
-	tags = __webpack_require__(4);
+	transaction = __webpack_require__(4);
 
-	history = __webpack_require__(5);
+	tags = __webpack_require__(5);
 
-	crud = __webpack_require__(6);
+	history = __webpack_require__(6);
 
-	wrap = __webpack_require__(7);
+	crud = __webpack_require__(7);
 
-	utils = __webpack_require__(8);
+	wrap = __webpack_require__(8);
 
-	resolve = __webpack_require__(9);
+	utils = __webpack_require__(9);
 
-	merge = __webpack_require__(10);
+	resolve = __webpack_require__(10);
+
+	merge = __webpack_require__(11);
 
 	cache = {};
 
@@ -114,6 +116,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    conformance: function(opt) {
 	      return conf.conformance(deps(opt));
 	    },
+	    document: function(opt) {
+	      return conf.document(deps(opt));
+	    },
 	    profile: function(opt) {
 	      return conf.profile(deps(opt));
 	    },
@@ -141,9 +146,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tags: function(opt) {
 	      return tags.tags(deps(opt));
 	    },
-	    tagsAll: function(opt) {
-	      return tags.tagsAll(deps(opt));
-	    },
 	    affixTags: function(opt) {
 	      return tags.affixTags(deps(opt));
 	    },
@@ -168,7 +170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(11);
+	queryBuider = __webpack_require__(12);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -259,6 +261,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var document;
+
+	document = (function(_this) {
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, success;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
+	    return http({
+	      method: 'POST',
+	      url: baseUrl + '/Document',
+	      data: bundle,
+	      success: success,
+	      error: error
+	    });
+	  };
+	})(this);
+
+	module.exports = document;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var transaction;
 
 	transaction = (function(_this) {
@@ -279,7 +304,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -333,7 +358,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return tagsResourceVersion(q);
 	  } else if ((q.id != null) && (q.type != null)) {
 	    return tagsResource(q);
-	  } else if ((q.id != null) && (q.type != null)) {
+	  } else if (q.type != null) {
 	    return tagsResourceType(q);
 	  } else {
 	    return tagsAll(q);
@@ -430,15 +455,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.tags = tags;
 
-	exports.tagsAll = tagsAll;
-
 	exports.affixTags = affixTags;
 
 	exports.removeTags = removeTags;
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var buildParams, history, historyAll, historyType;
@@ -503,12 +526,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	trim = utils.trim;
 
@@ -672,7 +695,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var wrap;
@@ -692,13 +715,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(10);
+	merge = __webpack_require__(11);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -909,12 +932,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CONTAINED, async, resolveContained, sync, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	CONTAINED = /^#(.*)/;
 
@@ -1018,7 +1041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -1102,15 +1125,15 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module)))
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	type = utils.type;
 
@@ -1271,7 +1294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

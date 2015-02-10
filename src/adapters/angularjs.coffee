@@ -16,6 +16,7 @@ angular.module('ng-fhir').provider '$fhir', ()->
 
       search: fhir.search
       conformance: fhir.conformance
+      document: fhir.document
       profile: fhir.profile
       transaction: fhir.transaction
       history: fhir.history
@@ -25,7 +26,6 @@ angular.module('ng-fhir').provider '$fhir', ()->
       update: fhir.update
       delete: fhir.delete
       tags: fhir.tags
-      tagsAll: fhir.tagsAll
       affixTags: fhir.affixTags
       removeTags: fhir.removeTags
       vread: fhir.vread

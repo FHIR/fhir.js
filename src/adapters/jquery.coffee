@@ -50,6 +50,7 @@ module.exports = (config)->
   [
     "search"
     "conformance"
+    "document"
     "profile"
     "transaction"
     "history"
