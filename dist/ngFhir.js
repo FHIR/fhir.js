@@ -561,15 +561,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
+	var assert, gettype, toJson, utils;
 
 	utils = __webpack_require__(9);
-
-	trim = utils.trim;
-
-	tagsToHeader = utils.tagsToHeader;
-
-	headerToTags = utils.headerToTags;
 
 	gettype = utils.type;
 
@@ -588,132 +582,78 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.create = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  tags = entry.category || [];
-	  resource = entry.content;
-	  assert(resource, 'entry.content with resource body should be present');
+	  var baseUrl, error, http, resource, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, resource = _arg.resource, success = _arg.success, error = _arg.error;
 	  type = resource.resourceType;
-	  assert(type, 'entry.content.resourceType with resourceType should be present');
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader.length > 0) {
-	    headers["Category"] = tagHeader;
-	  }
+	  assert(type, 'resourceType should be present');
 	  return http({
 	    method: 'POST',
 	    url: baseUrl + "/" + type,
 	    data: toJson(resource),
-	    headers: headers,
 	    success: function(data, status, headers, config) {
-	      var id;
-	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category')) || tags;
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data || resource
-	      }, config);
+	      var uri;
+	      uri = headers('Content-Location');
+	      return success(uri, config);
 	    },
 	    error: error
 	  });
 	};
 
 	exports.validate = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  tags = entry.category || [];
-	  resource = entry.content;
-	  assert(resource, 'entry.content with resource body should be present');
+	  var baseUrl, error, http, resource, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, resource = _arg.resource, success = _arg.success, error = _arg.error;
 	  type = resource.resourceType;
-	  assert(type, 'entry.content.resourceType with resourceType should be present');
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader.length > 0) {
-	    headers["Category"] = tagHeader;
-	  }
+	  assert(resource.resourceType, 'resourceType should be present');
 	  return http({
 	    method: 'POST',
 	    url: baseUrl + "/" + type + "/_validate",
 	    data: toJson(resource),
-	    headers: headers,
 	    success: function(data, status, headers, config) {
-	      var id;
-	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category')) || tags;
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data || resource
-	      }, config);
+	      return success(data, config);
 	    },
 	    error: error
 	  });
 	};
 
 	exports.read = function(_arg) {
-	  var baseUrl, error, http, id, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, id = _arg.id, success = _arg.success, error = _arg.error;
-	  console.log("[read] ", id);
+	  var baseUrl, error, http, id, resourceType, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, resourceType = _arg.resourceType, id = _arg.id, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: utils.absoluteUrl(baseUrl, id),
+	    url: utils.absoluteUrl(baseUrl, resourceType + "/" + id),
 	    success: function(data, status, headers, config) {
-	      var tags;
-	      id = headers && headers('Content-Location') || '??';
-	      tags = headers && headerToTags(headers('Category')) || '??';
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data
-	      }, config);
+	      return success(data, config);
 	    },
 	    error: error
 	  });
 	};
 
 	exports.update = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, url;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  console.log("[update] ", entry);
-	  url = entry.id.split("/_history/")[0];
-	  tags = entry.tags;
-	  resource = entry.content;
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader) {
-	    headers["Category"] = tagHeader;
-	  }
-	  headers['Content-Location'] = entry.id;
+	  var baseUrl, error, http, resource, success, url;
+	  baseUrl = _arg.baseUrl, http = _arg.http, resource = _arg.resource, success = _arg.success, error = _arg.error;
+	  url = utils.absoluteUrl(baseUrl, resource.resourceType + "/" + resource.id);
 	  return http({
 	    method: 'PUT',
 	    url: url,
 	    data: toJson(resource),
-	    headers: headers,
 	    success: function(data, status, headers, config) {
-	      var id, _tags;
-	      id = headers('Content-Location');
-	      _tags = headerToTags(headers('Category'));
-	      return success({
-	        id: id,
-	        category: _tags || tags || [],
-	        content: data
-	      }, config);
+	      var uri;
+	      uri = headers('Content-Location');
+	      return success(uri, config);
 	    },
 	    error: error
 	  });
 	};
 
 	exports["delete"] = function(_arg) {
-	  var baseUrl, entry, error, http, success, url;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  console.log("[delete] ", entry);
-	  url = entry.id.split('_history')[0];
+	  var baseUrl, error, http, resource, success, url;
+	  baseUrl = _arg.baseUrl, http = _arg.http, resource = _arg.resource, success = _arg.success, error = _arg.error;
+	  url = utils.absoluteUrl(baseUrl, resource.resourceType + "/" + resource.id);
 	  return http({
 	    method: 'DELETE',
 	    url: url,
 	    success: function(data, status, headers, config) {
-	      return success(entry, config);
+	      return success(data, config);
 	    },
 	    error: error
 	  });
@@ -750,7 +690,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
+	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, trim, type, walk,
 	  __slice = [].slice;
 
 	merge = __webpack_require__(14);
@@ -767,16 +707,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.trim = trim;
 
-	tagsToHeader = function(tags) {
-	  return (tags || []).filter(function(i) {
-	    return i && trim(i.term);
-	  }).map(function(i) {
-	    return i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
-	  }).join(",");
-	};
-
-	exports.tagsToHeader = tagsToHeader;
-
 	addKey = function(acc, str) {
 	  var pair, val;
 	  if (!str) {
@@ -789,26 +719,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return acc;
 	};
-
-	headerToTags = function(categoryHeader) {
-	  if (!categoryHeader) {
-	    return [];
-	  }
-	  return categoryHeader.split(',').map(function(x) {
-	    var acc, parts;
-	    parts = trim(x).split(';').map(trim);
-	    if (parts[0]) {
-	      acc = {
-	        term: parts[0]
-	      };
-	      addKey(acc, parts[1]);
-	      addKey(acc, parts[2]);
-	      return acc;
-	    }
-	  });
-	};
-
-	exports.headerToTags = headerToTags;
 
 	type = function(obj) {
 	  var classToType;
