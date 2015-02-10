@@ -3,22 +3,16 @@
   "version": "0.0.5",
   "devDependencies": {
     "bower": "latest",
-    "grunt": "~0.4.5",
-    "grunt-cli": "latest",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-coffee": "~0.11.1",
-    "grunt-karma": "latest",
     "jasmine-node": "latest",
     "karma": "latest",
-    "karma-phantomjs-launcher": "~0.1",
+    "karma-phantomjs-launcher": "latest",
     "karma-chrome-launcher": "latest",
     "karma-jasmine": "~0.2.0",
-    "phantomjs": "~1.9.7",
+    "phantomjs": "latest",
     "karma-coffee-preprocessor": "latest",
-    "webpack-dev-server": "~1.5.0",
-    "karma-webpack": "~1.2.2",
-    "grunt-webpack": "~1.0.8",
-    "karma-sourcemap-loader": "~0.3.0"
+    "webpack-dev-server": "latest",
+    "karma-webpack": "latest",
+    "karma-sourcemap-loader": "latest"
   },
   "description": "FHIR javascript client",
   "main": "lib/adapters/node",
@@ -44,12 +38,21 @@
   },
   "homepage": "https://github.com/FHIR/fhir.js",
   "dependencies": {
-    "coffee-script": "~1.8.0",
-    "coffee-loader": "~0.7.2",
-    "webpack": "~1.4.0-beta1",
+    "coffee-script": "latest",
+    "coffee-loader": "latest",
+    "webpack": "latest",
     "merge": "~1.1.3",
     "Base64": "~0.3.0",
     "chance": "latest",
     "request": "~2.42.0"
+  },
+  "scripts": {
+    "install": "bower prune && bower install",
+    "start":   "webpack-dev-server --port $PORT --progress --colors",
+    "build":   "npm install && rm -rf dist && `npm bin`/webpack --progress --colors",
+    "spec":    "node_modules/karma/bin/karma start --single-run",
+    "integrate":    "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
+    "node": "node_modules/.bin/jasmine-node --coffee node_tests/",
+    "spec-watch":    "node_modules/karma/bin/karma start"
   }
 }

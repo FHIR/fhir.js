@@ -54,27 +54,34 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var cache, conf, crud, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
 
-	search = __webpack_require__(1);
+	search = __webpack_require__(2);
 
-	conf = __webpack_require__(2);
+	conf = __webpack_require__(3);
 
-	transaction = __webpack_require__(3);
+	transaction = __webpack_require__(4);
 
-	tags = __webpack_require__(4);
+	tags = __webpack_require__(5);
 
-	history = __webpack_require__(5);
+	history = __webpack_require__(6);
 
-	crud = __webpack_require__(6);
+	crud = __webpack_require__(7);
 
-	wrap = __webpack_require__(7);
+	wrap = __webpack_require__(8);
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
-	resolve = __webpack_require__(9);
+	resolve = __webpack_require__(10);
 
-	merge = __webpack_require__(10);
+	merge = __webpack_require__(14);
 
 	cache = {};
 
@@ -163,12 +170,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var doGet, getRel, queryBuider, search;
 
-	queryBuider = __webpack_require__(11);
+	queryBuider = __webpack_require__(15);
 
 	doGet = function(http, uri, success, error) {
 	  return http({
@@ -184,7 +191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var baseUrl, error, http, query, queryStr, success, type, uri;
 	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, query = _arg.query, success = _arg.success, error = _arg.error;
 	    queryStr = queryBuider.query(query);
-	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
+	    uri = baseUrl + "/" + type + "/_search?" + queryStr;
 	    return doGet(http, uri, success, error);
 	  };
 	})(this);
@@ -221,7 +228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var conformance, profile;
@@ -231,7 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/metadata",
+	    url: baseUrl + "/metadata",
 	    success: success,
 	    error: error
 	  });
@@ -243,7 +250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
 	    return http({
 	      method: 'GET',
-	      url: "" + baseUrl + "/Profile/" + type,
+	      url: baseUrl + "/Profile/" + type,
 	      success: success,
 	      error: error
 	    });
@@ -256,7 +263,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var transaction;
@@ -279,7 +286,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
@@ -289,7 +296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/_tags",
+	    url: baseUrl + "/_tags",
 	    success: success,
 	    error: error
 	  });
@@ -300,7 +307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/_tags",
+	    url: baseUrl + "/" + type + "/_tags",
 	    success: success,
 	    error: error
 	  });
@@ -311,7 +318,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
+	    url: baseUrl + "/" + type + "/" + id + "/_tags",
 	    success: success,
 	    error: error
 	  });
@@ -322,7 +329,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
 	    success: success,
 	    error: error
 	  });
@@ -344,7 +351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return tags.filter(function(i) {
 	    return $.trim(i.term);
 	  }).map(function(i) {
-	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	    return i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
 	  }).join(",");
 	};
 
@@ -357,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    headers["Category"] = tagHeader;
 	    return http({
 	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
+	      url: baseUrl + "/" + type + "/" + id + "/_tags",
 	      headers: headers,
 	      success: success,
 	      error: error
@@ -376,7 +383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    headers["Category"] = tagHeader;
 	    return http({
 	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	      url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
 	      headers: headers,
 	      success: success,
 	      error: error
@@ -401,7 +408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags/_delete",
+	    url: baseUrl + "/" + type + "/" + id + "/_tags/_delete",
 	    success: success,
 	    error: error
 	  });
@@ -412,7 +419,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
 	  return http({
 	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
 	    success: success,
 	    error: error
 	  });
@@ -438,7 +445,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var buildParams, history, historyAll, historyType;
@@ -460,7 +467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history",
+	    url: baseUrl + "/" + type + "/" + id + "/_history",
 	    params: buildParams(count, since),
 	    success: success,
 	    error: error
@@ -472,7 +479,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/_history",
+	    url: baseUrl + "/" + type + "/_history",
 	    params: buildParams(count, since),
 	    success: success,
 	    error: error
@@ -484,7 +491,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
 	  return http({
 	    method: 'GET',
-	    url: "" + baseUrl + "/_history",
+	    url: baseUrl + "/_history",
 	    params: buildParams(count, since),
 	    success: success,
 	    error: error
@@ -503,12 +510,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	trim = utils.trim;
 
@@ -547,7 +554,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return http({
 	    method: 'POST',
-	    url: "" + baseUrl + "/" + type,
+	    url: baseUrl + "/" + type,
 	    data: toJson(resource),
 	    headers: headers,
 	    success: function(data, status, headers, config) {
@@ -579,7 +586,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return http({
 	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/_validate",
+	    url: baseUrl + "/" + type + "/_validate",
 	    data: toJson(resource),
 	    headers: headers,
 	    success: function(data, status, headers, config) {
@@ -672,7 +679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var wrap;
@@ -692,13 +699,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(10);
+	merge = __webpack_require__(14);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -716,7 +723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (tags || []).filter(function(i) {
 	    return i && trim(i.term);
 	  }).map(function(i) {
-	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	    return i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
 	  }).join(",");
 	};
 
@@ -842,7 +849,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	absoluteUrl = function(baseUrl, ref) {
 	  if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
-	    return "" + baseUrl + "/" + ref;
+	    return baseUrl + "/" + ref;
 	  } else {
 	    return ref;
 	  }
@@ -864,9 +871,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = baseUrl.replace(/\/$/, '');
 	  id = id.replace(/^\//, '');
 	  if (id.indexOf('/') < 0) {
-	    return "" + baseUrl + "/" + type + "/" + id;
+	    return baseUrl + "/" + type + "/" + id;
 	  } else if (id.indexOf(baseUrl) !== 0) {
-	    return "" + baseUrl + "/" + id;
+	    return baseUrl + "/" + id;
 	  } else {
 	    return id;
 	  }
@@ -909,12 +916,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CONTAINED, async, resolveContained, sync, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	CONTAINED = /^#(.*)/;
 
@@ -1018,7 +1025,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
@@ -1102,15 +1112,15 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)(module)))
 
 /***/ },
-/* 11 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(8);
+	utils = __webpack_require__(9);
 
 	type = utils.type;
 
@@ -1191,14 +1201,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return v.map(function(x) {
 	            return {
 	              param: '_include',
-	              value: "" + k + "." + x
+	              value: k + "." + x
 	            };
 	          });
 	        case 'string':
 	          return [
 	            {
 	              param: '_include',
-	              value: "" + k + "." + v
+	              value: k + "." + v
 	            }
 	          ];
 	      }
@@ -1271,7 +1281,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 16 */,
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(module) {

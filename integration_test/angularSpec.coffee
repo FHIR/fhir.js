@@ -29,8 +29,8 @@ genPatient = ()->
 
 
 describe "ngFhir", ->
+
   $injector = angular.injector(['test'])
-  fail = (err)-> console.error(err)
   q = null
   subject = null
   $injector.invoke ['$q','$fhir', ($q, $fhir)-> q=$q; subject=$fhir]
@@ -39,10 +39,16 @@ describe "ngFhir", ->
   checkStep =  tu.checkStep(q)
 
   it "search", (done) ->
+    console.log('ng spec')
     subject.search(type: 'Patient', query: {name: 'maud'})
       .then (d)-> done()
 
   it "CRUD", (done) ->
+    fail = (err)->
+      console.error(err)
+      done()
+
+    console.log('ng spec')
     preparePt = buildStep 'pt', (next, st)-> next(genPatient())
 
     createPt = buildStep 'createPt', (next, st)->
@@ -91,10 +97,15 @@ describe "ngFhir", ->
       .then deletePt
       .then done
 
-  it "history", (done) ->
-    subject.history {}
-     .success done
-     .error (err)-> console.error('History', err)
+  # it "history", (done) ->
+  #   console.log('ng spec')
+  #   fail = (err)->
+  #     console.error(err)
+  #     done()
+
+  #   subject.history {}
+  #    .success done
+  #    .error fail
 
   # it "transaction", (done) ->
   #      subject.transaction(bundle)

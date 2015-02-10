@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define(factory);
 	else if(typeof exports === 'object')
-		exports["yuiFhir"] = factory();
+		exports["fhir"] = factory();
 	else
-		root["yuiFhir"] = factory();
+		root["fhir"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -58,15 +58,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	mkFhir = __webpack_require__(1);
 
-	merge = __webpack_require__(6);
+	merge = __webpack_require__(14);
 
-	utils = __webpack_require__(2);
+	utils = __webpack_require__(9);
 
-	auth = __webpack_require__(3);
+	auth = __webpack_require__(11);
 
-	searchByPatient = __webpack_require__(4);
+	searchByPatient = __webpack_require__(12);
 
-	searchResultsAsGraph = __webpack_require__(5);
+	searchResultsAsGraph = __webpack_require__(13);
 
 	yui = YUI();
 
@@ -80,7 +80,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      q.data = q.data || q.params;
 	      q.on = {
 	        success: function(id, data, args) {
-	          return q.success(JSON.parse(data.responseText), data.status, data.getAllResponseHeaders());
+	          var fn;
+	          fn = function(headerName) {
+	            return data.getResponseHeader(headerName);
+	          };
+	          return q.success(JSON.parse(data.responseText), data.status, fn);
 	        },
 	        failure: function(id, args) {
 	          return q.error(null, args);
@@ -117,25 +121,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var cache, conf, crud, fhir, history, merge, resolve, search, tags, transaction, utils, wrap;
 
-	search = __webpack_require__(7);
+	search = __webpack_require__(2);
 
-	conf = __webpack_require__(8);
+	conf = __webpack_require__(3);
 
-	transaction = __webpack_require__(9);
+	transaction = __webpack_require__(4);
 
-	tags = __webpack_require__(10);
+	tags = __webpack_require__(5);
 
-	history = __webpack_require__(11);
+	history = __webpack_require__(6);
 
-	crud = __webpack_require__(12);
+	crud = __webpack_require__(7);
 
-	wrap = __webpack_require__(13);
+	wrap = __webpack_require__(8);
 
-	utils = __webpack_require__(2);
+	utils = __webpack_require__(9);
 
-	resolve = __webpack_require__(14);
+	resolve = __webpack_require__(10);
 
-	merge = __webpack_require__(6);
+	merge = __webpack_require__(14);
 
 	cache = {};
 
@@ -227,10 +231,539 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var doGet, getRel, queryBuider, search;
+
+	queryBuider = __webpack_require__(15);
+
+	doGet = function(http, uri, success, error) {
+	  return http({
+	    method: 'GET',
+	    url: uri,
+	    success: success || function() {},
+	    error: error || function() {}
+	  });
+	};
+
+	search = (function(_this) {
+	  return function(_arg) {
+	    var baseUrl, error, http, query, queryStr, success, type, uri;
+	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, query = _arg.query, success = _arg.success, error = _arg.error;
+	    queryStr = queryBuider.query(query);
+	    uri = baseUrl + "/" + type + "/_search?" + queryStr;
+	    return doGet(http, uri, success, error);
+	  };
+	})(this);
+
+	getRel = function(rel) {
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, l, success, urls;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
+	    urls = (function() {
+	      var _i, _len, _ref, _results;
+	      _ref = bundle != null ? bundle.link : void 0;
+	      _results = [];
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        l = _ref[_i];
+	        if (l.rel === rel) {
+	          _results.push(l.href);
+	        }
+	      }
+	      return _results;
+	    })();
+	    if (urls.length !== 1) {
+	      return error("No " + rel + " link found in bundle");
+	    } else {
+	      return doGet(http, urls[0], success, error);
+	    }
+	  };
+	};
+
+	module.exports.search = search;
+
+	module.exports.next = getRel("next");
+
+	module.exports.prev = getRel("prev");
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var conformance, profile;
+
+	conformance = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/metadata",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	profile = (function(_this) {
+	  return function(_arg) {
+	    var baseUrl, error, http, success, type;
+	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
+	    return http({
+	      method: 'GET',
+	      url: baseUrl + "/Profile/" + type,
+	      success: success,
+	      error: error
+	    });
+	  };
+	})(this);
+
+	exports.conformance = conformance;
+
+	exports.profile = profile;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var transaction;
+
+	transaction = (function(_this) {
+	  return function(_arg) {
+	    var baseUrl, bundle, error, http, success;
+	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
+	    return http({
+	      method: 'POST',
+	      url: baseUrl,
+	      data: bundle,
+	      success: success,
+	      error: error
+	    });
+	  };
+	})(this);
+
+	module.exports = transaction;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
+
+	tagsAll = function(_arg) {
+	  var baseUrl, error, http, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	tagsResourceType = function(_arg) {
+	  var baseUrl, error, http, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/" + type + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	tagsResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/" + type + "/" + id + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	tagsResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	tags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return tagsResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResource(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return tagsResourceType(q);
+	  } else {
+	    return tagsAll(q);
+	  }
+	};
+
+	buildTags = function(tags) {
+	  return tags.filter(function(i) {
+	    return $.trim(i.term);
+	  }).map(function(i) {
+	    return i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	  }).join(",");
+	};
+
+	affixTagsToResource = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    return http({
+	      method: 'POST',
+	      url: baseUrl + "/" + type + "/" + id + "/_tags",
+	      headers: headers,
+	      success: success,
+	      error: error
+	    });
+	  } else {
+	    return console.log('Empty tags');
+	  }
+	};
+
+	affixTagsToResourceVersion = function(_arg) {
+	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, tags = _arg.tags, success = _arg.success, error = _arg.error;
+	  headers = {};
+	  tagHeader = buildTags(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	    return http({
+	      method: 'POST',
+	      url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	      headers: headers,
+	      success: success,
+	      error: error
+	    });
+	  } else {
+	    return console.log('Empty tags');
+	  }
+	};
+
+	affixTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return affixTagsToResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return affixTagsToResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	removeTagsFromResource = function(_arg) {
+	  var baseUrl, error, http, id, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: baseUrl + "/" + type + "/" + id + "/_tags/_delete",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTagsFromResourceVersion = function(_arg) {
+	  var baseUrl, error, http, id, success, type, vid;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
+	  return http({
+	    method: 'POST',
+	    url: baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
+	    success: success,
+	    error: error
+	  });
+	};
+
+	removeTags = function(q) {
+	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
+	    return removeTagsFromResourceVersion(q);
+	  } else if ((q.id != null) && (q.type != null)) {
+	    return removeTagsFromResource(q);
+	  } else {
+	    throw 'wrong arguments';
+	  }
+	};
+
+	exports.tags = tags;
+
+	exports.tagsAll = tagsAll;
+
+	exports.affixTags = affixTags;
+
+	exports.removeTags = removeTags;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var buildParams, history, historyAll, historyType;
+
+	buildParams = function(count, since) {
+	  var prm;
+	  prm = {};
+	  if (since != null) {
+	    prm._since = since;
+	  }
+	  if (count != null) {
+	    prm._count = count;
+	  }
+	  return prm;
+	};
+
+	history = function(_arg) {
+	  var baseUrl, count, error, http, id, since, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/" + type + "/" + id + "/_history",
+	    params: buildParams(count, since),
+	    success: success,
+	    error: error
+	  });
+	};
+
+	historyType = function(_arg) {
+	  var baseUrl, count, error, http, since, success, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/" + type + "/_history",
+	    params: buildParams(count, since),
+	    success: success,
+	    error: error
+	  });
+	};
+
+	historyAll = function(_arg) {
+	  var baseUrl, count, error, http, since, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
+	  return http({
+	    method: 'GET',
+	    url: baseUrl + "/_history",
+	    params: buildParams(count, since),
+	    success: success,
+	    error: error
+	  });
+	};
+
+	module.exports = function(q) {
+	  if ((q.id != null) && (q.type != null)) {
+	    return history(q);
+	  } else if (q.type != null) {
+	    return historyType(q);
+	  } else {
+	    return historyAll(q);
+	  }
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
+
+	utils = __webpack_require__(9);
+
+	trim = utils.trim;
+
+	tagsToHeader = utils.tagsToHeader;
+
+	headerToTags = utils.headerToTags;
+
+	gettype = utils.type;
+
+	toJson = function(resource) {
+	  if (gettype(resource) === 'string') {
+	    return resource;
+	  } else if (gettype(resource) === 'object') {
+	    return JSON.stringify(resource);
+	  }
+	};
+
+	assert = function(pred, mess) {
+	  if (pred == null) {
+	    throw mess;
+	  }
+	};
+
+	exports.create = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  tags = entry.category || [];
+	  resource = entry.content;
+	  assert(resource, 'entry.content with resource body should be present');
+	  type = resource.resourceType;
+	  assert(type, 'entry.content.resourceType with resourceType should be present');
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader.length > 0) {
+	    headers["Category"] = tagHeader;
+	  }
+	  return http({
+	    method: 'POST',
+	    url: baseUrl + "/" + type,
+	    data: toJson(resource),
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category')) || tags;
+	      return success({
+	        id: id,
+	        category: tags || [],
+	        content: data || resource
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports.validate = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  tags = entry.category || [];
+	  resource = entry.content;
+	  assert(resource, 'entry.content with resource body should be present');
+	  type = resource.resourceType;
+	  assert(type, 'entry.content.resourceType with resourceType should be present');
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader.length > 0) {
+	    headers["Category"] = tagHeader;
+	  }
+	  return http({
+	    method: 'POST',
+	    url: baseUrl + "/" + type + "/_validate",
+	    data: toJson(resource),
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id;
+	      id = headers('Content-Location');
+	      tags = headerToTags(headers('Category')) || tags;
+	      return success({
+	        id: id,
+	        category: tags || [],
+	        content: data || resource
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports.read = function(_arg) {
+	  var baseUrl, error, http, id, success;
+	  baseUrl = _arg.baseUrl, http = _arg.http, id = _arg.id, success = _arg.success, error = _arg.error;
+	  console.log("[read] ", id);
+	  return http({
+	    method: 'GET',
+	    url: utils.absoluteUrl(baseUrl, id),
+	    success: function(data, status, headers, config) {
+	      var tags;
+	      id = headers && headers('Content-Location') || '??';
+	      tags = headers && headerToTags(headers('Category')) || '??';
+	      return success({
+	        id: id,
+	        category: tags || [],
+	        content: data
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports.update = function(_arg) {
+	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, url;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  console.log("[update] ", entry);
+	  url = entry.id.split("/_history/")[0];
+	  tags = entry.tags;
+	  resource = entry.content;
+	  headers = {};
+	  tagHeader = tagsToHeader(tags);
+	  if (tagHeader) {
+	    headers["Category"] = tagHeader;
+	  }
+	  headers['Content-Location'] = entry.id;
+	  return http({
+	    method: 'PUT',
+	    url: url,
+	    data: toJson(resource),
+	    headers: headers,
+	    success: function(data, status, headers, config) {
+	      var id, _tags;
+	      id = headers('Content-Location');
+	      _tags = headerToTags(headers('Category'));
+	      return success({
+	        id: id,
+	        category: _tags || tags || [],
+	        content: data
+	      }, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports["delete"] = function(_arg) {
+	  var baseUrl, entry, error, http, success, url;
+	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
+	  console.log("[delete] ", entry);
+	  url = entry.id.split('_history')[0];
+	  return http({
+	    method: 'DELETE',
+	    url: url,
+	    success: function(data, status, headers, config) {
+	      return success(entry, config);
+	    },
+	    error: error
+	  });
+	};
+
+	exports.vread = function(_arg) {
+	  var baseUrl, http;
+	  baseUrl = _arg.baseUrl, http = _arg.http;
+	  return console.log('TODO');
+	};
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var wrap;
+
+	wrap = function(cfg, fn, middlewares) {
+	  var next;
+	  if (typeof middlewares === 'function') {
+	    middlewares = [middlewares];
+	  }
+	  next = function(wrapped, nextf) {
+	    return nextf(cfg, wrapped);
+	  };
+	  return [].concat(middlewares || []).reverse().reduce(next, fn);
+	};
+
+	module.exports = wrap;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var RTRIM, absoluteUrl, addKey, argsArray, assertArray, assertObject, headerToTags, identity, merge, mergeLists, postwalk, reduceMap, relativeUrl, tagsToHeader, trim, type, walk,
 	  __slice = [].slice;
 
-	merge = __webpack_require__(6);
+	merge = __webpack_require__(14);
 
 	RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
@@ -248,7 +781,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (tags || []).filter(function(i) {
 	    return i && trim(i.term);
 	  }).map(function(i) {
-	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
+	    return i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
 	  }).join(",");
 	};
 
@@ -374,7 +907,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	absoluteUrl = function(baseUrl, ref) {
 	  if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
-	    return "" + baseUrl + "/" + ref;
+	    return baseUrl + "/" + ref;
 	  } else {
 	    return ref;
 	  }
@@ -396,9 +929,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  baseUrl = baseUrl.replace(/\/$/, '');
 	  id = id.replace(/^\//, '');
 	  if (id.indexOf('/') < 0) {
-	    return "" + baseUrl + "/" + type + "/" + id;
+	    return baseUrl + "/" + type + "/" + id;
 	  } else if (id.indexOf(baseUrl) !== 0) {
-	    return "" + baseUrl + "/" + id;
+	    return baseUrl + "/" + id;
 	  } else {
 	    return id;
 	  }
@@ -441,783 +974,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
-
-	btoa = __webpack_require__(16).btoa;
-
-	merge = __webpack_require__(6);
-
-	bearer = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Bearer " + cfg.auth.bearer);
-	  };
-	};
-
-	basic = function(cfg) {
-	  return function(req) {
-	    return withAuth(req, "Basic " + btoa("" + cfg.auth.user + ":" + cfg.auth.pass));
-	  };
-	};
-
-	identity = function(x) {
-	  return x;
-	};
-
-	withAuth = function(req, a) {
-	  var headers;
-	  headers = merge(true, req.headers || {}, {
-	    "Authorization": a
-	  });
-	  return merge(true, req, {
-	    headers: headers
-	  });
-	};
-
-	wrapWithAuth = function(cfg, http) {
-	  var requestProcessor;
-	  requestProcessor = (function() {
-	    var _ref, _ref1, _ref2;
-	    switch (false) {
-	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
-	        return bearer(cfg);
-	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
-	        return basic(cfg);
-	      default:
-	        return identity;
-	    }
-	  })();
-	  return function(req) {
-	    return http(requestProcessor(req));
-	  };
-	};
-
-	module.exports = wrapWithAuth;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var keyFor, merge, withPatient, wrap;
-
-	merge = __webpack_require__(6);
-
-	keyFor = {
-	  "Observation": "subject",
-	  "MedicationPrescription": "patient"
-	};
-
-	withPatient = function(cfg, type, q) {
-	  var query;
-	  if (!cfg.boundToPatient || !cfg.patient || !keyFor[type]) {
-	    return q;
-	  }
-	  query = merge(true, q);
-	  query[keyFor[type]] = {
-	    $type: "Patient",
-	    _id: cfg.patient
-	  };
-	  return query;
-	};
-
-	wrap = function(cfg, search) {
-	  return function(params) {
-	    var baseUrl, error, http, query, success, type;
-	    baseUrl = params.baseUrl, http = params.http, type = params.type, query = params.query, success = params.success, error = params.error;
-	    return search(merge(true, params, {
-	      query: withPatient(cfg, type, query)
-	    }));
-	  };
-	};
-
-	module.exports = wrap;
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ltype, merge, resolve, utils, wrap;
-
-	resolve = __webpack_require__(14);
-
-	merge = __webpack_require__(6);
-
-	utils = __webpack_require__(2);
-
-	ltype = utils.type;
-
-	wrap = function(cfg, search) {
-	  var resourceBoundary;
-	  resourceBoundary = function(stack) {
-	    var res;
-	    res = function(acc, val) {
-	      return acc != null ? acc : ((val != null ? val.resourceType : void 0) && (val != null ? val.contained : void 0) ? val : null);
-	    };
-	    return stack.reduce(res, null);
-	  };
-	  return function(params) {
-	    var graph, graphCb, graphify, success, type;
-	    type = params.type, success = params.success, graph = params.graph;
-	    graphify = function(bundle, content) {
-	      var resolveRefs;
-	      resolveRefs = function(value, context) {
-	        var mapto, _ref;
-	        if (value.reference) {
-	          mapto = resolve.sync(merge(true, params, {
-	            reference: value,
-	            bundle: bundle,
-	            resource: resourceBoundary(context)
-	          }));
-	          return (_ref = mapto != null ? mapto.content : void 0) != null ? _ref : value;
-	        } else {
-	          return value;
-	        }
-	      };
-	      return utils.postwalk(resolveRefs, content, []);
-	    };
-	    graphCb = graph ? function(bundle, status, xhr) {
-	      var entries;
-	      entries = bundle.entry.map(function(e) {
-	        return e.content;
-	      });
-	      return success(graphify(bundle, entries));
-	    } : success;
-	    return search(merge(true, params, {
-	      success: graphCb
-	    }));
-	  };
-	};
-
-	module.exports = wrap;
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(module) {/*!
-	 * @name JavaScript/NodeJS Merge v1.1.3
-	 * @author yeikos
-	 * @repository https://github.com/yeikos/js.merge
-
-	 * Copyright 2014 yeikos - MIT license
-	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
-	 */
-
-	;(function(isNode) {
-
-		function merge() {
-
-			var items = Array.prototype.slice.call(arguments),
-				result = items.shift(),
-				deep = (result === true),
-				size = items.length,
-				item, index, key;
-
-			if (deep || typeOf(result) !== 'object')
-
-				result = {};
-
-			for (index=0;index<size;++index)
-
-				if (typeOf(item = items[index]) === 'object')
-
-					for (key in item)
-
-						result[key] = deep ? clone(item[key]) : item[key];
-
-			return result;
-
-		}
-
-		function clone(input) {
-
-			var output = input,
-				type = typeOf(input),
-				index, size;
-
-			if (type === 'array') {
-
-				output = [];
-				size = input.length;
-
-				for (index=0;index<size;++index)
-
-					output[index] = clone(input[index]);
-
-			} else if (type === 'object') {
-
-				output = {};
-
-				for (index in input)
-
-					output[index] = clone(input[index]);
-
-			}
-
-			return output;
-
-		}
-
-		function typeOf(input) {
-
-			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
-
-		}
-
-		if (isNode) {
-
-			module.exports = merge;
-
-		} else {
-
-			window.merge = merge;
-
-		}
-
-	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)(module)))
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var doGet, getRel, queryBuider, search;
-
-	queryBuider = __webpack_require__(15);
-
-	doGet = function(http, uri, success, error) {
-	  return http({
-	    method: 'GET',
-	    url: uri,
-	    success: success || function() {},
-	    error: error || function() {}
-	  });
-	};
-
-	search = (function(_this) {
-	  return function(_arg) {
-	    var baseUrl, error, http, query, queryStr, success, type, uri;
-	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, query = _arg.query, success = _arg.success, error = _arg.error;
-	    queryStr = queryBuider.query(query);
-	    uri = "" + baseUrl + "/" + type + "/_search?" + queryStr;
-	    return doGet(http, uri, success, error);
-	  };
-	})(this);
-
-	getRel = function(rel) {
-	  return function(_arg) {
-	    var baseUrl, bundle, error, http, l, success, urls;
-	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
-	    urls = (function() {
-	      var _i, _len, _ref, _results;
-	      _ref = bundle != null ? bundle.link : void 0;
-	      _results = [];
-	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	        l = _ref[_i];
-	        if (l.rel === rel) {
-	          _results.push(l.href);
-	        }
-	      }
-	      return _results;
-	    })();
-	    if (urls.length !== 1) {
-	      return error("No " + rel + " link found in bundle");
-	    } else {
-	      return doGet(http, urls[0], success, error);
-	    }
-	  };
-	};
-
-	module.exports.search = search;
-
-	module.exports.next = getRel("next");
-
-	module.exports.prev = getRel("prev");
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var conformance, profile;
-
-	conformance = function(_arg) {
-	  var baseUrl, error, http, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/metadata",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	profile = (function(_this) {
-	  return function(_arg) {
-	    var baseUrl, error, http, success, type;
-	    baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
-	    return http({
-	      method: 'GET',
-	      url: "" + baseUrl + "/Profile/" + type,
-	      success: success,
-	      error: error
-	    });
-	  };
-	})(this);
-
-	exports.conformance = conformance;
-
-	exports.profile = profile;
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var transaction;
-
-	transaction = (function(_this) {
-	  return function(_arg) {
-	    var baseUrl, bundle, error, http, success;
-	    baseUrl = _arg.baseUrl, http = _arg.http, bundle = _arg.bundle, success = _arg.success, error = _arg.error;
-	    return http({
-	      method: 'POST',
-	      url: baseUrl,
-	      data: bundle,
-	      success: success,
-	      error: error
-	    });
-	  };
-	})(this);
-
-	module.exports = transaction;
-
-
-/***/ },
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var affixTags, affixTagsToResource, affixTagsToResourceVersion, buildTags, removeTags, removeTagsFromResource, removeTagsFromResourceVersion, tags, tagsAll, tagsResource, tagsResourceType, tagsResourceVersion;
-
-	tagsAll = function(_arg) {
-	  var baseUrl, error, http, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/_tags",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	tagsResourceType = function(_arg) {
-	  var baseUrl, error, http, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/_tags",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	tagsResource = function(_arg) {
-	  var baseUrl, error, http, id, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	tagsResourceVersion = function(_arg) {
-	  var baseUrl, error, http, id, success, type, vid;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	tags = function(q) {
-	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
-	    return tagsResourceVersion(q);
-	  } else if ((q.id != null) && (q.type != null)) {
-	    return tagsResource(q);
-	  } else if ((q.id != null) && (q.type != null)) {
-	    return tagsResourceType(q);
-	  } else {
-	    return tagsAll(q);
-	  }
-	};
-
-	buildTags = function(tags) {
-	  return tags.filter(function(i) {
-	    return $.trim(i.term);
-	  }).map(function(i) {
-	    return "" + i.term + "; scheme=\"" + i.scheme + "\"; label=\"" + i.label + "\"";
-	  }).join(",");
-	};
-
-	affixTagsToResource = function(_arg) {
-	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, tags = _arg.tags, success = _arg.success, error = _arg.error;
-	  headers = {};
-	  tagHeader = buildTags(tags);
-	  if (tagHeader) {
-	    headers["Category"] = tagHeader;
-	    return http({
-	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_tags",
-	      headers: headers,
-	      success: success,
-	      error: error
-	    });
-	  } else {
-	    return console.log('Empty tags');
-	  }
-	};
-
-	affixTagsToResourceVersion = function(_arg) {
-	  var baseUrl, error, headers, http, id, success, tagHeader, tags, type, vid;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, tags = _arg.tags, success = _arg.success, error = _arg.error;
-	  headers = {};
-	  tagHeader = buildTags(tags);
-	  if (tagHeader) {
-	    headers["Category"] = tagHeader;
-	    return http({
-	      method: 'POST',
-	      url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
-	      headers: headers,
-	      success: success,
-	      error: error
-	    });
-	  } else {
-	    return console.log('Empty tags');
-	  }
-	};
-
-	affixTags = function(q) {
-	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
-	    return affixTagsToResourceVersion(q);
-	  } else if ((q.id != null) && (q.type != null)) {
-	    return affixTagsToResource(q);
-	  } else {
-	    throw 'wrong arguments';
-	  }
-	};
-
-	removeTagsFromResource = function(_arg) {
-	  var baseUrl, error, http, id, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_tags/_delete",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	removeTagsFromResourceVersion = function(_arg) {
-	  var baseUrl, error, http, id, success, type, vid;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, vid = _arg.vid, success = _arg.success, error = _arg.error;
-	  return http({
-	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history/" + vid + "/_tags",
-	    success: success,
-	    error: error
-	  });
-	};
-
-	removeTags = function(q) {
-	  if ((q.vid != null) && (q.id != null) && (q.type != null)) {
-	    return removeTagsFromResourceVersion(q);
-	  } else if ((q.id != null) && (q.type != null)) {
-	    return removeTagsFromResource(q);
-	  } else {
-	    throw 'wrong arguments';
-	  }
-	};
-
-	exports.tags = tags;
-
-	exports.tagsAll = tagsAll;
-
-	exports.affixTags = affixTags;
-
-	exports.removeTags = removeTags;
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var buildParams, history, historyAll, historyType;
-
-	buildParams = function(count, since) {
-	  var prm;
-	  prm = {};
-	  if (since != null) {
-	    prm._since = since;
-	  }
-	  if (count != null) {
-	    prm._count = count;
-	  }
-	  return prm;
-	};
-
-	history = function(_arg) {
-	  var baseUrl, count, error, http, id, since, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, id = _arg.id, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/" + id + "/_history",
-	    params: buildParams(count, since),
-	    success: success,
-	    error: error
-	  });
-	};
-
-	historyType = function(_arg) {
-	  var baseUrl, count, error, http, since, success, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, type = _arg.type, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/" + type + "/_history",
-	    params: buildParams(count, since),
-	    success: success,
-	    error: error
-	  });
-	};
-
-	historyAll = function(_arg) {
-	  var baseUrl, count, error, http, since, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, success = _arg.success, error = _arg.error, count = _arg.count, since = _arg.since;
-	  return http({
-	    method: 'GET',
-	    url: "" + baseUrl + "/_history",
-	    params: buildParams(count, since),
-	    success: success,
-	    error: error
-	  });
-	};
-
-	module.exports = function(q) {
-	  if ((q.id != null) && (q.type != null)) {
-	    return history(q);
-	  } else if (q.type != null) {
-	    return historyType(q);
-	  } else {
-	    return historyAll(q);
-	  }
-	};
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var assert, gettype, headerToTags, tagsToHeader, toJson, trim, utils;
-
-	utils = __webpack_require__(2);
-
-	trim = utils.trim;
-
-	tagsToHeader = utils.tagsToHeader;
-
-	headerToTags = utils.headerToTags;
-
-	gettype = utils.type;
-
-	toJson = function(resource) {
-	  if (gettype(resource) === 'string') {
-	    return resource;
-	  } else if (gettype(resource) === 'object') {
-	    return JSON.stringify(resource);
-	  }
-	};
-
-	assert = function(pred, mess) {
-	  if (pred == null) {
-	    throw mess;
-	  }
-	};
-
-	exports.create = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  tags = entry.category || [];
-	  resource = entry.content;
-	  assert(resource, 'entry.content with resource body should be present');
-	  type = resource.resourceType;
-	  assert(type, 'entry.content.resourceType with resourceType should be present');
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader.length > 0) {
-	    headers["Category"] = tagHeader;
-	  }
-	  return http({
-	    method: 'POST',
-	    url: "" + baseUrl + "/" + type,
-	    data: toJson(resource),
-	    headers: headers,
-	    success: function(data, status, headers, config) {
-	      var id;
-	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category')) || tags;
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data || resource
-	      }, config);
-	    },
-	    error: error
-	  });
-	};
-
-	exports.validate = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, type;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  tags = entry.category || [];
-	  resource = entry.content;
-	  assert(resource, 'entry.content with resource body should be present');
-	  type = resource.resourceType;
-	  assert(type, 'entry.content.resourceType with resourceType should be present');
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader.length > 0) {
-	    headers["Category"] = tagHeader;
-	  }
-	  return http({
-	    method: 'POST',
-	    url: "" + baseUrl + "/" + type + "/_validate",
-	    data: toJson(resource),
-	    headers: headers,
-	    success: function(data, status, headers, config) {
-	      var id;
-	      id = headers('Content-Location');
-	      tags = headerToTags(headers('Category')) || tags;
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data || resource
-	      }, config);
-	    },
-	    error: error
-	  });
-	};
-
-	exports.read = function(_arg) {
-	  var baseUrl, error, http, id, success;
-	  baseUrl = _arg.baseUrl, http = _arg.http, id = _arg.id, success = _arg.success, error = _arg.error;
-	  console.log("[read] ", id);
-	  return http({
-	    method: 'GET',
-	    url: utils.absoluteUrl(baseUrl, id),
-	    success: function(data, status, headers, config) {
-	      var tags;
-	      id = headers && headers('Content-Location') || '??';
-	      tags = headers && headerToTags(headers('Category')) || '??';
-	      return success({
-	        id: id,
-	        category: tags || [],
-	        content: data
-	      }, config);
-	    },
-	    error: error
-	  });
-	};
-
-	exports.update = function(_arg) {
-	  var baseUrl, entry, error, headers, http, resource, success, tagHeader, tags, url;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  console.log("[update] ", entry);
-	  url = entry.id.split("/_history/")[0];
-	  tags = entry.tags;
-	  resource = entry.content;
-	  headers = {};
-	  tagHeader = tagsToHeader(tags);
-	  if (tagHeader) {
-	    headers["Category"] = tagHeader;
-	  }
-	  headers['Content-Location'] = entry.id;
-	  return http({
-	    method: 'PUT',
-	    url: url,
-	    data: toJson(resource),
-	    headers: headers,
-	    success: function(data, status, headers, config) {
-	      var id, _tags;
-	      id = headers('Content-Location');
-	      _tags = headerToTags(headers('Category'));
-	      return success({
-	        id: id,
-	        category: _tags || tags || [],
-	        content: data
-	      }, config);
-	    },
-	    error: error
-	  });
-	};
-
-	exports["delete"] = function(_arg) {
-	  var baseUrl, entry, error, http, success, url;
-	  baseUrl = _arg.baseUrl, http = _arg.http, entry = _arg.entry, success = _arg.success, error = _arg.error;
-	  console.log("[delete] ", entry);
-	  url = entry.id.split('_history')[0];
-	  return http({
-	    method: 'DELETE',
-	    url: url,
-	    success: function(data, status, headers, config) {
-	      return success(entry, config);
-	    },
-	    error: error
-	  });
-	};
-
-	exports.vread = function(_arg) {
-	  var baseUrl, http;
-	  baseUrl = _arg.baseUrl, http = _arg.http;
-	  return console.log('TODO');
-	};
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var wrap;
-
-	wrap = function(cfg, fn, middlewares) {
-	  var next;
-	  if (typeof middlewares === 'function') {
-	    middlewares = [middlewares];
-	  }
-	  next = function(wrapped, nextf) {
-	    return nextf(cfg, wrapped);
-	  };
-	  return [].concat(middlewares || []).reverse().reduce(next, fn);
-	};
-
-	module.exports = wrap;
-
-
-/***/ },
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CONTAINED, async, resolveContained, sync, utils;
 
-	utils = __webpack_require__(2);
+	utils = __webpack_require__(9);
 
 	CONTAINED = /^#(.*)/;
 
@@ -1321,12 +1083,254 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var basic, bearer, btoa, identity, merge, withAuth, wrapWithAuth;
+
+	btoa = __webpack_require__(16).btoa;
+
+	merge = __webpack_require__(14);
+
+	bearer = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Bearer " + cfg.auth.bearer);
+	  };
+	};
+
+	basic = function(cfg) {
+	  return function(req) {
+	    return withAuth(req, "Basic " + btoa(cfg.auth.user + ":" + cfg.auth.pass));
+	  };
+	};
+
+	identity = function(x) {
+	  return x;
+	};
+
+	withAuth = function(req, a) {
+	  var headers;
+	  headers = merge(true, req.headers || {}, {
+	    "Authorization": a
+	  });
+	  return merge(true, req, {
+	    headers: headers
+	  });
+	};
+
+	wrapWithAuth = function(cfg, http) {
+	  var requestProcessor;
+	  requestProcessor = (function() {
+	    var _ref, _ref1, _ref2;
+	    switch (false) {
+	      case !(cfg != null ? (_ref = cfg.auth) != null ? _ref.bearer : void 0 : void 0):
+	        return bearer(cfg);
+	      case !((cfg != null ? (_ref1 = cfg.auth) != null ? _ref1.user : void 0 : void 0) && (cfg != null ? (_ref2 = cfg.auth) != null ? _ref2.pass : void 0 : void 0)):
+	        return basic(cfg);
+	      default:
+	        return identity;
+	    }
+	  })();
+	  return function(req) {
+	    return http(requestProcessor(req));
+	  };
+	};
+
+	module.exports = wrapWithAuth;
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var keyFor, merge, withPatient, wrap;
+
+	merge = __webpack_require__(14);
+
+	keyFor = {
+	  "Observation": "subject",
+	  "MedicationPrescription": "patient"
+	};
+
+	withPatient = function(cfg, type, q) {
+	  var query;
+	  if (!cfg.boundToPatient || !cfg.patient || !keyFor[type]) {
+	    return q;
+	  }
+	  query = merge(true, q);
+	  query[keyFor[type]] = {
+	    $type: "Patient",
+	    _id: cfg.patient
+	  };
+	  return query;
+	};
+
+	wrap = function(cfg, search) {
+	  return function(params) {
+	    var baseUrl, error, http, query, success, type;
+	    baseUrl = params.baseUrl, http = params.http, type = params.type, query = params.query, success = params.success, error = params.error;
+	    return search(merge(true, params, {
+	      query: withPatient(cfg, type, query)
+	    }));
+	  };
+	};
+
+	module.exports = wrap;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ltype, merge, resolve, utils, wrap;
+
+	resolve = __webpack_require__(10);
+
+	merge = __webpack_require__(14);
+
+	utils = __webpack_require__(9);
+
+	ltype = utils.type;
+
+	wrap = function(cfg, search) {
+	  var resourceBoundary;
+	  resourceBoundary = function(stack) {
+	    var res;
+	    res = function(acc, val) {
+	      return acc != null ? acc : ((val != null ? val.resourceType : void 0) && (val != null ? val.contained : void 0) ? val : null);
+	    };
+	    return stack.reduce(res, null);
+	  };
+	  return function(params) {
+	    var graph, graphCb, graphify, success, type;
+	    type = params.type, success = params.success, graph = params.graph;
+	    graphify = function(bundle, content) {
+	      var resolveRefs;
+	      resolveRefs = function(value, context) {
+	        var mapto, _ref;
+	        if (value.reference) {
+	          mapto = resolve.sync(merge(true, params, {
+	            reference: value,
+	            bundle: bundle,
+	            resource: resourceBoundary(context)
+	          }));
+	          return (_ref = mapto != null ? mapto.content : void 0) != null ? _ref : value;
+	        } else {
+	          return value;
+	        }
+	      };
+	      return utils.postwalk(resolveRefs, content, []);
+	    };
+	    graphCb = graph ? function(bundle, status, xhr) {
+	      var entries;
+	      entries = bundle.entry.map(function(e) {
+	        return e.content;
+	      });
+	      return success(graphify(bundle, entries));
+	    } : success;
+	    return search(merge(true, params, {
+	      success: graphCb
+	    }));
+	  };
+	};
+
+	module.exports = wrap;
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * @name JavaScript/NodeJS Merge v1.1.3
+	 * @author yeikos
+	 * @repository https://github.com/yeikos/js.merge
+
+	 * Copyright 2014 yeikos - MIT license
+	 * https://raw.github.com/yeikos/js.merge/master/LICENSE
+	 */
+
+	;(function(isNode) {
+
+		function merge() {
+
+			var items = Array.prototype.slice.call(arguments),
+				result = items.shift(),
+				deep = (result === true),
+				size = items.length,
+				item, index, key;
+
+			if (deep || typeOf(result) !== 'object')
+
+				result = {};
+
+			for (index=0;index<size;++index)
+
+				if (typeOf(item = items[index]) === 'object')
+
+					for (key in item)
+
+						result[key] = deep ? clone(item[key]) : item[key];
+
+			return result;
+
+		}
+
+		function clone(input) {
+
+			var output = input,
+				type = typeOf(input),
+				index, size;
+
+			if (type === 'array') {
+
+				output = [];
+				size = input.length;
+
+				for (index=0;index<size;++index)
+
+					output[index] = clone(input[index]);
+
+			} else if (type === 'object') {
+
+				output = {};
+
+				for (index in input)
+
+					output[index] = clone(input[index]);
+
+			}
+
+			return output;
+
+		}
+
+		function typeOf(input) {
+
+			return ({}).toString.call(input).match(/\s([\w]+)/)[1].toLowerCase();
+
+		}
+
+		if (isNode) {
+
+			module.exports = merge;
+
+		} else {
+
+			window.merge = merge;
+
+		}
+
+	})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)(module)))
+
+/***/ },
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MODIFIERS, OPERATORS, assertArray, assertObject, buildSearchParams, expandParam, handleInclude, handleSort, identity, isOperator, linearizeOne, linearizeParams, reduceMap, type, utils;
 
-	utils = __webpack_require__(2);
+	utils = __webpack_require__(9);
 
 	type = utils.type;
 
@@ -1407,14 +1411,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return v.map(function(x) {
 	            return {
 	              param: '_include',
-	              value: "" + k + "." + x
+	              value: k + "." + x
 	            };
 	          });
 	        case 'string':
 	          return [
 	            {
 	              param: '_include',
-	              value: "" + k + "." + v
+	              value: k + "." + v
 	            }
 	          ];
 	      }

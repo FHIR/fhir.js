@@ -1,5 +1,13 @@
-// Karma configuration
-// Generated on Tue Aug 26 2014 15:55:24 GMT+0400 (MSK)
+var wp = require('./webpack.config.js');
+wp.externals = {
+    './module': 'angular.module("formstamp")'
+};
+
+wp.devtool = "inline-source-map"
+
+delete wp.entry;
+delete wp.context;
+delete wp.output;
 
 module.exports = function(config) {
   config.set({
@@ -13,9 +21,7 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: [
-      'test/*.coffee'
-    ],
+    files: [ 'test/*.coffee' ],
 
     // list of files to exclude
     exclude: [ '**/*.swp' ],
@@ -26,18 +32,7 @@ module.exports = function(config) {
 
     preprocessors: { '**/*.coffee': ['webpack', 'sourcemap'] },
 
-    webpack: {
-      cache: true,
-      resolve: {
-        extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"],
-      },
-      module: {
-        loaders: [
-          { test: /\.coffee$/, loader: "coffee-loader" }
-        ]
-      },
-      devtool: "inline-source-map"
-    },
+    webpack: wp,
 
     webpackServer: {
       stats: {

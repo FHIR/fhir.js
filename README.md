@@ -27,20 +27,18 @@ Build & test:
 git clone https://github.com/FHIR/fhir.js
 cd fhir.js
 npm install
-`npm bin`/bower install
 
 # buld fhir.js
-`npm bin`/grunt
+npm run-script build
 
-# run all tests
-node_modules/karma/bin/karma start --single-run
+# run all tests once
+npm run-script spec
 
 # watch tests while development
-node_modules/karma/bin/karma start
+npm run-script spec-watch
 
 # run integration tests
-`npm bin`/bower install
-node_modules/karma/bin/karma start karma-itegration.conf.js --single-run
+npm run-script integrate
 ```
 
 ## API
@@ -173,7 +171,7 @@ For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/tes
 
 ## AngularJS adapter: `ng-fhir`
 
-AngularJS adapter after `grunt build` can be found at `dist/ngFhir.js`
+AngularJS adapter after `npm run-script build` can be found at `dist/ngFhir.js`
 
 
 Usage:
