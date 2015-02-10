@@ -4,5 +4,5 @@ before_script:
 - 'npm install'
 script:
 - 'npm run-script spec'
-- 'npm run-script integrate'
 - 'npm run-script node'
+# - 'npm run-script integrate' turn of integrate until available DSTU 2 servers

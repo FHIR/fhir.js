@@ -7,13 +7,6 @@ trim = (text)->
 
 exports.trim = trim
 
-tagsToHeader = (tags)->
-  (tags || [])
-    .filter((i)-> i && trim(i.term))
-    .map((i)-> "#{i.term}; scheme=\"#{i.scheme}\"; label=\"#{i.label}\"")
-    .join(",")
-
-exports.tagsToHeader = tagsToHeader
 
 addKey = (acc, str)->
   return unless str
@@ -21,18 +14,6 @@ addKey = (acc, str)->
   val = pair[1].replace(/(^"|"$)/g,'')
   acc[pair[0]] = val if val
   acc
-
-headerToTags = (categoryHeader)->
-  return [] unless categoryHeader
-  categoryHeader.split(',').map (x)->
-    parts = trim(x).split(';').map(trim)
-    if parts[0]
-      acc = {term: parts[0]}
-      addKey(acc, parts[1])
-      addKey(acc, parts[2])
-      acc
-
-exports.headerToTags = headerToTags
 
 type = (obj) ->
     if obj == undefined or obj == null

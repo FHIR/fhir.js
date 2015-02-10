@@ -17,79 +17,65 @@ describe "search:", ->
 
   headers = mockHeaders
     'Content-Location': 'BASE/Patient/5'
-    'Category': 'term; scheme="sch"; label="lbl"'
 
   it "create", (done)->
-    http = (x)-> x.success(x.content, 201, headers, x)
-    entry = {content: {resourceType: 'Patient'}, category: tags}
+    # http = (x)-> x.success(x, 201, headers, x)
+    http = (x)-> x.success(resource, 200, headers, x)
+    resource = {resourceType: 'Patient', meta: {tags: tags}}
     res.create
       baseUrl: 'BASE'
       http: http
-      entry: entry
-      success: (res, q)->
-        expect(res).not.toBe(null)
-        expect(res.id).toBe('BASE/Patient/5')
-        expect(res.category).toEqual(tags)
-
+      resource: resource
+      success: (uri, q)->
+        expect(uri).toBe('BASE/Patient/5')
         expect(q.method).toBe('POST')
         expect(q.url).toBe('BASE/Patient')
-        expect(q.data).toBe(JSON.stringify(entry.content))
-        expect(q.headers['Category']).toBe('term; scheme="sch"; label="lbl"')
+        expect(q.data).toBe(JSON.stringify(resource))
         done()
 
-  simpleRead = (id, done) ->
-    entry = {content: {resourceType: 'Patient'}, category: tags}
-    http = (x)-> x.success(entry.content, 200, headers, x)
+  simpleRead = (tp, id, done) ->
+    resource = {id: '5', resourceType: 'Patient', meta: {tags: tags}}
+    http = (x)-> x.success(resource, 200, headers, x)
 
     res.read
       baseUrl: 'BASE'
       http: http
+      resourceType: tp
       id: id
       success: (res, q)->
         expect(res).not.toBe(null)
-        expect(res.id).toBe('BASE/Patient/5')
-        expect(res.category).toEqual(tags)
+        expect(res.id).toBe('5')
+        expect(res.meta.tags).toEqual(tags)
         expect(q.method).toBe('GET')
         expect(q.url).toBe('BASE/Patient/5')
         done()
 
   it "read", (done)->
-    simpleRead('BASE/Patient/5', done)
-
-  it "read relative", (done)->
-    simpleRead('Patient/5', done)
+    simpleRead('Patient','5', done)
 
   it "update", (done)->
-    entry = {id: 'BASE/Patient/5', content: {resourceType: 'Patient'}, category: tags}
-    http = (x)-> x.success(entry.content, 200, headers, x)
+    resource = {id: '5', resourceType: 'Patient'}
+    http = (x)-> x.success(resource, 200, headers, x)
 
     res.update
       baseUrl: 'BASE'
       http: http
-      entry: entry
-      success: (res, q)->
-        expect(res).not.toBe(null)
-        expect(res.id).toBe('BASE/Patient/5')
-        expect(res.category).toEqual(tags)
+      resource: resource
+      success: (uri, q)->
+        expect(uri).toBe('BASE/Patient/5')
         expect(q.method).toBe('PUT')
         expect(q.url).toBe('BASE/Patient/5')
 
         done()
 
   it "delete", (done)->
-    entry = {id: 'BASE/Patient/5', content: {resourceType: 'Patient'}, category: tags}
-    http = (x)-> x.success(entry.content, 204, headers, x)
-
+    resource = {id: '5', resourceType: 'Patient'}
+    http = (x)-> x.success(resource, 204, headers, x)
     res.delete
       baseUrl: 'BASE'
       http: http
-      entry: entry
+      resource: resource
       success: (res, q)->
-        expect(res).not.toBe(null)
-        expect(res.id).toBe('BASE/Patient/5')
-        expect(res.category).toEqual(tags)
-
         expect(q.method).toBe('DELETE')
         expect(q.url).toBe('BASE/Patient/5')
-
         done()
