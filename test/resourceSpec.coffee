@@ -26,8 +26,8 @@ describe "search:", ->
       baseUrl: 'BASE'
       http: http
       resource: resource
-      success: (uri, q)->
-        expect(uri).toBe('BASE/Patient/5')
+      success: (data, q)->
+        expect(data).toBe(resource)
         expect(q.method).toBe('POST')
         expect(q.url).toBe('BASE/Patient')
         expect(q.data).toBe(JSON.stringify(resource))
@@ -61,8 +61,8 @@ describe "search:", ->
       baseUrl: 'BASE'
       http: http
       resource: resource
-      success: (uri, q)->
-        expect(uri).toBe('BASE/Patient/5')
+      success: (data, q)->
+        expect(data).toBe(resource)
         expect(q.method).toBe('PUT')
         expect(q.url).toBe('BASE/Patient/5')
 

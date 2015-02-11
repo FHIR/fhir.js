@@ -1,4 +1,5 @@
 queryBuider = require('./query')
+utils = require('./utils')
 
 doGet = (http, uri, success, error)->
   http
@@ -9,7 +10,12 @@ doGet = (http, uri, success, error)->
 
 search = ({baseUrl, http, type, query, success, error}) =>
   # TODO: suport passing profile as type and query validation
-  queryStr = queryBuider.query(query)
+  if utils.type(query) == 'object'
+    queryStr = queryBuider.query(query)
+  else if utils.type(query) == 'string'
+    queryStr =  query
+  else
+    queryStr =  ''
   uri = "#{baseUrl}/#{type}/_search?#{queryStr}"
   doGet http, uri, success, error
 

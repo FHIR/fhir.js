@@ -14,14 +14,16 @@ assert = (pred, mess)->
 exports.create = ({baseUrl, http, resource, success, error})->
   type = resource.resourceType
   assert(type, 'resourceType should be present')
+  headers = { Prefer: 'return=representation' }
+
   http
     method: 'POST'
     url: "#{baseUrl}/#{type}"
+    headers: headers
     data: toJson(resource)
     success: (data, status, headers, config)->
       uri = headers('Content-Location')
-      # should we read resource here?
-      success(uri, config)
+      success(data, config)
     error: error
 
 exports.validate = ({baseUrl, http, resource, success, error})->
@@ -48,14 +50,19 @@ exports.read = ({baseUrl, http, resourceType, id, success, error})->
     error: error
 
 exports.update = ({baseUrl, http, resource, success ,error})->
+  console.log(resource)
+  assert(resource.resourceType, 'resourceType expected')
+  assert(resource.id, 'id expected')
   url = utils.absoluteUrl(baseUrl, "#{resource.resourceType}/#{resource.id}")
+  headers = { Prefer: 'return=representation' }
   http
     method: 'PUT'
     url: url
+    headers: headers
     data: toJson(resource)
     success: (data, status, headers, config)->
       uri = headers('Content-Location')
-      success(uri, config)
+      success(data, config)
     error: error
 
 exports.delete = ({baseUrl, http, resource, success, error})->

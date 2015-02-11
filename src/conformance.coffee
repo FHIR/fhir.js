@@ -1,9 +1,9 @@
 conformance = ({baseUrl, http, success, error})->
-    http
-      method: 'GET'
-      url: "#{baseUrl}/metadata"
-      success: success
-      error: error
+  http
+    method: 'GET'
+    url: "#{baseUrl}/metadata"
+    success: success
+    error: error
 
 profile = ({baseUrl, http, type, success, error})=>
   http
