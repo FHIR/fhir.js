@@ -30,7 +30,8 @@
   "author": [
     "Maksym Bodnarchuk <bodnarchuk@gmail.com>",
     "Nikolay Ryzhikov <niquola@gmail.com>",
-    "Josh Mandel <joshua.mandel@childrens.harvard.edu>"
+    "Josh Mandel <joshua.mandel@childrens.harvard.edu>",
+    "Pavel Bubentsov <bazzy.bazzy@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {

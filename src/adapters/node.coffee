@@ -38,6 +38,7 @@ module.exports = (config)->
   ret = [
     "search"
     "conformance"
+    "document"
     "profile"
     "transaction"
     "history"
