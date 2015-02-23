@@ -183,7 +183,7 @@ angular.module('app', ['ng-fhir'])
   .controller 'mainCtrl', ($scope, $fhir)->
      $fhir.search
        type: 'Patient'
-       query: {name: {$exact: 'Maud'}})
+       query: {name: {$exact: 'Maud'}}
        error: (error)-> $scope.error = error
        success: (bundle)-> $scope.patients = bundle.entry
 ```
