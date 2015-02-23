@@ -178,15 +178,14 @@ Usage:
 
 ```coffeescript
 angular.module('app', ['ng-fhir'])
-  # configure base url
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
   .controller 'mainCtrl', ($scope, $fhir)->
-     $fhir.search('Patient', {name: {$exact: 'Maud'}})
-       .error (error)->
-         $scope.error = error
-       .success (bundle)->
-         $scope.patients = bundle.entry
+     $fhir.search
+       type: 'Patient'
+       query: {name: {$exact: 'Maud'}})
+       error: (error)-> $scope.error = error
+       success: (bundle)-> $scope.patients = bundle.entry
 ```
 
 ## jQuery adapter: `jqFhir`
@@ -211,7 +210,7 @@ var fhir = jqFhir({
     auth: {user: 'client', pass: 'secret'}
 })
 
-fhir.search('Patient', {name: 'maud'})
+fhir.search({type: 'Patient', query: {name: 'maud'}})
 .then(function(bundle){
   console.log('Search patients', bundle)
 })
@@ -230,7 +229,7 @@ var client = mkFhir({
   baseUrl: 'http://try-fhirplace.hospital-systems.com'
 });
 
-client.search( 'Patient', { 'birthdate': '1974' }, function(err, bundle) {
+client.search( {type: 'Patient', query: { 'birthdate': '1974' }}, function(err, bundle) {
   var count = (bundle.entry && bundle.entry.length) || 0;
   console.log("# Patients born in 1974: ", count);
 });
