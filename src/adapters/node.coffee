@@ -11,19 +11,28 @@ adapter =
     q = merge(true, q)
     q.headers = q.headers || {}
     q.headers["Accept"] = "application/json"
+    q.headers["Content-Type"] = "application/json"
+    q.body = q.data
     q.json = true
 
     request q, (err, response, body)->
+      headers = (x)->
+        response.headers[x.toLowerCase()]
       if (err)
-        q.error(err, response.statusCode, response.getHeader, q)
+        q.error(err, response.statusCode, headers, q)
+      else if response.statusCode > 399
+        q.error(body, response.statusCode, headers, q)
       else
-        q.success(body, response.statusCode, response.getHeader, q)
+        q.success(body, response.statusCode, headers, q)
 
 wrappToErrbackForm = (fhir, fn)->
   (opt, cb) ->
+    opt.callback = cb
     opt = merge true, opt,
-      success: (res)-> cb(null, res)
-      error: (err)-> cb(err, null)
+      success: (res, status, headersFn, query)->
+        cb(null, res, status, headersFn, query)
+      error: (err, status, headersFn, query)->
+        cb(err, null, status, headersFn, query)
     fhir[fn](opt)
 
 module.exports = (config)->
