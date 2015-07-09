@@ -1,6 +1,6 @@
 {
   "name": "fhir.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "devDependencies": {
     "bower": "latest",
     "jasmine-node": "latest",
