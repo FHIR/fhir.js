@@ -27,12 +27,12 @@ adapter =
 
 wrappToErrbackForm = (fhir, fn)->
   (opt, cb) ->
-    opt.callback = cb
+    opt.callback = cb if cb
     opt = merge true, opt,
       success: (res, status, headersFn, query)->
-        cb(null, res, status, headersFn, query)
+        cb(null, res, status, headersFn, query) if cb
       error: (err, status, headersFn, query)->
-        cb(err, null, status, headersFn, query)
+        cb(err, null, status, headersFn, query) if cb
     fhir[fn](opt)
 
 module.exports = (config)->

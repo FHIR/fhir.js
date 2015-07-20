@@ -18,9 +18,9 @@ new_pt =
   resource:
     resourceType: 'Patient'
     name: [ {
-      family: [ 'Bob' ]
-      given: [ 'Smith' ]
-    } ]
+      family: [ 'Fhirjs' ]
+      given: [ 'Node' ]
+    }]
     birthDate: '1990-06-20'
 
 describe "nodejs adapter", ->
@@ -33,4 +33,9 @@ describe "nodejs adapter", ->
         console.log 'error', err
       else
         console.log 'created', uri
+      done()
+
+  it "search", (done) ->
+    subject.search {type: 'Patient', query: {name: 'Node'}}, (err,res)->
+      console.log(err,res)
       done()
