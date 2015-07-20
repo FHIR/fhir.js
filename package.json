@@ -2,19 +2,19 @@
   "name": "fhir.js",
   "version": "0.0.7",
   "devDependencies": {
+    "angular": "~1.4.0",
     "bower": "latest",
     "jasmine-node": "latest",
-    "karma": "latest",
-    "karma-phantomjs-launcher": "latest",
-    "karma-chrome-launcher": "latest",
-    "karma-jasmine": "~0.2.0",
-    "phantomjs": "latest",
-    "karma-coffee-preprocessor": "latest",
-    "webpack-dev-server": "latest",
-    "karma-webpack": "latest",
-    "karma-sourcemap-loader": "latest",
-    "angular":"~1.4.0",
     "jquery": "~2.1.1",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "latest",
+    "karma-coffee-preprocessor": "latest",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.0",
+    "karma-sourcemap-loader": "latest",
+    "karma-webpack": "latest",
+    "phantomjs": "latest",
+    "webpack-dev-server": "latest",
     "yui": "~3.17.1"
   },
   "description": "FHIR javascript client",
@@ -24,7 +24,12 @@
     "url": "git@github.com:FHIR/fhir.js.git"
   },
   "scripts": {
-    "prepublish": "./node_modules/.bin/coffee --compile -o lib/ src/"
+    "start": "webpack-dev-server --port $PORT --progress --colors",
+    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && coffee --output lib --compile src",
+    "spec": "node_modules/karma/bin/karma start --single-run",
+    "integrate": "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
+    "test": "node_modules/.bin/jasmine-node --coffee node_tests/",
+    "spec-watch": "node_modules/karma/bin/karma start"
   },
   "keywords": [
     "fhir",
@@ -54,13 +59,5 @@
     "bin",
     "lib",
     "src"
-  ],
-  "scripts": {
-    "start":   "webpack-dev-server --port $PORT --progress --colors",
-    "build":   "rm -rf dist && `npm bin`/webpack --progress --colors && coffee --output lib --compile src",
-    "spec":    "node_modules/karma/bin/karma start --single-run",
-    "integrate":    "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
-    "test": "node_modules/.bin/jasmine-node --coffee node_tests/",
-    "spec-watch":    "node_modules/karma/bin/karma start"
-  }
+  ]
 }
