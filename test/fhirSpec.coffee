@@ -1,9 +1,9 @@
-fhir = require('../src/fhir.coffee')
-
+fhir = require('../src/fhir')
 
 describe "fhir:", ->
   cfg = {baseUrl: 'BASE'}
-  adapter =  {http: ((x)-> x.success(x))}
+  res = true
+  adapter =  {http: ((x)-> x.success && x.success(x))}
   subject = fhir(cfg, adapter)
 
   it "api", ()->
@@ -11,17 +11,26 @@ describe "fhir:", ->
     expect(subject.profile).not.toBe(null)
     expect(subject.transaction).not.toBe(null)
 
-  it "search", (done)->
-    subject.search type: 'Patient', query: {name: 'maud'}, success: done
+  it "search", ->
+    subject.search type: 'Patient', query: {name: 'maud'}, success: (x)->
+      expect(x.url).toEqual('BASE/Patient/_search?name=maud')
 
-  it "conformance", (done)->
-    subject.conformance success: done
+  it "conformance", ->
+    subject.conformance success: (x)->
+      expect(x.url).toEqual('BASE/metadata')
 
-  it "profile", (done)->
-    subject.profile type: 'Patient', success: done
+  it "profile", ->
+    subject.profile type: 'Patient',success: (x)->
+      expect(x.url).toEqual('BASE/Profile/Patient')
 
-  it "transaction", (done)->
-    subject.transaction bundle: 'bundle', success: done
 
-  it "read", (done)->
-    subject.read id :'BASE/Patient/123', success: done
+  it "transaction", ->
+    subject.transaction bundle: 'bundle',success: (x)->
+      expect(x.url).toEqual('BASE/')
+      expect(x.method).toEqual('POST')
+
+
+  it "read", ->
+    subject.read type: 'Patient', id :'123',success: (x)->
+      expect(x.url).toEqual('BASE/Patient/123')
+
