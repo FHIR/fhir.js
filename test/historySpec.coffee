@@ -1,10 +1,16 @@
-history = require('../src/history.coffee')
+fhir = require('../src/fhir')
 
 nop = (x)-> x
 
 describe 'history', ->
+  cfg = {baseUrl: 'BASE'}
+  res = true
+  adapter =  {http: ((x)-> x.success && x.success(x))}
+  subject = fhir(cfg, adapter)
+  history = subject.history
+
   it 'success', (done)->
-    http = (q)->
+    adapter.http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/Alert/test-id/_history')
       expect(q.params._count).toBe(10)
@@ -24,7 +30,7 @@ describe 'history', ->
       error: nop
 
   it 'error', (done)->
-    http = (q)-> q.error('ok')
+    adapter.http = (q)-> q.error('ok')
 
     history
       baseUrl: 'BASE'
@@ -39,7 +45,7 @@ describe 'history', ->
 
 describe 'historyType', ->
   it 'success', (done)->
-    http = (q)->
+    adapter.http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/Alert/_history')
       q.success('ok')
@@ -54,7 +60,7 @@ describe 'historyType', ->
       error: nop
 
   it 'error', (done)->
-    http = (q)-> q.error('ok')
+    adapter.http = (q)-> q.error('ok')
 
     history
       baseUrl:'BASE',
@@ -67,7 +73,7 @@ describe 'historyType', ->
 
 describe 'historyAll', ->
   it 'success', (done)->
-    http = (q)->
+    adapter.http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/_history')
       q.success('ok')
@@ -81,7 +87,7 @@ describe 'historyAll', ->
       error: nop
 
   it 'error', (done)->
-    http = (q)-> q.error('ok')
+    adapter.http = (q)-> q.error('ok')
 
     history
       baseUrl: 'BASE'

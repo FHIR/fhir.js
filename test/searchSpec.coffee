@@ -1,7 +1,11 @@
-subject = require('../src/search.coffee')
+fhir = require('../src/fhir')
 patientBundle = require('../fixtures/patientBundle.js')
 
 nop = ()->
+cfg = {baseUrl: 'BASE'}
+res = true
+adapter =  {http: ((x)-> x.success && x.success(x))}
+subject = fhir(cfg, adapter)
 
 describe "search:", ->
   it "search success", (done)->
@@ -25,11 +29,11 @@ describe "search:", ->
 
     http = (q)-> q.error('error')
 
-    subject.search(baseUrl: 'BASE',http: http, type: 'Patient', query: {name: 'maud'}, success: nop, error: err)
+    subject.search(http: http, type: 'Patient', query: {name: 'maud'}, success: nop, error: err)
 
   it "fetch prev page fails when no link is available", (done)->
     err = (msg)-> done()
-    subject.prev(baseUrl: 'BASE', http: nop, bundle: patientBundle, success: nop, error: err)
+    subject.prevPage( http: nop, bundle: patientBundle, success: nop, error: err)
 
   it "fetch next page suceeds", (done)->
     http = (q)->
@@ -38,4 +42,4 @@ describe "search:", ->
       console.log('finishing')
       done()
 
-    subject.next(baseUrl: 'BASE', http: http, bundle: patientBundle, success: nop, error: (e)->console.log("ERR",e))
+    subject.nextPage(http: http, bundle: patientBundle, success: nop, error: (e)->console.log("ERR",e))

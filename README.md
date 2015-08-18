@@ -258,6 +258,16 @@ var fhir = jqFhir({
 
 fhir.search(type: 'Patient', query: {name: 'maud'}, success: function(bundle) {}, error: function() {})
 ```
+## Release Notes
+
+### release 0.1
+
+API changes history is split into 3 fns:
+
+* fhir.history
+* fhir.typeHistory
+* fhir.resourceHistory
+
 ## TODO
 
 * npm package

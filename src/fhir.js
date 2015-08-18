@@ -68,7 +68,7 @@
                 var data = arg.bundle || arg.data;
                 if(data){ opts.data = toJson(data); }
                 if(withCache && cfg.cache){ opts.cache = cache[baseUrl];}
-                return http(opts);
+                return (arg.http || http)(opts);
             };
         };
 
@@ -101,8 +101,9 @@
 
         var bundleRelPath =  function(rel){
             return function(args){
-                var matched = function(x){return x.rel && x.rel == rel;}
-                var res =  bundle && (bundle.link || []).find(matched)[0];
+                var matched = function(x){return x.rel && x.rel === rel;};
+                var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
+                console.log('res', res, 'links', args.bundle.link);
                 if(res){
                     return res;
                 }else{
@@ -112,14 +113,21 @@
         };
 
         var searchPath =  function(args){
-            var pth = resourceTypePath(args) + "/_search";
+            var pth = path(resourceTypePath,"_search")(args);
             var queryStr = queryBuider.query(args.query);
             return pth + "?" + queryStr;
         };
 
+        var notImpl = function(err){
+            return function(){
+                throw new Error (err + " not " + implemented);
+            };
+        };
+
         return {
+            _http: function(mock){http = wrap(cfg, mock, middlewares.http);},
             conformance: Operation('GET', path('metadata')),
-            document: Operation('POST', path('/Document')),
+            document: Operation('POST', path('Document')),
             profile: Operation('GET', path(path("Profile"), ":type")),
             transaction: Operation('POST', path('')),
             history: Operation('GET', path('_history')),
@@ -131,16 +139,12 @@
             create: wrapContentLocation(Operation('POST', resourceTypePath)),
             validate: Operation('POST', path(resourceTypePath, "_validate")),
             // TODO fix wrap
-            search: Operation('POST', searchPath),
+            search: Operation('GET', searchPath),
             update: wrapContentLocation(Operation('PUT', resourcePath)),
-            nextPage: Operation('POST', bundleRelPath("next")),
-            prevPage: Operation('POST', bundleRelPath("prev")),
-            resolve: function(opt) {
-                return resolve.async(depsWithCache(opt));
-            },
-            resolveSync: function(opt) {
-                return resolve.sync(depsWithCache(opt));
-            }
+            nextPage: Operation('GET', bundleRelPath("next")),
+            prevPage: Operation('GET', bundleRelPath("prev")),
+            resolve: notImpl('resolve'),
+            resolveSync: notImpl('resolveSync')
         };
     };
 

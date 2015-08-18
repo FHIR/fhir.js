@@ -1,4 +1,4 @@
-res = require('../src/resource.coffee')
+fhir = require('../src/fhir')
 
 nop = ()->
 
@@ -6,6 +6,11 @@ tags = [{term: 'term', scheme: 'sch', label: 'lbl'}]
 
 mockHeaders = (hs)->
   (nm)-> hs[nm]
+
+cfg = {baseUrl: 'BASE'}
+res = true
+adapter =  {http: ((x)-> x.success && x.success(x))}
+res = fhir(cfg, adapter)
 
 describe "search:", ->
   it "api", ->
@@ -19,8 +24,8 @@ describe "search:", ->
     'Content-Location': 'BASE/Patient/5'
 
   it "create", (done)->
-    # http = (x)-> x.success(x, 201, headers, x)
-    http = (x)-> x.success(resource, 200, headers, x)
+    # adapter.http = (x)-> x.success(x, 201, headers, x)
+    adapter.http = (x)-> x.success(resource, 200, headers, x)
     resource = {resourceType: 'Patient', meta: {tags: tags}}
     res.create
       baseUrl: 'BASE'
@@ -35,7 +40,7 @@ describe "search:", ->
 
   simpleRead = (tp, id, done) ->
     resource = {id: '5', resourceType: 'Patient', meta: {tags: tags}}
-    http = (x)-> x.success(resource, 200, headers, x)
+    adapter.http = (x)-> x.success(resource, 200, headers, x)
 
     res.read
       baseUrl: 'BASE'
@@ -55,7 +60,7 @@ describe "search:", ->
 
   it "update", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    http = (x)-> x.success(resource, 200, headers, x)
+    adapter.http = (x)-> x.success(resource, 200, headers, x)
 
     res.update
       baseUrl: 'BASE'
@@ -70,7 +75,7 @@ describe "search:", ->
 
   it "delete", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    http = (x)-> x.success(resource, 204, headers, x)
+    adapter.http = (x)-> x.success(resource, 204, headers, x)
     res.delete
       baseUrl: 'BASE'
       http: http

@@ -1,4 +1,4 @@
-utils = require('../src/utils.coffee')
+utils = require('../src/utils')
 
 describe "utils", ->
   it "trim", ->

@@ -1,4 +1,4 @@
-wrap = require('../src/wrap.coffee')
+wrap = require('../src/wrap')
 
 describe "wrap:", ()->
   identity = (x)-> x

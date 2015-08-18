@@ -1,15 +1,21 @@
-conf = require('../src/conformance.coffee')
+fhir = require('../src/fhir')
 
 nop = (x)-> x
 
+cfg = {baseUrl: 'BASE'}
+res = true
+adapter =  {http: ((x)-> x.success && x.success(x))}
+subject = fhir(cfg, adapter)
+
 describe 'conformance', ->
+
   it 'success', (done)->
     http = (q)->
       expect(q.method).toBe('GET')
       expect(q.url).toBe('BASE/metadata')
       q.success('ok')
 
-    conf.conformance
+    subject.conformance
       baseUrl: 'BASE'
       http: http
       success: (data)->
@@ -19,7 +25,7 @@ describe 'conformance', ->
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    conf.conformance
+    subject.conformance
       baseUrl: 'BASE'
       http: http
       success: nop
@@ -34,7 +40,7 @@ describe 'profile', ->
       expect(q.url).toBe('BASE/Profile/Alert')
       q.success('ok')
 
-    conf.profile
+    subject.profile
       baseUrl: 'BASE'
       http: http
       type: 'Alert'
@@ -44,7 +50,7 @@ describe 'profile', ->
   it 'error', (done)->
     http = (q)-> q.error('ok')
 
-    conf.profile
+    subject.profile
       baseUrl: 'BASE'
       http: http
       type: 'Alert'

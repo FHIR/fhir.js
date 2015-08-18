@@ -1,4 +1,4 @@
-subject = require('../src/resolve.coffee')
+fhir = require('../src/fhir')
 rx = require('../fixtures/medicationPrescription.js')
 
 bpBundle = require('../fixtures/bpBundle.js')
@@ -11,14 +11,15 @@ systolic = bpBundle.entry[1]
 diastolic = require('../fixtures/diastolic.js')
 
 nop = ()->
-
 cache = {}
+cfg = {baseUrl: 'BASE'}
+adapter =  {http: ((x)-> x.success && x.success(x))}
+subject = fhir(cfg, adapter)
 
-describe "resolve synchronous", ->
-  http = nop
+describe "resolve resolveSynchronous", ->
 
   it "resolves a missing contained resource as null", ->
-    resolved = subject.sync
+    resolved = subject.resolveSync
       baseUrl: 'BASE'
       http: http
       cache: cache
@@ -27,7 +28,7 @@ describe "resolve synchronous", ->
     expect(resolved).toEqual(null)
 
   it "resolves a contained resource", ->
-    resolved = subject.sync
+    resolved = subject.resolveSync
       baseUrl: 'BASE'
       http: http
       cache: cache
@@ -36,7 +37,7 @@ describe "resolve synchronous", ->
     expect(resolved.content).toEqual(rx.contained[0])
 
   it "resolves a missing bundled resource as null", ->
-    resolved = subject.sync
+    resolved = subject.resolveSync
       baseUrl: 'BASE',
       http: http,
       cache: cache,
@@ -45,7 +46,7 @@ describe "resolve synchronous", ->
     expect(resolved).toEqual(null)
 
   it "resolves a co-bundled resource", ->
-    resolved = subject.sync
+    resolved = subject.resolveSync
       baseUrl: 'BASE'
       http: http
       cache: cache
@@ -54,7 +55,7 @@ describe "resolve synchronous", ->
     expect(resolved).toEqual(systolic)
 
   it "resolves a cached resource", ->
-    resolved = subject.sync
+    resolved = subject.resolveSync
       baseUrl: 'BASE',
       http: http,
       cache: {'BASE/Observation/9573':diastolic}
@@ -62,12 +63,12 @@ describe "resolve synchronous", ->
 
     expect(resolved).toEqual(diastolic)
 
-describe "resolve async", ->
+describe "resolve resolve", ->
 
   it "resolves a missing contained resource as null", (done)->
     http = (q)-> (throw "should not be called")
     err = (e)-> done()
-    subject.async
+    subject.resolve
       baseUrl: 'BASE'
       http: http
       cache:cache
@@ -80,7 +81,7 @@ describe "resolve async", ->
     cb = (r)->
       expect(r.content).toEqual(rx.contained[0])
       done()
-    subject.async
+    subject.resolve
       baseUrl: 'BASE'
       http: http
       cache: cache
@@ -93,7 +94,7 @@ describe "resolve async", ->
     cb = (r)->
       expect(r).toEqual(systolic)
       done()
-    subject.async
+    subject.resolve
       baseUrl: 'BASE'
       http: http
       cache: cache
@@ -108,7 +109,7 @@ describe "resolve async", ->
       expect(q.url).toBe('BASE/Observation/9573')
       done()
 
-    subject.async
+    subject.resolve
       baseUrl: 'BASE'
       http: http
       reference: diastolicRef
