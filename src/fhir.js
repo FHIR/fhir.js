@@ -1,153 +1,131 @@
 (function() {
-    var wrap = require("./wrap");
     var utils = require("./utils");
     var resolve = require('./resolve');
-    var merge = require('merge');
     var queryBuider = require('./query');
     var cache = {};
     var constantly = function(x){return function(){return x;};};
 
-    var buildParams = function(args, params){
-        params = params || {};
+    var M = require('./operation');
+    var Operation = M.Operation;
+    var Path = M.Path;
+    var Method = M.Method;
+    var Attribute = M.Attribute;
+
+    var MagicParams = Attribute('params', function(args){
+        var params = args.params || {};
         if(args.since){params._since = args.since;}
         if(args.count){params._count = args.count;}
         return params;
-    };
+    });
 
-    //I do not like this
-    var wrapContentLocation = function(h){
+    // TODO work better with promises
+    var ContentLocation = Operation(function(h){
         return function(args){
             var success = args.success;
             args.success = function(data, status, headers, config){
                 var uri = headers('Content-Location');
-                success(uri, config);
+                success(uri, status, headers, config);
             };
             return h(args);
         };
+    });
+
+    var toJson = function(x){
+        return (utils.type(x) == 'object') ? JSON.stringify(x) : x;
     };
 
-    var errors = function(arg,keys){
-        var k;
-        var noerrors = true;
-        var res = {};
-        for(k in keys){
-            if(!arg[k]){
-                noerrors = false;
-                res[k] = keys[k];
+    var JsonData = Attribute('data', function(args){
+        var data = args.bundle || args.data || args.resource;
+        return data && toJson(data);
+    });
+
+    var BundleRelUrl =  function(rel){
+        return Attribute('url', function(args){
+            var matched = function(x){return x.rel && x.rel === rel;};
+            var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
+            if(res && res.href){
+                return res.href;
+            }else{
+                throw new Error("No " + rel + " link found in bundle");
             }
-        }
-        if(noerrors){
-           return null;
-        }else{
-           return res;
-        }
+        });
     };
 
-    var emptyFn = function(){};
-    var fhir = function(cfg, adapter) {
-        var middlewares = cfg.middlewares || {};
-        var http = wrap(cfg, adapter.http, middlewares.http);
-        var baseUrl = cfg.baseUrl;
-        var toJson = function(resource){
-            if(utils.type(resource) == 'object'){
-                return JSON.stringify(resource);
-            }else{
-                return resource;
+    var CatchErrors = Operation(function(h){
+        return function(args){
+            try{
+                return h(args);
+            }catch(e){
+               var error = args.error;
+               console.log('Error', e.message);
+               if(error){ error(e); };
+               return null;
             }
-        };
-        var Operation = function(method, pathFn, withCache){
-            if(!pathFn) { throw new Error("I need pathFn(args)"); }
-            return function(arg){
-                opts = {
-                        method: method,
-                        url: baseUrl + pathFn(arg),
-                        params: buildParams(arg, arg.params),
-                        success: arg.success || emptyFn,
-                        error: arg.error || emptyFn
-                    };
-                var data = arg.bundle || arg.data;
-                if(data){ opts.data = toJson(data); }
-                if(withCache && cfg.cache){ opts.cache = cache[baseUrl];}
-                return (arg.http || http)(opts);
-            };
-        };
+      };
+    });
 
-        var processPath = function(pth, args){
-            if(pth.indexOf(":") > -1){
-                var k = args[pth.substring(1)];
-                if(k){
-                    return k;
-                }else{
-                    throw new Error("Parameter "+pth+" is required: " + JSON.stringify(args));
-                }
-            }else{
-                return pth;
-            }
-        };
-        var path = function(h, pth){
-            if(!pth){
-                pth = h;
-                h = false;
-            }
+    var InjectConfig = function(cfg){
+        return Operation(function(h){
             return function(args){
-                return (h ? h(args) : "") + "/" + processPath(pth, args) ;
+                args.baseUrl = cfg.baseUrl;
+                args.cache = cache;
+                return h(args);
             };
-        };
-        var resourceTypePath = path(":type");
-        var resourceTypeHxPath = path(resourceTypePath, "_history");
-        var resourcePath = path(resourceTypePath, ":id");
-        var resourceHxPath = path(resourcePath, "/_history");
-        var resourceVersionPath = path(resourceHxPath, "/:versionId");
+        });
+    };
 
-        var bundleRelPath =  function(rel){
-            return function(args){
-                var matched = function(x){return x.rel && x.rel === rel;};
-                var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
-                console.log('res', res, 'links', args.bundle.link);
-                if(res){
-                    return res;
-                }else{
-                    throw new Error("No " + rel + " link found in bundle");
-                }
-            };
-        };
 
-        var searchPath =  function(args){
-            var pth = path(resourceTypePath,"_search")(args);
-            var queryStr = queryBuider.query(args.query);
-            return pth + "?" + queryStr;
+    var Http = function(cfg, adapter){
+        return function(args){
+            return (args.http || adapter.http  || cfg.http)(args);
         };
+    };
 
-        var notImpl = function(err){
-            return function(){
-                throw new Error (err + " not " + implemented);
-            };
-        };
+    var searchParams = Attribute('url', function(args){
+        var url = args.url;
+        var queryStr = queryBuider.query(args.query);
+        return url + "?" + queryStr;
+    });
+
+    var fhir = function(cfg, adapter){
+        var Defaults = InjectConfig(cfg).and(CatchErrors);
+
+        var GET = Defaults.and(Method('GET'));
+        var POST = Defaults.and(Method('POST'));
+        var PUT = Defaults.and(Method('PUT'));
+        var DELETE = Defaults.and(Method('DELETE'));
+
+        var http = Http(cfg, adapter);
+
+        var BaseUrl = Path(cfg.baseUrl);
+        var resourceTypePath = BaseUrl.slash(function(x){return x.type || (x.resource && x.resource.resourceType);});
+        var searchPath = resourceTypePath.slash("_search");
+        var _idPath = function(x){return x.id || (x.resource && x.resource.id);};
+        var resourceTypeHxPath = resourceTypePath.slash("_history");
+        var resourcePath = resourceTypePath.slash(_idPath);
+        var resourceHxPath = resourcePath.slash("_history");
+        var resourceVersionPath = resourceHxPath.slash(":versionId");
 
         return {
-            _http: function(mock){http = wrap(cfg, mock, middlewares.http);},
-            conformance: Operation('GET', path('metadata')),
-            document: Operation('POST', path('Document')),
-            profile: Operation('GET', path(path("Profile"), ":type")),
-            transaction: Operation('POST', path('')),
-            history: Operation('GET', path('_history')),
-            typeHistory: Operation('GET', resourceTypeHxPath),
-            resourceHistory: Operation('GET', resourceHxPath),
-            read: Operation('GET', resourcePath),
-            vread: Operation('GET', resourceVersionPath),
-            "delete": Operation('DELETE', resourcePath),
-            create: wrapContentLocation(Operation('POST', resourceTypePath)),
-            validate: Operation('POST', path(resourceTypePath, "_validate")),
-            // TODO fix wrap
-            search: Operation('GET', searchPath),
-            update: wrapContentLocation(Operation('PUT', resourcePath)),
-            nextPage: Operation('GET', bundleRelPath("next")),
-            prevPage: Operation('GET', bundleRelPath("prev")),
-            resolve: notImpl('resolve'),
-            resolveSync: notImpl('resolveSync')
+            conformance: GET.and(BaseUrl.slash("metadata")).end(http),
+            document: POST.and(BaseUrl.slash("Document")).end(http),
+            profile:  GET.and(BaseUrl.slash("Profile").slash(":type")).end(http),
+            transaction: POST.and(BaseUrl).and(JsonData).end(http),
+            history: GET.and(BaseUrl.slash("_history")).and(MagicParams).end(http),
+            typeHistory: GET.and(resourceTypeHxPath).and(MagicParams).end(http),
+            resourceHistory: GET.and(resourceHxPath).and(MagicParams).end(http),
+            read: GET.and(resourcePath).end(http),
+            vread: GET.and(resourceHxPath).end(http),
+            "delete": DELETE.and(resourcePath).end(http),
+            create: POST.and(resourceTypePath).and(ContentLocation).and(JsonData).end(http),
+            validate: POST.and(resourceTypePath.slash("_validate")).and(ContentLocation).and(JsonData).end(http),
+            search: GET.and(searchPath).and(searchParams).and(MagicParams).end(http),
+            update: PUT.and(resourcePath).and(ContentLocation).and(JsonData).end(http),
+            nextPage: GET.and(BundleRelUrl("next")).end(http),
+            prevPage: GET.and(BundleRelUrl("prev")).end(http),
+            resolve: GET.and(Operation(resolve.resolve)).end(http)
         };
+
     };
-
     module.exports = fhir;
-
 }).call(this);

@@ -1,4 +1,4 @@
-fhir = require('../src/query.coffee')
+fhir = require('../src/query')
 describe "linearizeParams:", ->
   subject = fhir._query
 

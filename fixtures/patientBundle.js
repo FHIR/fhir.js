@@ -1,15 +1,15 @@
 module.exports = {
   "resourceType": "Bundle",
   "title": "FHIR Atom Feed",
-  "id": "BASE/Patient?_count=1",
+  "id": "/BASE/Patient?_count=1",
   "link": [
     {
       "rel": "self",
-      "href": "BASE/Patient?_count=1"
+      "href": "/BASE/Patient?_count=1"
     },
     {
       "rel": "next",
-      "href": "BASE/Patient?_count=1&_skip=1"
+      "href": "/BASE/Patient?_count=1&_skip=1"
     }
   ],
   "totalResults": 58,
@@ -23,7 +23,7 @@ module.exports = {
   "entry": [
     {
       "title": "Patient/1032702",
-      "id": "BASE/Patient/1032702",
+      "id": "/BASE/Patient/1032702",
       "updated": "2014-09-03T16:12:57.963-07:00",
       "content": {
         "resourceType": "Patient",

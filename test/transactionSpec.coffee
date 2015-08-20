@@ -1,37 +1,24 @@
 fhir = require('../src/fhir')
 
 nop = (x)-> x
-bundle = 'bundle'
+bundle = {a: 1}
 
 cfg = {baseUrl: 'BASE'}
 res = true
-adapter =  {http: ((x)-> x.success && x.success(x))}
-subject = fhir(cfg, adapter)
+subject = fhir(cfg, {})
 trans = subject.transaction
 
 describe 'transaction', ->
   it 'success', (done)->
-    http = (q)->
-      expect(q.method).toBe('POST')
-      expect(q.url).toBe('BASE/')
-      expect(q.data).toBe(bundle)
-      q.success('ok')
+    http = (q)-> q.success('ok', null, null, q)
 
     trans
       baseUrl: 'BASE'
       http: http
-      bundle: bundle,
-      success: (data)->
-        expect(data).toBe('ok')
-        done()
-
-  it 'error', (done)->
-    http = (q)-> q.error('ok')
-
-    trans
-      baseUrl: 'BASE'
-      http: http
-      success: nop
-      error: (data)->
+      bundle: {a: 1},
+      success: (data, status, headers, q)->
+        expect(q.method).toBe('POST')
+        expect(q.url).toBe('/BASE')
+        expect(q.data).toEqual('{"a":1}')
         expect(data).toBe('ok')
         done()

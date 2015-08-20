@@ -21,38 +21,36 @@ describe "search:", ->
     expect(res.delete).not.toBe(null)
 
   headers = mockHeaders
-    'Content-Location': 'BASE/Patient/5'
+    'Content-Location': '/BASE/Patient/5'
 
   it "create", (done)->
-    # adapter.http = (x)-> x.success(x, 201, headers, x)
-    adapter.http = (x)-> x.success(resource, 200, headers, x)
+    # http = (x)-> x.success(x, 201, headers, x)
+    http = (x)-> x.success(resource, 200, headers, x)
     resource = {resourceType: 'Patient', meta: {tags: tags}}
     res.create
-      baseUrl: 'BASE'
       http: http
       resource: resource
-      success: (uri, q)->
-        expect(uri).toBe('BASE/Patient/5')
+      success: (uri, status, headers, q)->
+        expect(uri).toBe('/BASE/Patient/5')
         expect(q.method).toBe('POST')
-        expect(q.url).toBe('BASE/Patient')
+        expect(q.url).toBe('/BASE/Patient')
         expect(q.data).toBe(JSON.stringify(resource))
         done()
 
   simpleRead = (tp, id, done) ->
     resource = {id: '5', resourceType: 'Patient', meta: {tags: tags}}
-    adapter.http = (x)-> x.success(resource, 200, headers, x)
+    http = (x)-> x.success(resource, 200, headers, x)
 
     res.read
-      baseUrl: 'BASE'
       http: http
-      resourceType: tp
+      type: tp
       id: id
-      success: (res, q)->
+      success: (res, status, headers, q)->
         expect(res).not.toBe(null)
         expect(res.id).toBe('5')
         expect(res.meta.tags).toEqual(tags)
         expect(q.method).toBe('GET')
-        expect(q.url).toBe('BASE/Patient/5')
+        expect(q.url).toBe('/BASE/Patient/5')
         done()
 
   it "read", (done)->
@@ -60,27 +58,26 @@ describe "search:", ->
 
   it "update", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    adapter.http = (x)-> x.success(resource, 200, headers, x)
+    http = (x)-> x.success(resource, 200, headers, x)
 
     res.update
-      baseUrl: 'BASE'
       http: http
+      type: 'Patient'
       resource: resource
-      success: (uri, q)->
-        expect(uri).toBe('BASE/Patient/5')
+      success: (uri, status, headers, q)->
+        expect(uri).toBe('/BASE/Patient/5')
         expect(q.method).toBe('PUT')
-        expect(q.url).toBe('BASE/Patient/5')
+        expect(q.url).toBe('/BASE/Patient/5')
 
         done()
 
   it "delete", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    adapter.http = (x)-> x.success(resource, 204, headers, x)
+    http = (x)-> x.success(resource, 204, headers, x)
     res.delete
-      baseUrl: 'BASE'
       http: http
       resource: resource
-      success: (res, q)->
+      success: (res, status, headers, q)->
         expect(q.method).toBe('DELETE')
-        expect(q.url).toBe('BASE/Patient/5')
+        expect(q.url).toBe('/BASE/Patient/5')
         done()
