@@ -2,7 +2,10 @@
     var utils = require("./utils");
     var resolve = require('./resolve');
     var queryBuider = require('./query');
+    var auth = require('./middlewares/auth');
+
     var cache = {};
+
     var constantly = function(x){return function(){return x;};};
 
     var M = require('./operation');
@@ -43,11 +46,8 @@
         return Attribute('url', function(args){
             var matched = function(x){return x.rel && x.rel === rel;};
             var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
-            if(res && res.href){
-                return res.href;
-            }else{
-                throw new Error("No " + rel + " link found in bundle");
-            }
+            if(res && res.href){ return res.href; }
+            else{ throw new Error("No " + rel + " link found in bundle");}
         });
     };
 
@@ -69,6 +69,7 @@
             return function(args){
                 args.baseUrl = cfg.baseUrl;
                 args.cache = cache;
+                args.auth = args.auth || cfg.auth;
                 return h(args);
             };
         });
@@ -88,7 +89,10 @@
     });
 
     var fhir = function(cfg, adapter){
-        var Defaults = InjectConfig(cfg).and(CatchErrors);
+        var Defaults = InjectConfig(cfg)
+                .and(CatchErrors)
+                .and(auth.Basic)
+                .and(auth.Bearer);
 
         var GET = Defaults.and(Method('GET'));
         var POST = Defaults.and(Method('POST'));

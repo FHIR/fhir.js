@@ -25,27 +25,8 @@
     return prov = {
       $get: function($http) {
         var adapter, fhir;
-        adapter = {
-          http: implementXhr($http)
-        };
-        fhir = mkFhir(prov, adapter);
-        return {
-          search: fhir.search,
-          conformance: fhir.conformance,
-          document: fhir.document,
-          profile: fhir.profile,
-          transaction: fhir.transaction,
-          history: fhir.history,
-          validate: fhir.validate,
-          create: fhir.create,
-          read: fhir.read,
-          update: fhir.update,
-          "delete": fhir["delete"],
-          tags: fhir.tags,
-          affixTags: fhir.affixTags,
-          removeTags: fhir.removeTags,
-          vread: fhir.vread
-        };
+        adapter = {http: implementXhr($http)};
+        return mkFhir(prov, adapter);
       }
     };
   });

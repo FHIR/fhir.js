@@ -1,4 +1,4 @@
-searchResultsAsGraph = require('../src/middlewares/searchResultsAsGraph.coffee')
+searchResultsAsGraph = require('../src/middlewares/searchResultsAsGraph')
 bpBundle = require('../fixtures/bpBundle.js')
 medRx = require('../fixtures/medicationPrescription.js')
 

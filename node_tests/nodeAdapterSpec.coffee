@@ -1,12 +1,9 @@
-fhir = require('../src/adapters/node.coffee')
+fhir = require('../src/adapters/node')
 
 describe "nodejs adapter", ->
 
   it "simplest", (done) ->
-    subject = fhir
-        baseUrl: 'https://ci-api.fhir.me',
-        patient: '123',
-        auth: {user: 'client', pass: 'secret'}
+    subject = fhir baseUrl: 'https://ci-api.fhir.me', patient: '123', auth: {user: 'client', pass: 'secret'}
 
     subject.search {type: 'Patient', query: {name: 'adams'}},
       (err, res)->
@@ -24,8 +21,7 @@ new_pt =
     birthDate: '1990-06-20'
 
 describe "nodejs adapter", ->
-  subject = fhir
-      baseUrl: 'http://fhirtest.uhn.ca/baseDstu1'
+  subject = fhir baseUrl: 'http://fhirtest.uhn.ca/baseDstu1'
 
   it "simplest", (done) ->
     subject.create new_pt, (err, uri)->

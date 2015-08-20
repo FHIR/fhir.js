@@ -1,4 +1,4 @@
-searchByPatient = require('../src/middlewares/searchByPatient.coffee')
+searchByPatient = require('../src/middlewares/searchByPatient')
 
 describe "Search by patient:", ()->
   pid = "123"
