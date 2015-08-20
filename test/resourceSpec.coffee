@@ -21,7 +21,7 @@ describe "search:", ->
     expect(res.delete).not.toBe(null)
 
   headers = mockHeaders
-    'Content-Location': '/BASE/Patient/5'
+    'Content-Location': 'BASE/Patient/5'
 
   it "create", (done)->
     # http = (x)-> x.success(x, 201, headers, x)
@@ -31,9 +31,9 @@ describe "search:", ->
       http: http
       resource: resource
       success: (uri, status, headers, q)->
-        expect(uri).toBe('/BASE/Patient/5')
+        expect(uri).toBe('BASE/Patient/5')
         expect(q.method).toBe('POST')
-        expect(q.url).toBe('/BASE/Patient')
+        expect(q.url).toBe('BASE/Patient')
         expect(q.data).toBe(JSON.stringify(resource))
         done()
 
@@ -50,7 +50,7 @@ describe "search:", ->
         expect(res.id).toBe('5')
         expect(res.meta.tags).toEqual(tags)
         expect(q.method).toBe('GET')
-        expect(q.url).toBe('/BASE/Patient/5')
+        expect(q.url).toBe('BASE/Patient/5')
         done()
 
   it "read", (done)->
@@ -65,9 +65,9 @@ describe "search:", ->
       type: 'Patient'
       resource: resource
       success: (uri, status, headers, q)->
-        expect(uri).toBe('/BASE/Patient/5')
+        expect(uri).toBe('BASE/Patient/5')
         expect(q.method).toBe('PUT')
-        expect(q.url).toBe('/BASE/Patient/5')
+        expect(q.url).toBe('BASE/Patient/5')
 
         done()
 
@@ -79,5 +79,5 @@ describe "search:", ->
       resource: resource
       success: (res, status, headers, q)->
         expect(q.method).toBe('DELETE')
-        expect(q.url).toBe('/BASE/Patient/5')
+        expect(q.url).toBe('BASE/Patient/5')
         done()

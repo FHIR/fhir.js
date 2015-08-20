@@ -11,7 +11,7 @@ describe "search:", ->
   it "search success", (done)->
     http = (q)->
       expect(q.method).toBe('GET')
-      expect(q.url).toBe('/BASE/Patient/_search?name=maud')
+      expect(q.url).toBe('BASE/Patient/_search?name=maud')
       done()
 
     subject.search
@@ -37,7 +37,7 @@ describe "search:", ->
   it "fetch next page suceeds", (done)->
     http = (q)->
       expect(q.method).toBe('GET')
-      expect(q.url).toBe('/BASE/Patient?_count=1&_skip=1')
+      expect(q.url).toBe('BASE/Patient?_count=1&_skip=1')
       console.log('finishing')
       done()
 

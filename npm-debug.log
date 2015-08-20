@@ -2,15 +2,15 @@
 1 verbose cli [ '/root/.nvm/versions/node/v0.12.7/bin/node',
 1 verbose cli   '/root/.nvm/versions/node/v0.12.7/bin/npm',
 1 verbose cli   'run-script',
-1 verbose cli   'test' ]
+1 verbose cli   'spec' ]
 2 info using npm@2.11.3
 3 info using node@v0.12.7
-4 verbose run-script [ 'pretest', 'test', 'posttest' ]
-5 info pretest fhir.js@0.0.7
-6 info test fhir.js@0.0.7
+4 verbose run-script [ 'prespec', 'spec', 'postspec' ]
+5 info prespec fhir.js@0.0.7
+6 info spec fhir.js@0.0.7
 7 verbose unsafe-perm in lifecycle true
-8 info fhir.js@0.0.7 Failed to exec test script
-9 verbose stack Error: fhir.js@0.0.7 test: `jasmine-node --coffee node_tests/`
+8 info fhir.js@0.0.7 Failed to exec spec script
+9 verbose stack Error: fhir.js@0.0.7 spec: `node_modules/karma/bin/karma start --single-run`
 9 verbose stack Exit status 1
 9 verbose stack     at EventEmitter.<anonymous> (/root/.nvm/versions/node/v0.12.7/lib/node_modules/npm/lib/utils/lifecycle.js:213:16)
 9 verbose stack     at EventEmitter.emit (events.js:110:17)
@@ -21,17 +21,17 @@
 10 verbose pkgid fhir.js@0.0.7
 11 verbose cwd /root/fhir.js
 12 error Linux 3.13.0-62-generic
-13 error argv "/root/.nvm/versions/node/v0.12.7/bin/node" "/root/.nvm/versions/node/v0.12.7/bin/npm" "run-script" "test"
+13 error argv "/root/.nvm/versions/node/v0.12.7/bin/node" "/root/.nvm/versions/node/v0.12.7/bin/npm" "run-script" "spec"
 14 error node v0.12.7
 15 error npm  v2.11.3
 16 error code ELIFECYCLE
-17 error fhir.js@0.0.7 test: `jasmine-node --coffee node_tests/`
+17 error fhir.js@0.0.7 spec: `node_modules/karma/bin/karma start --single-run`
 17 error Exit status 1
-18 error Failed at the fhir.js@0.0.7 test script 'jasmine-node --coffee node_tests/'.
+18 error Failed at the fhir.js@0.0.7 spec script 'node_modules/karma/bin/karma start --single-run'.
 18 error This is most likely a problem with the fhir.js package,
 18 error not with npm itself.
 18 error Tell the author that this fails on your system:
-18 error     jasmine-node --coffee node_tests/
+18 error     node_modules/karma/bin/karma start --single-run
 18 error You can get their info via:
 18 error     npm owner ls fhir.js
 18 error There is likely additional logging output above.

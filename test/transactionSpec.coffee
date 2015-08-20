@@ -18,7 +18,7 @@ describe 'transaction', ->
       bundle: {a: 1},
       success: (data, status, headers, q)->
         expect(q.method).toBe('POST')
-        expect(q.url).toBe('/BASE')
+        expect(q.url).toBe('BASE')
         expect(q.data).toEqual('{"a":1}')
         expect(data).toBe('ok')
         done()

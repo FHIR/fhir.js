@@ -35,7 +35,7 @@
         var k = null;
         switch (utils.type(pth)) {
         case 'string':
-            k = pth.indexOf(":") > -1 ? args[pth.substring(1)] : pth;
+            k = pth.indexOf(":") == 0 ? args[pth.substring(1)] : pth;
             break;
         case 'function':
             k = pth(args);
@@ -53,7 +53,7 @@
     var Path = function(tkn, chain){
         //Chainable
         var new_chain = function(args){
-            return ((chain && chain(args)) || "") + "/"  + buildPathPart(tkn, args);
+            return ((chain && (chain(args) + "/")) || "") +  buildPathPart(tkn, args);
         };
         var ch = Attribute('url', new_chain);
         ch.slash = function(tkn){

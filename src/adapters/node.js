@@ -11,9 +11,10 @@
             q.headers["Content-Type"] = "application/json";
             q.body = q.data;
             q.json = true;
+            console.log(q.url);
             return request(q, function(err, response, body) {
-                var headers;
-                headers = function(x) {
+                console.log('NODE http:', err, response);
+                var headers = function(x) {
                     return response.headers[x.toLowerCase()];
                 };
                 if (err) {

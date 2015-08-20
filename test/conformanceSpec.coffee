@@ -12,11 +12,11 @@ describe 'conformance', ->
   it 'success', (done)->
     http = (q)->
       expect(q.method).toBe('GET')
-      expect(q.url).toBe('/BASE/metadata')
+      expect(q.url).toBe('BASE/metadata')
       q.success('ok')
 
     subject.conformance
-      baseUrl: '/BASE'
+      baseUrl: 'BASE'
       http: http
       success: (data)->
         expect(data).toBe('ok')
@@ -26,7 +26,7 @@ describe 'conformance', ->
     http = (q)-> q.error('ok')
 
     subject.conformance
-      baseUrl: '/BASE'
+      baseUrl: 'BASE'
       http: http
       success: nop
       error: (data)->
@@ -37,11 +37,11 @@ describe 'profile', ->
   it 'success', (done)->
     http = (q)->
       expect(q.method).toBe('GET')
-      expect(q.url).toBe('/BASE/Profile/Alert')
+      expect(q.url).toBe('BASE/Profile/Alert')
       q.success('ok')
 
     subject.profile
-      baseUrl: '/BASE'
+      baseUrl: 'BASE'
       http: http
       type: 'Alert'
       success: (data)->
@@ -51,7 +51,7 @@ describe 'profile', ->
     http = (q)-> q.error('ok')
 
     subject.profile
-      baseUrl: '/BASE'
+      baseUrl: 'BASE'
       http: http
       type: 'Alert'
       success: nop

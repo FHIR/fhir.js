@@ -58,6 +58,7 @@
             }catch(e){
                var error = args.error;
                console.log('Error', e.message);
+               console.log(e.stack);
                if(error){ error(e); };
                return null;
             }
