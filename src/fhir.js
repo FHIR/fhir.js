@@ -37,8 +37,12 @@
         return Attribute('url', function(args){
             var matched = function(x){return x.rel && x.rel === rel;};
             var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
-            if(res && res.href){ return res.href; }
-            else{ throw new Error("No " + rel + " link found in bundle");}
+            if(res && res.href){
+                return res.href;
+            }
+            else{
+              throw new Error("No " + rel + " link found in bundle");
+            }
         });
     };
 
@@ -47,11 +51,11 @@
 
     var copyAttr = function(from, to, attr){
         var v =  from[attr];
-        if(v) {to[attr] = v;}
+        if(v && !to[attr]) {to[attr] = v;}
         return from;
     };
 
-    var InjectConfig = function(cfg){
+    var InjectConfig = function(cfg, adapter){
         return Operation(function(h){
             return function(args){
                 copyAttr(cfg, args, 'baseUrl');
@@ -59,11 +63,12 @@
                 copyAttr(cfg, args, 'auth');
                 copyAttr(cfg, args, 'patient');
                 copyAttr(cfg, args, 'debug');
+                copyAttr(adapter, args, 'defer');
+                copyAttr(adapter, args, 'http');
                 return h(args);
             };
         });
     };
-
 
     var Http = function(cfg, adapter){
         return function(args){
@@ -85,7 +90,7 @@
     });
 
     var fhir = function(cfg, adapter){
-        var Defaults = InjectConfig(cfg)
+        var Defaults = InjectConfig(cfg, adapter)
                 .and(CatchErrors)
                 .and(auth.Basic)
                 .and(auth.Bearer)

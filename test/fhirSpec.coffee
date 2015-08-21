@@ -3,7 +3,7 @@ fhir = require('../src/fhir')
 describe "fhir", ->
   cfg = {baseUrl: 'BASE'}
   res = true
-  adapter =  {http: ((x)-> x.success && x.success(x))}
+  adapter =  {http: ((x)-> {then: (f)->f(x)})}
   subject = fhir(cfg, adapter)
 
   it "api", ()->
@@ -12,25 +12,24 @@ describe "fhir", ->
     expect(subject.transaction).not.toBe(null)
 
   it "search", ->
-    subject.search type: 'Patient', query: {name: 'maud'}, success: (x)->
+    subject.search(type: 'Patient', query: {name: 'maud'}).then (x)->
       expect(x.url).toEqual('BASE/Patient/_search?name=maud')
 
   it "conformance", ->
-    subject.conformance success: (x)->
+    subject.conformance({}).then (x)->
       expect(x.url).toEqual('BASE/metadata')
 
   it "profile", ->
-    subject.profile type: 'Patient',success: (x)->
+    subject.profile(type: 'Patient').then (x)->
       expect(x.url).toEqual('BASE/Profile/Patient')
 
 
   it "transaction", ->
-    subject.transaction bundle: 'bundle',success: (x)->
+    subject.transaction(bundle: 'bundle').then (x)->
       expect(x.url).toEqual('BASE')
       expect(x.method).toEqual('POST')
 
 
   it "read", ->
-    subject.read type: 'Patient', id :'123',success: (x)->
+    subject.read(type: 'Patient', id :'123').then (x)->
       expect(x.url).toEqual('BASE/Patient/123')
-

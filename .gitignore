@@ -7,3 +7,5 @@ dist
 sample
 *sw?
 npm-debug.log
+*.term-port
+.term-port

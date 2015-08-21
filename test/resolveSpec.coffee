@@ -1,4 +1,5 @@
 fhir = require('../src/fhir')
+Q = require('q')
 resolve = require('../src/resolve')
 rx = require('../fixtures/medicationPrescription.js')
 
@@ -14,8 +15,8 @@ diastolic = require('../fixtures/diastolic.js')
 nop = ()->
 cache = {}
 cfg = {baseUrl: 'BASE'}
-adapter =  {http: ((x)-> x.success && x.success(x))}
-subject = fhir(cfg, adapter)
+
+subject = fhir(cfg, {defer: Q.defer})
 
 describe "resolve resolveSynchronous", ->
 
@@ -62,28 +63,26 @@ describe "resolve resolveSynchronous", ->
 describe "resolve resolve", ->
 
   it "resolves a missing contained resource as null", (done)->
-    http = (q)-> (throw "should not be called")
-    err = (e)-> done()
-    subject.resolve
+    subject.resolve(
       baseUrl: 'BASE'
-      http: http
       cache:cache
       reference: {reference: "#no-such-thing"}
       resource: rx
-      error: err
+    ).then(nop, (err)-> done)
 
   it "resolves a contained resource", (done)->
-    http = (q)->(throw "should not be called")
+    http = (q)-> (throw "should not be called")
     cb = (r)->
       expect(r.content).toEqual(rx.contained[0])
       done()
-    subject.resolve
+
+    subject.resolve(
       baseUrl: 'BASE'
       http: http
       cache: cache
       reference: rx.medication
       resource: rx
-      success: cb
+    ).then(cb, done)
 
   it "resolves a co-bundled resource", (done)->
     http = (q)->(throw "should not be called")
@@ -92,12 +91,12 @@ describe "resolve resolve", ->
       expect(r).toEqual(systolic)
       done()
 
-    subject.resolve
+    subject.resolve(
       http: http
       cache: cache
       reference: systolicRef
       bundle: bpBundle
-      success: cb
+    ).then(cb)
 
   it "resolves a non-local resource via HTTP", (done)->
     http = (q)->
@@ -105,7 +104,4 @@ describe "resolve resolve", ->
       expect(q.url).toBe('BASE/Observation/9573')
       done()
 
-    subject.resolve
-      http: http
-      error: done
-      reference: diastolicRef
+    subject.resolve(http: http, reference: diastolicRef)

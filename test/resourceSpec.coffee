@@ -9,8 +9,7 @@ mockHeaders = (hs)->
 
 cfg = {baseUrl: 'BASE'}
 res = true
-adapter =  {http: ((x)-> x.success && x.success(x))}
-res = fhir(cfg, adapter)
+res = fhir(cfg, {})
 
 describe "search:", ->
   it "api", ->
@@ -24,60 +23,41 @@ describe "search:", ->
     'Content-Location': 'BASE/Patient/5'
 
   it "create", (done)->
-    # http = (x)-> x.success(x, 201, headers, x)
-    http = (x)-> x.success(resource, 200, headers, x)
     resource = {resourceType: 'Patient', meta: {tags: tags}}
-    res.create
-      http: http
-      resource: resource
-      success: (uri, status, headers, q)->
-        expect(uri).toBe('BASE/Patient/5')
-        expect(q.method).toBe('POST')
-        expect(q.url).toBe('BASE/Patient')
-        expect(q.data).toBe(JSON.stringify(resource))
-        done()
+    http = (req)->
+      expect(req.data).toEqual(JSON.stringify(resource))
+      expect(req.method).toBe('POST')
+      expect(req.url).toBe('BASE/Patient')
+      expect(req.data).toBe(JSON.stringify(resource))
+      done()
+    res.create(http: http, resource: resource)
 
   simpleRead = (tp, id, done) ->
     resource = {id: '5', resourceType: 'Patient', meta: {tags: tags}}
-    http = (x)-> x.success(resource, 200, headers, x)
+    http = (req)->
+      expect(req.method).toBe('GET')
+      expect(req.url).toBe('BASE/Patient/5')
+      done()
 
-    res.read
-      http: http
-      type: tp
-      id: id
-      success: (res, status, headers, q)->
-        expect(res).not.toBe(null)
-        expect(res.id).toBe('5')
-        expect(res.meta.tags).toEqual(tags)
-        expect(q.method).toBe('GET')
-        expect(q.url).toBe('BASE/Patient/5')
-        done()
+    res.read(http: http, type: tp, id: id)
 
   it "read", (done)->
     simpleRead('Patient','5', done)
 
   it "update", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    http = (x)-> x.success(resource, 200, headers, x)
+    http = (req)->
+      expect(req.method).toBe('PUT')
+      expect(req.url).toBe('BASE/Patient/5')
+      expect(req.data).toEqual(JSON.stringify(resource))
+      done()
 
-    res.update
-      http: http
-      type: 'Patient'
-      resource: resource
-      success: (uri, status, headers, q)->
-        expect(uri).toBe('BASE/Patient/5')
-        expect(q.method).toBe('PUT')
-        expect(q.url).toBe('BASE/Patient/5')
-
-        done()
+    res.update(http: http, type: 'Patient', resource: resource)
 
   it "delete", (done)->
     resource = {id: '5', resourceType: 'Patient'}
-    http = (x)-> x.success(resource, 204, headers, x)
-    res.delete
-      http: http
-      resource: resource
-      success: (res, status, headers, q)->
-        expect(q.method).toBe('DELETE')
-        expect(q.url).toBe('BASE/Patient/5')
-        done()
+    http = (q)->
+      expect(q.method).toBe('DELETE')
+      expect(q.url).toBe('BASE/Patient/5')
+      done()
+    res.delete(http: http, resource: resource)

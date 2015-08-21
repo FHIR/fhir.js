@@ -25,18 +25,15 @@
         return bundled || (cache != null ? cache[abs] : void 0) || null;
     };
 
-    var throwInTimeout = function(msg, error){
-        setTimeout(function() { error(msg);});
-        return null;
-    };
     var resolve = function(h){
         return function(args) {
             var cacheMatched = sync(args);
             var ref = args.reference;
+            var def = args.defer();
             if (cacheMatched) {
-                var success = args.success;
-                success && success(cacheMatched);
-                return {success: function(f){f(cacheMatched);}};
+                if(!args.defer){ throw new Error("I need promise constructor 'adapter.defer' in adapter"); }
+                def.resolve(cacheMatched);
+                return def.promise;
             }
             if (!ref) {
                 throw new Error("No reference found");

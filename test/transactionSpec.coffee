@@ -10,15 +10,10 @@ trans = subject.transaction
 
 describe 'transaction', ->
   it 'success', (done)->
-    http = (q)-> q.success('ok', null, null, q)
+    http = (q)->
+      expect(q.method).toBe('POST')
+      expect(q.url).toBe('BASE')
+      expect(q.data).toEqual('{"a":1}')
+      done()
 
-    trans
-      baseUrl: 'BASE'
-      http: http
-      bundle: {a: 1},
-      success: (data, status, headers, q)->
-        expect(q.method).toBe('POST')
-        expect(q.url).toBe('BASE')
-        expect(q.data).toEqual('{"a":1}')
-        expect(data).toBe('ok')
-        done()
+    trans(http: http, bundle: {a: 1})
