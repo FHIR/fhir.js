@@ -3,6 +3,7 @@
     var resolve = require('./resolve');
     var queryBuider = require('./query');
     var auth = require('./middlewares/auth');
+    var pt = require('./middlewares/patient');
 
     var cache = {};
 
@@ -65,12 +66,19 @@
       };
     });
 
+    var copyAttr = function(from, to, attr){
+        var v =  from[attr];
+        if(v) {to[attr] = v;}
+        return from;
+    };
+
     var InjectConfig = function(cfg){
         return Operation(function(h){
             return function(args){
-                args.baseUrl = cfg.baseUrl;
-                args.cache = cache;
-                args.auth = args.auth || cfg.auth;
+                copyAttr(cfg, args, 'baseUrl');
+                copyAttr(cfg, args, 'cache');
+                copyAttr(cfg, args, 'auth');
+                copyAttr(cfg, args, 'patient');
                 return h(args);
             };
         });
@@ -124,7 +132,7 @@
             "delete": DELETE.and(resourcePath).end(http),
             create: POST.and(resourceTypePath).and(ContentLocation).and(JsonData).end(http),
             validate: POST.and(resourceTypePath.slash("_validate")).and(ContentLocation).and(JsonData).end(http),
-            search: GET.and(searchPath).and(searchParams).and(MagicParams).end(http),
+            search: GET.and(searchPath).and(pt.withPatient).and(searchParams).and(MagicParams).end(http),
             update: PUT.and(resourcePath).and(ContentLocation).and(JsonData).end(http),
             nextPage: GET.and(BundleRelUrl("next")).end(http),
             prevPage: GET.and(BundleRelUrl("prev")).end(http),

@@ -1,6 +1,7 @@
 auth = require('../src/middlewares/auth')
 
-describe "authentication:", ->
+describe "authentication", ->
+
   identity = (x)-> x
 
   it "no auth", ->

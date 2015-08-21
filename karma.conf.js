@@ -1,10 +1,7 @@
 var wp = require('./webpack.config.js');
 require('karma-jasmine');
-wp.externals = {
-    './module': 'angular.module("formstamp")'
-};
 
-wp.devtool = "inline-source-map"
+wp.devtool = "inline-source-map";
 
 delete wp.entry;
 delete wp.context;

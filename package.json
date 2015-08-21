@@ -3,19 +3,18 @@
   "version": "0.0.7",
   "devDependencies": {
     "angular": "~1.4.0",
+    "jquery": "~2.1.1",
+    "yui": "~3.17.1",
     "bower": "latest",
     "jasmine-node": "latest",
-    "jquery": "~2.1.1",
-    "karma": "^0.12.31",
+    "karma": "latest",
     "karma-chrome-launcher": "latest",
     "karma-coffee-preprocessor": "latest",
-    "karma-jasmine": "^0.3.6",
-    "karma-phantomjs-launcher": "^0.2.0",
-    "karma-sourcemap-loader": "latest",
+    "karma-jasmine": "latest",
+    "karma-phantomjs-launcher": "latest",
     "karma-webpack": "latest",
     "phantomjs": "latest",
-    "webpack-dev-server": "latest",
-    "yui": "~3.17.1"
+    "webpack-dev-server": "latest"
   },
   "description": "FHIR javascript client",
   "main": "lib/adapters/node",
@@ -55,9 +54,5 @@
     "chance": "latest",
     "request": "~2.42.0"
   },
-  "files": [
-    "bin",
-    "lib",
-    "src"
-  ]
+  "files": ["bin", "lib", "src"]
 }

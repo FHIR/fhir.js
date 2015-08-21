@@ -33,5 +33,5 @@ describe "nodejs adapter", ->
 
   it "search", (done) ->
     subject.search {type: 'Patient', query: {name: 'Node'}}, (err,res)->
-      console.log(err,res)
+      # console.log(err,res)
       done()

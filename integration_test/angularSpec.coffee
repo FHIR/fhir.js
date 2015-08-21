@@ -1,12 +1,11 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
-fhir = require('../src/adapters/angularjs.coffee')
-merge = require('merge')
+fhir = require('../src/adapters/angularjs')
 
 Chance = require('chance')
 chance = new Chance()
 
-tu = require('../src/testUtils.coffee')
+tu = require('../src/testUtils')
 
 angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->

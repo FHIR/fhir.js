@@ -1,6 +1,6 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
-tu = require('../src/testUtils.coffee')
+tu = require('../src/testUtils')
 
 describe "ngFhir", ->
   $injector = angular.injector(['test'])

@@ -2,27 +2,24 @@
 (function() {
     var request = require('request');
     var mkFhir = require('../fhir');
-    var utils = require('../utils');
 
     var adapter = {
-        http: function(q) {
-            q.headers = q.headers || {};
-            q.headers["Accept"] = "application/json";
-            q.headers["Content-Type"] = "application/json";
-            q.body = q.data;
-            q.json = true;
-            console.log(q.url);
-            return request(q, function(err, response, body) {
-                console.log('NODE http:', err, response);
+        http: function(args) {
+            args.headers = args.headers || {};
+            args.headers["Accept"] = "application/json";
+            args.headers["Content-Type"] = "application/json";
+            args.body = args.data;
+            args.json = true;
+            return request( args, function(err, response, body) {
                 var headers = function(x) {
                     return response.headers[x.toLowerCase()];
                 };
                 if (err) {
-                    return q.error(err, response.statusCode, headers, q);
+                    return args.error(err, response.statusCode, headers,args);
                 } else if (response.statusCode > 399) {
-                    return q.error(body, response.statusCode, headers, q);
+                    return args.error(body, response.statusCode, headers,args);
                 } else {
-                    return q.success(body, response.statusCode, headers, q);
+                    return args.success(body, response.statusCode, headers,args);
                 }
             });
         }

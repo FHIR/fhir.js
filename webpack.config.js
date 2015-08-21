@@ -3,10 +3,10 @@ var path = require("path");
 
 module.exports = {
   entry: {
-    fhir: ["./src/fhir.coffee"],
-    ngFhir: "./src/adapters/angularjs.coffee",
-    jqFhir: "./src/adapters/jquery.coffee",
-    yuifhir: "./src/adapters/yui.coffee"
+    fhir: ["./src/fhir.js"],
+    ngFhir: "./src/adapters/angularjs.js",
+    jqFhir: "./src/adapters/jquery.js",
+    yuifhir: "./src/adapters/yui.js"
   },
   node: {
     buffer: "mock"
@@ -14,9 +14,7 @@ module.exports = {
   module: {
     loaders: [{ test: /\.coffee$/, loader: "coffee-loader" }]
   },
-  externals: {
-    "jquery": "jQuery"
-  },
+  externals: {"jquery": "jQuery"},
   resolve: {
     extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee", ".less"]
   },

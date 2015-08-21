@@ -3,8 +3,6 @@ wp.externals = {
     './module': 'angular.module("formstamp")'
 };
 
-wp.devtool = "inline-source-map"
-
 delete wp.entry;
 delete wp.context;
 delete wp.output;
@@ -57,7 +55,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
 
-    preprocessors: { '**/*.coffee': ['webpack', 'sourcemap'] },
+    preprocessors: { '**/*.coffee': ['webpack'] },
 
     webpack: wp,
 
