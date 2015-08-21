@@ -41,8 +41,7 @@ describe "ngFhir", ->
 
   it "search", (done) ->
     console.log('ng spec')
-    subject.search(type: 'Patient', query: {name: 'maud'})
-      .then (d)-> done()
+    subject.search(type: 'Patient', query: {name: 'maud'}).then(done)
 
   it "CRUD", (done) ->
     fail = (err)->

@@ -5,6 +5,7 @@
     var Q = require('q');
 
     var adapter = {
+        defer: Q.defer,
         http: function(args) {
             var deff = Q.defer();
             args.body = args.data;

@@ -4,8 +4,8 @@ before_script:
 - 'npm install'
 script:
 - 'npm run-script spec'
-- 'npm run-script node'
-# - 'npm run-script integrate' turn of integrate until available DSTU 2 servers
+- 'npm run test'
+- 'npm run-script integrate'
 after_success:
 - 'git config --global user.email "robot@health-samurai.io"'
 - 'git config --global user.name "Travis CI Deployer"'
