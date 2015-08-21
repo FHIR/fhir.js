@@ -9,3 +9,4 @@ sample
 npm-debug.log
 *.term-port
 .term-port
+src/.tern-port

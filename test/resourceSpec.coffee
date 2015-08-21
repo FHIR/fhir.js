@@ -1,5 +1,6 @@
 fhir = require('../src/fhir')
 
+
 nop = ()->
 
 tags = [{term: 'term', scheme: 'sch', label: 'lbl'}]
@@ -9,7 +10,7 @@ mockHeaders = (hs)->
 
 cfg = {baseUrl: 'BASE'}
 res = true
-res = fhir(cfg, {})
+res = fhir(cfg, {defer: require('../src/testUtils').defer})
 
 describe "search:", ->
   it "api", ->

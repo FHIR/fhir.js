@@ -30,4 +30,36 @@
     };
   };
 
+  // simple defer impl for tests
+  exports.defer = function(){
+      var pr = {
+          _status: 'pending',
+          _cb: null,
+          then: function(cb, err){
+              if(this._status == 'resolved'){
+                 cb(this._payload);
+              }
+              else if(this._status == 'errored'){
+                 (err || cb)(this._payload);
+              }else{
+                  this.cb = cb;
+                  this.err = err || cb;
+              }
+          }
+      };
+      return {
+          reject: function(e){
+              pr._status = 'errored';
+              pr._payload = e;
+              pr.err && pr.err(e);
+          },
+          resolve: function(obj){
+              pr._status = 'resolved';
+              pr._payload = obj;
+              pr.cb && pr.cb(obj);
+          },
+          promise: pr
+      };
+  };
+
 }).call(this);

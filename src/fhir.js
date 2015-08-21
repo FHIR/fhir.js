@@ -34,15 +34,18 @@
     });
 
     var BundleRelUrl =  function(rel){
-        return Attribute('url', function(args){
-            var matched = function(x){return x.rel && x.rel === rel;};
-            var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
-            if(res && res.href){
-                return res.href;
-            }
-            else{
-              throw new Error("No " + rel + " link found in bundle");
-            }
+        return Operation(function(h) {
+            return function(args){
+                var matched = function(x){return x.rel && x.rel === rel;};
+                var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
+                if(res && res.href){
+                    args.url = res.href;
+                    return h(args);
+                }
+                else{
+                    throw new Error("No " + rel + " link found in bundle");
+                }
+            };
         });
     };
 
