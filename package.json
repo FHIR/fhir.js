@@ -27,7 +27,8 @@
     "build": "rm -rf dist && `npm bin`/webpack --progress --colors && coffee --output lib --compile src",
     "spec": "node_modules/karma/bin/karma start --single-run",
     "integrate": "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
-    "test": "node_modules/.bin/jasmine-node --coffee node_tests/",
+    "node-test": "node_modules/.bin/jasmine-node --coffee node_tests",
+    "spec-node": "node_modules/.bin/jasmine-node --coffee test",
     "spec-watch": "node_modules/karma/bin/karma start"
   },
   "keywords": [
