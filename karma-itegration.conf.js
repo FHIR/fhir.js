@@ -24,9 +24,10 @@ module.exports = function(config) {
     // to preload all the resources into Karma because Karma context
     // cant async load.
     files: [
-      'node_modules/angular/angular.min.js',
       'node_modules/jquery/dist/jquery.js',
+      'node_modules/angular/angular.min.js',
       'node_modules/yui/yui/yui.js',
+      'node_modules/yui/promise/promise.js',
       'node_modules/yui/io-base/io-base.js',
       'node_modules/yui/event-custom-base/event-custom-base-min.js',
       'node_modules/yui/querystring-stringify-simple/querystring-stringify-simple-min.js',
@@ -34,6 +35,7 @@ module.exports = function(config) {
       'node_modules/yui/io-xdr/io-xdr-min.js',
       'node_modules/yui/event-base/event-base-min.js',
       'node_modules/yui/dom-core/dom-core-min.js',
+      'node_modules/yui/timers/timers.js',
       'node_modules/yui/dom-base/dom-base-min.js',
       'node_modules/yui/selector-native/selector-native-min.js',
       'node_modules/yui/selector/selector-min.js',

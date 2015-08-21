@@ -1,17 +1,12 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 
-fhir = require('../src/adapters/angularjs')
+fhir = require('../src/adapters/yui')
 
 Chance = require('chance')
 chance = new Chance()
 
 tu = require('../src/testUtils')
 
-angular.module('test', ['ng-fhir'])
-  .config ($fhirProvider)->
-     $fhirProvider.baseUrl = 'http://fhir.healthintersections.com.au/open'
-     $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
-     #$fhirProvider.debug = true
 
 genPatient = ()->
   resourceType: "Patient"
@@ -29,22 +24,19 @@ genPatient = ()->
   ]
 
 
-describe "ngFhir", ->
-
-  $injector = angular.injector(['test'])
-  q = null
-  subject = null
-  $injector.invoke ['$q','$fhir', ($q, $fhir)-> q=$q; subject=$fhir]
-
+describe "jquery", ->
+  q = {defer: fhir.defer}
   buildStep =  tu.stepBuilder(q)
   checkStep =  tu.checkStep(q)
+
+  subject = fhir(baseUrl: 'http://try-fhirplace.hospital-systems.com')
 
 
   it "search", (done) ->
     subject.search(type: 'Patient', query: {name: 'maud'}).then(done)
 
   it "CRUD", (done) ->
-    console.log('ANGULAR SPEC')
+    console.log("YUI spec")
     fail = (err)->
       console.error(err)
       done()
