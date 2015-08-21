@@ -5,16 +5,8 @@
   mkFhir = require('../fhir');
 
   implementXhr = function($http) {
-    return function(q) {
-      var p;
-      p = $http(q);
-      if (q.success) {
-        p.success(q.success);
-      }
-      if (q.error) {
-        p.error(q.error);
-      }
-      return p;
+    return function(args) {
+      return $http(args);
     };
   };
 

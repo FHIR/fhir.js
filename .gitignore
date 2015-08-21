@@ -6,3 +6,4 @@ lib
 dist
 sample
 *sw?
+npm-debug.log

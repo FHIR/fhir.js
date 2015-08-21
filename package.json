@@ -46,6 +46,7 @@
   },
   "homepage": "https://github.com/FHIR/fhir.js",
   "dependencies": {
+    "q": "latest",
     "coffee-script": "latest",
     "coffee-loader": "latest",
     "webpack": "latest",

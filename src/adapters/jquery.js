@@ -7,20 +7,17 @@
     var adapter = {
         http: function(q) {
             var ret = $.Deferred();
-            $.ajax({
+            var opts = {
                 type: args.method,
                 url: args.url,
                 headers: args.headers,
                 dataType: "json",
                 contentType: "application/json",
                 data: args.data || args.params
-            }).done(function(data, status, xhr) {
-                args.success && args.success(data, status, xhr.getResponseHeader);
-                ret.resolve(data, status, xhr.getResponseHeader);
-            }).fail(function() {
-                args.error && args.error.call(null, arguments);
-                ret.reject.apply(null, argumetns);
-            });
+            };
+            $.ajax(opts)
+              .done(function(data, status, xhr) {ret.resolve({data: data, status: status, headers: xhr.getResponseHeader, config: q});})
+              .fail(function(err) {ret.reject({error: err, data: err, config: q});});
             return ret;
         }
     };

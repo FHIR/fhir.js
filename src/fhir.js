@@ -3,6 +3,8 @@
     var resolve = require('./resolve');
     var queryBuider = require('./query');
     var auth = require('./middlewares/auth');
+    var errors = require('./middlewares/errors');
+    var header = require('./middlewares/header');
     var pt = require('./middlewares/patient');
 
     var cache = {};
@@ -20,18 +22,6 @@
         if(args.since){params._since = args.since;}
         if(args.count){params._count = args.count;}
         return params;
-    });
-
-    // TODO work better with promises
-    var ContentLocation = Operation(function(h){
-        return function(args){
-            var success = args.success;
-            args.success = function(data, status, headers, config){
-                var uri = headers('Content-Location');
-                success(uri, status, headers, config);
-            };
-            return h(args);
-        };
     });
 
     var toJson = function(x){
@@ -52,19 +42,8 @@
         });
     };
 
-    var CatchErrors = Operation(function(h){
-        return function(args){
-            try{
-                return h(args);
-            }catch(e){
-               var error = args.error;
-               console.log('Error', e.message);
-               console.log(e.stack);
-               if(error){ error(e); };
-               return null;
-            }
-      };
-    });
+    var CatchErrors = Operation(errors);
+    var ReturnHeader = Operation(header('Prefer', 'return=representation'));
 
     var copyAttr = function(from, to, attr){
         var v =  from[attr];
@@ -79,6 +58,7 @@
                 copyAttr(cfg, args, 'cache');
                 copyAttr(cfg, args, 'auth');
                 copyAttr(cfg, args, 'patient');
+                copyAttr(cfg, args, 'debug');
                 return h(args);
             };
         });
@@ -87,7 +67,14 @@
 
     var Http = function(cfg, adapter){
         return function(args){
-            return (args.http || adapter.http  || cfg.http)(args);
+            if(args.debug){
+                console.log("\nDEBUG (request):", args.method, args.url, args);
+            }
+            var promise = (args.http || adapter.http  || cfg.http)(args);
+            if (args.debug && promise && promise.then){
+                promise.then(function(x){ console.log("\nDEBUG: (responce)", x);});
+            }
+            return promise;
         };
     };
 
@@ -101,7 +88,9 @@
         var Defaults = InjectConfig(cfg)
                 .and(CatchErrors)
                 .and(auth.Basic)
-                .and(auth.Bearer);
+                .and(auth.Bearer)
+                .and(header('Accept', 'application/json'))
+                .and(header('Content-Type', 'application/json'));
 
         var GET = Defaults.and(Method('GET'));
         var POST = Defaults.and(Method('POST'));
@@ -129,11 +118,11 @@
             resourceHistory: GET.and(resourceHxPath).and(MagicParams).end(http),
             read: GET.and(resourcePath).end(http),
             vread: GET.and(resourceHxPath).end(http),
-            "delete": DELETE.and(resourcePath).end(http),
-            create: POST.and(resourceTypePath).and(ContentLocation).and(JsonData).end(http),
-            validate: POST.and(resourceTypePath.slash("_validate")).and(ContentLocation).and(JsonData).end(http),
+            "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
+            create: POST.and(resourceTypePath).and(ReturnHeader).and(JsonData).end(http),
+            validate: POST.and(resourceTypePath.slash("_validate")).and(JsonData).end(http),
             search: GET.and(searchPath).and(pt.withPatient).and(searchParams).and(MagicParams).end(http),
-            update: PUT.and(resourcePath).and(ContentLocation).and(JsonData).end(http),
+            update: PUT.and(resourcePath).and(ReturnHeader).and(JsonData).end(http),
             nextPage: GET.and(BundleRelUrl("next")).end(http),
             prevPage: GET.and(BundleRelUrl("prev")).end(http),
             resolve: GET.and(Operation(resolve.resolve)).end(http)

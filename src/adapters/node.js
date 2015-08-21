@@ -2,49 +2,27 @@
 (function() {
     var request = require('request');
     var mkFhir = require('../fhir');
+    var Q = require('q');
 
     var adapter = {
         http: function(args) {
-            args.headers = args.headers || {};
-            args.headers["Accept"] = "application/json";
-            args.headers["Content-Type"] = "application/json";
+            var deff = Q.defer();
             args.body = args.data;
             args.json = true;
-            return request( args, function(err, response, body) {
-                var headers = function(x) {
-                    return response.headers[x.toLowerCase()];
-                };
-                if (err) {
-                    return args.error(err, response.statusCode, headers,args);
-                } else if (response.statusCode > 399) {
-                    return args.error(body, response.statusCode, headers,args);
-                } else {
-                    return args.success(body, response.statusCode, headers,args);
-                }
-            });
+            if(args.debug){
+                console.log('DEBUG[node]: (requrest)', args); 
+            }
+            request(args, function(err, response, body) {
+                var headers = function(x) {return response.headers[x.toLowerCase()];};
+                var resp = {data: body, status: response.statusCode, headers: headers, config: args};
+                if (err || response.statusCode > 399) {deff.reject(resp);} else {deff.resolve(resp);}
+            }) ;
+            return deff.promise;
         }
     };
 
-    var wrappToErrbackForm = function(fn) {
-        return function(args, cb) {
-            if(cb){
-                args.callback = cb;
-                args.success = function(res, status, headersFn, query) {
-                    return cb(null, res, status, headersFn, query);
-                };
-                args.error = function(err, status, headersFn, query) {
-                    return cb(err, null, status, headersFn, query);
-                };
-            }
-            return fn(args);
-        };
-    };
-
     module.exports = function(config) {
-        var fhir = mkFhir(config, adapter);
-        var wrp = {};
-        for(var k in fhir){wrp[k] = wrappToErrbackForm(fhir[k]); }
-        return wrp;
+        return mkFhir(config, adapter);
     };
 
 }).call(this);

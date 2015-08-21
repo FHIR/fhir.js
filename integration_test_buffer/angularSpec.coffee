@@ -11,7 +11,7 @@ angular.module('test', ['ng-fhir'])
   .config ($fhirProvider)->
      $fhirProvider.baseUrl = 'http://fhir.healthintersections.com.au/open'
      $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
-     #$fhirProvider.debug = true
+     $fhirProvider.debug = true
 
 genPatient = ()->
   resourceType: "Patient"
@@ -79,6 +79,7 @@ describe "ngFhir", ->
     checkUpdatePt = checkStep 'updatePt', (st, resp)->
       updatePt = resp.data
       createPt = st.createPt.data
+      console.log("CHECK UPDATE", st.createPt)
       expect(updatePt.name[0].family[0]).toEqual(createPt.name[0].family[0])
 
     deletePt = buildStep 'deletePt', (next, st)->
