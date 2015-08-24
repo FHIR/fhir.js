@@ -1,9 +1,8 @@
 fhir = require('../src/fhir')
 
 describe "fhir", ->
-  cfg = {baseUrl: 'BASE'}
-  res = true
-  adapter =  {http: ((x)-> {then: (f)->f(x)})}
+  cfg = {baseUrl: 'BASE', }
+  adapter =  {http: ((x)-> {then: (f)-> f(x)})}
   subject = fhir(cfg, adapter)
 
   it "api", ()->
@@ -25,9 +24,10 @@ describe "fhir", ->
 
 
   it "transaction", ->
-    subject.transaction(bundle: 'bundle').then (x)->
+    subject.transaction(bundle: {a: 1}).then (x)->
       expect(x.url).toEqual('BASE')
       expect(x.method).toEqual('POST')
+      expect(x.data).toEqual('{"a":1}')
 
 
   it "read", ->

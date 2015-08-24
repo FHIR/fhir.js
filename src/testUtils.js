@@ -45,6 +45,7 @@
                   this.cb = cb;
                   this.err = err || cb;
               }
+              return pr;
           }
       };
       return {
