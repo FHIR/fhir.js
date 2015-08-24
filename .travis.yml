@@ -3,7 +3,7 @@ node_js: '0.12'
 before_script:
 - 'npm install'
 script:
-- 'npm run node-test'
+- 'jasmine-node --coffee node_tests'
 - 'npm run spec-node'
 - 'npm run-script spec'
 - 'npm run-script integrate'
