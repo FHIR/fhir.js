@@ -1,5 +1,5 @@
 fhir = require('../src/fhir')
-resolve = require('../src/resolve')
+resolve = require('../src/middlewares/references')
 rx = require('../fixtures/medicationPrescription.js')
 
 bpBundle = require('../fixtures/bpBundle.js')

@@ -258,6 +258,39 @@ var fhir = jqFhir({
 
 fhir.search(type: 'Patient', query: {name: 'maud'}, success: function(bundle) {}, error: function() {})
 ```
+
+
+## For Developers
+
+FHIR.js is built on top of **middleware** concept.
+What is middleware?
+This is a high order function of shape:
+
+```js
+var mw  = function(next){
+   return function(args){
+     if (...) // some logic{
+        return next(args); //next mw in chain
+     } else {
+        return promise; //short circuit chain
+     }
+  }
+}
+```
+
+Using function Middleware(mw) you can get composable middle-ware (with .and(mw) method):
+
+```
+mwComposition = Middleware(mw).and(anotherMw).and(anotherMw);
+```
+
+Every API function is built as chain of middlewares with end handler in the end:
+
+```js
+conformance = $GET.and(BaseUrl.slash("metadata")).end(http)
+create =  $POST.and($resourceTypePath).and($ReturnHeader).and($JsonData).end(http),
+```
+
 ## Release Notes
 
 ### release 0.1

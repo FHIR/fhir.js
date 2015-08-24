@@ -2,7 +2,7 @@
 (function() {
   var ltype, merge, resolve, utils, wrap;
 
-  resolve = require('../resolve');
+  var resolve = require('./references');
 
   merge = require('merge');
 

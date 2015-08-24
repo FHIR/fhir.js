@@ -1,30 +1,17 @@
-subj = require('../src/operation')
+subj = require('../src/middlewares/core')
+url = require('../src/middlewares/url')
 
-Operation = subj.Operation;
-Path = subj.Path;
+Middleware = subj.Middleware;
+Path = url.Path;
 Method = subj.Method;
 Attribute = subj.Attribute;
+$$Attr = subj.$$Attr;
 
 p = (x)-> console.log(x)
 id = (x)-> x
 apply = (p,args)-> p.end(id)(args)
 
-describe "Path",->
-  it "build path & combine",->
-
-    p0 = Path("BASE")
-    p1 = p0.slash(":type")
-    p2 = p1.slash(":id")
-    p3 = p2.slash("_history")
-    p4 = p3.slash((args)-> args.versionId)
-
-    expect(apply(p0, {}).url).toEqual("BASE")
-    expect(apply(p1, {type: 'Patient'}).url).toEqual("BASE/Patient")
-    expect(apply(p2, {type: 'Patient',id: 5}).url).toEqual("BASE/Patient/5")
-    expect(apply(p3, {type: 'Patient',id: 5}).url).toEqual("BASE/Patient/5/_history")
-    expect(apply(p4, {type: 'Patient',id: 5, versionId: 6}).url).toEqual("BASE/Patient/5/_history/6")
-
-describe "Operation",->
+describe "Middleware",->
   it "build path & combine",->
 
     path = Path("BASE").slash(":type").slash(":id")
@@ -52,3 +39,22 @@ describe "Operation",->
     expect(res.url).toEqual("BASE/Patient")
     expect(res.send).toEqual(true)
     expect(res.data).toEqual('{"name":"Ivan"}')
+
+describe "$$Attr",->
+  it "create mw",->
+    id = (x)-> x
+    stack = $$Attr('a', (args)-> "a")
+      .and($$Attr('b', "b"))
+      .and($$Attr('c.d', (args)-> args.opt + "++"))
+      .and($$Attr('c.e', -> "e"))
+      .and($$Attr('headers.Content-Type', -> "application/json"))
+      .and($$Attr('headers.Auth', -> "basic"))
+      .end(id)
+
+    res  = stack({a: "noa", opt: "d"})
+    expect(res.a).toEqual('a')
+    expect(res.b).toEqual('b')
+    expect(res.c.d).toEqual('d++')
+    expect(res.c.e).toEqual('e')
+
+    

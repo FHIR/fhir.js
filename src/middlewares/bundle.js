@@ -1,4 +1,4 @@
-exports.BundleRelUrl =  function(rel){
+exports.$$BundleLinkUrl =  function(rel){
     return function(h) {
         return function(args){
             var matched = function(x){return x.rel && x.rel === rel;};

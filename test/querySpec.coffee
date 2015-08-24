@@ -1,4 +1,4 @@
-fhir = require('../src/query')
+fhir = require('../src/middlewares/search')
 describe "linearizeParams:", ->
   subject = fhir._query
 
