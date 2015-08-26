@@ -41,6 +41,7 @@
                 throw new Error("Contained resource not found");
             }
             args.url = utils.absoluteUrl(args.baseUrl, ref.reference);
+            args.data = null;
             return h(args);
         };
     };
