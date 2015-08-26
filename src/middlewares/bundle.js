@@ -1,10 +1,10 @@
 exports.$$BundleLinkUrl =  function(rel){
     return function(h) {
         return function(args){
-            var matched = function(x){return x.rel && x.rel === rel;};
+            var matched = function(x){return x.relation && x.relation === rel;};
             var res =  args.bundle && (args.bundle.link || []).filter(matched)[0];
-            if(res && res.href){
-                args.url = res.href;
+            if(res && res.url){
+                args.url = res.url;
                 return h(args);
             }
             else{
