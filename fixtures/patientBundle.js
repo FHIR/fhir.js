@@ -4,12 +4,12 @@ module.exports = {
   "id": "BASE/Patient?_count=1",
   "link": [
     {
-      "rel": "self",
-      "href": "BASE/Patient?_count=1"
+      "relation": "self",
+      "url": "BASE/Patient?_count=1"
     },
     {
-      "rel": "next",
-      "href": "BASE/Patient?_count=1&_skip=1"
+      "relation": "next",
+      "url": "BASE/Patient?_count=1&_skip=1"
     }
   ],
   "totalResults": 58,
