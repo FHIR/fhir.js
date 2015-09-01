@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --port $PORT --progress --colors",
-    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && coffee --output lib --compile src",
+    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && `npm bin`/coffee --output lib --compile src",
     "spec": "node_modules/karma/bin/karma start --single-run",
     "integrate": "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
     "node-test": "node_modules/.bin/jasmine-node --coffee node_tests",
