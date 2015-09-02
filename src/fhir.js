@@ -64,7 +64,7 @@
             "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
             create: POST.and(resourceTypePath).and(ReturnHeader).end(http),
             validate: POST.and(resourceTypePath.slash("_validate")).end(http),
-            search: GET.and(searchPath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
+            search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
