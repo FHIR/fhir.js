@@ -13,10 +13,10 @@ describe "Search by patient:", ()->
 
   it  'Add pt param', (done)->
     http = (opt)->
-      expect(opt.url).toEqual('BASE/MedicationPrescription?patient=123')
+      expect(opt.url).toEqual('BASE/MedicationOrder?patient=123')
       done()
 
-    subject.search(type: 'MedicationPrescription', http: http);
+    subject.search(type: 'MedicationOrder', http: http);
 
   it 'Skip non relevant types', (done)->
     http = (opt)->
