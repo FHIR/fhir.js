@@ -59,7 +59,7 @@
             history: GET.and(BaseUrl.slash("_history")).and($Paging).end(http),
             typeHistory: GET.and(resourceTypeHxPath).and($Paging).end(http),
             resourceHistory: GET.and(resourceHxPath).and($Paging).end(http),
-            read: GET.and(resourcePath).end(http),
+            read: GET.and(pt.$WithPatient).and(resourcePath).end(http),
             vread: GET.and(vreadPath).end(http),
             "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
             create: POST.and(resourceTypePath).and(ReturnHeader).end(http),
