@@ -1,9 +1,13 @@
+sudo: false
 language: node_js
 node_js: '0.12'
+cache:
+  directories:
+    - node_modules
 before_script:
 - 'npm install'
 script:
-- 'jasmine-node --coffee node_tests'
+- 'npm run node-test'
 - 'npm run spec-node'
 - 'npm run-script spec'
 - 'npm run-script integrate'

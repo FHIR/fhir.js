@@ -76,12 +76,20 @@ Structure of requestObj:
 * `method` - http method (GET|POST|PUT|DELETE)
 * `url` - url for request
 * `headers` - object with headers (i.e. {'Category': 'term; scheme="sch"; label="lbl"'}
-* `success` - success callback, which should be called with (data, status, headersFn, config)
+
+and return promise (A+)
+
+http(requestObj).then(success, error)
+
+where:
+`success` - success callback, which should be called with (data, status, headersFn, config)
+
   * data - parsed body of responce
   * status - responce HTTP status
   * headerFn - function to get header, i.e. headerFn('Content')
   * config - initial requestObj passed to http
-* `error` - error callback, which should be called with (data, status, headerFn, config)
+
+`error` - error callback, which should be called with (data, status, headerFn, config)
 
 
 Here are implementations for:

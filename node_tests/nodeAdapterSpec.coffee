@@ -15,8 +15,8 @@ describe "nodejs adapter", ->
 
   it "create", (done)->
     fail = (err)-> done(); throw new Error("Ups")
-    subject.create(new_pt).then(done, fail)
-    done()
+    success = (res)-> done()
+    subject.create(new_pt).then(success, fail)
 
   it "search", (done)->
     fail = (err)-> console.error(err); done()
