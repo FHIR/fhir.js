@@ -12,7 +12,7 @@ describe "fhir", ->
 
   it "search", ->
     subject.search(type: 'Patient', query: {name: 'maud'}).then (x)->
-      expect(x.url).toEqual('BASE/Patient/_search?name=maud')
+      expect(x.url).toEqual('BASE/Patient?name=maud')
 
   it "conformance", ->
     subject.conformance({}).then (x)->

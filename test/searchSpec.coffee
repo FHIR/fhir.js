@@ -11,7 +11,7 @@ describe "search:", ->
   it "search success", (done)->
     http = (q)->
       expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Patient/_search?name=maud')
+      expect(q.url).toBe('BASE/Patient?name=maud')
       done()
 
     subject.search(http: http, type: 'Patient', query: {name: 'maud'})

@@ -40,7 +40,7 @@
         var Path = url.Path;
         var BaseUrl = Path(cfg.baseUrl);
         var resourceTypePath = BaseUrl.slash(":type || :resource.resourceType");
-        var searchPath = resourceTypePath.slash("_search");
+        var searchPath = resourceTypePath;
         var resourceTypeHxPath = resourceTypePath.slash("_history");
         var resourcePath = resourceTypePath.slash(":id || :resource.id");
         var resourceHxPath = resourcePath.slash("_history");
