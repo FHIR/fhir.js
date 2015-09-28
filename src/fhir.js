@@ -10,6 +10,7 @@
     var pt = require('./middlewares/patient');
     var refs = require('./middlewares/references');
     var url = require('./middlewares/url');
+    var decorate = require('./decorate');
 
     var cache = {};
 
@@ -51,7 +52,7 @@
 
         var $Paging = Middleware(query.$Paging);
 
-        return {
+        return decorate({
             conformance: GET.and(BaseUrl.slash("metadata")).end(http),
             document: POST.and(BaseUrl.slash("Document")).end(http),
             profile:  GET.and(BaseUrl.slash("Profile").slash(":type")).end(http),
@@ -69,7 +70,7 @@
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
             resolve: GET.and(refs.resolve).end(http)
-        };
+        }, adapter);
 
     };
     module.exports = fhir;
