@@ -28,6 +28,8 @@
             }, function(err) {
                 fail(err);
             });
+        }, function(err) {
+            fail(err);
         });
     };
     
@@ -44,6 +46,9 @@
             },
             function () {
                 ret.resolve(results);
+            },
+            function (err) {
+                ret.reject(err);
             }
         );
           
