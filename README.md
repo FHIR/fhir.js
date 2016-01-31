@@ -94,10 +94,10 @@ where:
 
 Here are implementations for:
 
-* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/angularjs.coffee)
-* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.coffee)
-* [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.coffee)
-* [YUI adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/yui.coffee)
+* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/angularjs.js)
+* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.js)
+* [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.js)
+* [YUI adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/yui.js)
 
 ### Conformance & Profiles
 
