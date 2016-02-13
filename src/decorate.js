@@ -54,12 +54,68 @@
           
         return ret.promise;
     };
+
+    function fetchAllWithReferences (searchParams, resolveParams) {
+        var ret = adapter.defer();
+          
+        fhirAPI.fetchAll(searchParams)  // TODO: THIS IS NOT CORRECT
+            .then(function(results){
+
+                var resolvedReferences = {};
+
+                var queue = [function() {ret.resolve(results, resolvedReferences);}];
+                
+                function enqueue (bundle,resource,reference) {
+                  queue.push(function() {resolveReference(bundle,resource,reference)});
+                }
+
+                function next() {
+                  (queue.pop())();
+                }
+
+                function resolveReference (bundle,resource,reference) {
+                    var referenceID = reference.reference;
+                    fhirAPI.resolve({'bundle': bundle, 'resource': resource, 'reference':reference}).then(function(res){
+                      var referencedObject = res.data || res.content;
+                      resolvedReferences[referenceID] = referencedObject;
+                      next();
+                    });
+                }
+
+                var bundle = results.data;
+
+                bundle.entry && bundle.entry.forEach(function(element){
+                  var resource = element.resource;
+                  var type = resource.resourceType;
+                  resolveParams && resolveParams.forEach(function(resolveParam){
+                    var param = resolveParam.split('.');
+                    var targetType = param[0];
+                    var targetElement = param[1];
+                    var reference = resource[targetElement];
+                    if (type === targetType && reference) {
+                      var referenceID = reference.reference;
+                      if (!resolvedReferences[referenceID]) {
+                        enqueue(bundle,resource,reference);
+                      }
+                    }
+                  });
+                });
+
+                next();
+
+            }, function(){
+                ret.reject("Could not fetch search results");
+            });
+          
+        return ret.promise;
+    };
     
     function decorate (client, newAdapter) {
         fhirAPI = client;
         adapter = newAdapter;
         client["drain"] = drain;
         client["fetchAll"] = fetchAll;
+        client["fetchAllWithReferences"] = fetchAllWithReferences;
         return client;
     }
     
