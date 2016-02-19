@@ -37,7 +37,7 @@ describe "utils", ->
   it "url utils", ->
     expect(utils.absoluteUrl("BASE", "Patient/123")).toEqual("BASE/Patient/123")
     expect(utils.relativeUrl("BASE", "BASE/Patient/123")).toEqual("Patient/123")
-    expect(utils.absoluteUrl("BASE", "BASE/Patient/123")).toEqual("BASE/Patient/123")
+    expect(utils.absoluteUrl("BASE", "http://test/Patient/123")).toEqual("http://test/Patient/123")
     expect(utils.relativeUrl("BASE", "Patient/123")).toEqual("Patient/123")
 
   it "resourceIdToUrl", ->
