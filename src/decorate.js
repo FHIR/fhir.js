@@ -58,7 +58,7 @@
     function fetchAllWithReferences (searchParams, resolveParams) {
         var ret = adapter.defer();
           
-        fhirAPI.fetchAll(searchParams)  // TODO: THIS IS NOT CORRECT
+        fhirAPI.search(searchParams)  // TODO: THIS IS NOT CORRECT (need fetchAll, but it does not return a bundle yet)
             .then(function(results){
 
                 var resolvedReferences = {};
