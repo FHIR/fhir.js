@@ -1,6 +1,6 @@
 {
   "name": "fhir.js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "devDependencies": {
     "angular": "~1.4.0",
     "jquery": "~2.1.1",
