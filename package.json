@@ -3,33 +3,34 @@
   "version": "0.0.8",
   "devDependencies": {
     "angular": "~1.4.0",
-    "jquery": "~2.1.1",
-    "yui": "~3.17.1",
     "bower": "latest",
+    "jasmine-core": "latest",
     "jasmine-node": "latest",
+    "jquery": "~2.1.1",
     "karma": "latest",
     "karma-chrome-launcher": "latest",
     "karma-coffee-preprocessor": "latest",
     "karma-jasmine": "latest",
     "karma-phantomjs-launcher": "latest",
     "karma-webpack": "latest",
-    "phantomjs": "latest",
-    "webpack-dev-server": "latest"
+    "phantomjs-prebuilt": "latest",
+    "webpack-dev-server": "latest",
+    "yui": "~3.17.1"
   },
   "description": "FHIR javascript client",
-  "main": "lib/adapters/node",
+  "main": "src/adapters/node",
   "repository": {
     "type": "git",
     "url": "git@github.com:FHIR/fhir.js.git"
   },
   "scripts": {
     "start": "webpack-dev-server --port $PORT --progress --colors",
-    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && coffee --output lib --compile src",
-    "spec": "node_modules/karma/bin/karma start --single-run",
-    "integrate": "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
-    "node-test": "node_modules/.bin/jasmine-node --coffee node_tests",
-    "spec-node": "node_modules/.bin/jasmine-node --coffee test",
-    "spec-watch": "node_modules/karma/bin/karma start",
+    "build": "rm -rf dist && webpack --progress --colors && coffee --output lib --compile src",
+    "spec": "karma start --single-run",
+    "integrate": "karma start karma-itegration.conf.js --single-run",
+    "node-test": "jasmine-node --coffee node_tests",
+    "spec-node": "jasmine-node --coffee test",
+    "spec-watch": "karma start",
     "all-tests": "npm run node-test && npm run spec && npm run spec-node && npm run integrate"
   },
   "keywords": [
@@ -57,5 +58,9 @@
     "chance": "latest",
     "request": "~2.42.0"
   },
-  "files": ["bin", "lib", "src"]
+  "files": [
+    "bin",
+    "lib",
+    "src"
+  ]
 }
