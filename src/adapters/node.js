@@ -16,6 +16,9 @@
             request(args, function(err, response, body) {
                 var headers = function(x) {return response.headers[x.toLowerCase()];};
                 var resp = {data: body, status: response.statusCode, headers: headers, config: args};
+                if(args.debug){
+                    console.log('DEBUG[node]: (responce)', resp); 
+                }
                 if (err || response.statusCode > 399) {deff.reject(resp);} else {deff.resolve(resp);}
             }) ;
             return deff.promise;

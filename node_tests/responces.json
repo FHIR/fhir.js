@@ -1,0 +1,30 @@
+{
+    "_defaults": {
+        "status": 200,
+        "headers": {"Content-Type": "application/json"}
+    },
+    "GET /": {
+        "body": "Hello server"
+    },
+    "GET /fhir": {
+        "body": "Hello server"
+    },
+    "POST /node_test/Patient": {
+        "body":  {
+            "resourceType": "Patient",
+            "name": [{"family": [ "Fhirjs" ], "given": [ "Node" ]}],
+            "birthDate": "1990-06-20"
+        },
+        "headers": {"Content-Location": "/node_test/Patient/1"},
+        "status": 201
+    },
+    "GET /node_test/Patient?name=adams": {
+        "body":  {
+            "resourceType": "Patient",
+            "name": [{"family": [ "Fhirjs" ], "given": [ "Node" ]}],
+            "birthDate": "1990-06-20"
+        },
+        "headers": {"Content-Type": "application/json"},
+        "status": 200
+    }
+}

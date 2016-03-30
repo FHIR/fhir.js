@@ -1,5 +1,7 @@
 fhir = require('../src/fhir')
 
+assert = require('assert')
+
 nop = (x)-> x
 bundle = {a: 1}
 
@@ -11,9 +13,9 @@ trans = subject.transaction
 describe 'transaction', ->
   it 'success', (done)->
     http = (q)->
-      expect(q.method).toBe('POST')
-      expect(q.url).toBe('BASE')
-      expect(q.data).toEqual('{"a":1}')
+      assert.deepEqual(q.method, 'POST')
+      assert.deepEqual(q.url, 'BASE')
+      assert.deepEqual(q.data, '{"a":1}')
       done()
 
     trans(http: http, bundle: {a: 1})

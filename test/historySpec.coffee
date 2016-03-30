@@ -1,4 +1,5 @@
 fhir = require('../src/fhir')
+assert = require('assert')
 
 nop = (x)-> x
 
@@ -9,10 +10,10 @@ subject = fhir(cfg, {})
 describe 'history', ->
   it 'success', (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Alert/test-id/_history')
-      expect(q.params._count).toBe(10)
-      expect(q.params._since).toBe('2000-01-01')
+      assert.equal(q.method, 'GET')
+      assert.equal(q.url, 'BASE/Alert/test-id/_history')
+      assert.equal(q.params._count, 10)
+      assert.equal(q.params._since, '2000-01-01')
       done()
 
     subject.resourceHistory
@@ -26,8 +27,8 @@ describe 'history', ->
 describe 'historyType', ->
   it 'success', (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Alert/_history')
+      assert.equal(q.method, 'GET')
+      assert.equal(q.url, 'BASE/Alert/_history')
       done()
 
     subject.typeHistory(http: http, type:'Alert')
@@ -35,8 +36,8 @@ describe 'historyType', ->
 describe 'historyAll', ->
   it 'success', (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/_history')
+      assert.equal(q.method, 'GET')
+      assert.equal(q.url, 'BASE/_history')
       done()
 
     subject.history(http: http)

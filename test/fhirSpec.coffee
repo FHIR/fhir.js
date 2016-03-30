@@ -1,4 +1,5 @@
 fhir = require('../src/fhir')
+assert = require('assert')
 
 describe "fhir", ->
   cfg = {baseUrl: 'BASE', }
@@ -6,30 +7,29 @@ describe "fhir", ->
   subject = fhir(cfg, adapter)
 
   it "api", ()->
-    expect(subject.search).not.toBe(null)
-    expect(subject.profile).not.toBe(null)
-    expect(subject.transaction).not.toBe(null)
+    assert.notEqual(subject.search, null)
+    assert.notEqual(subject.profile, null)
+    assert.notEqual(subject.transaction, null)
 
   it "search", ->
     subject.search(type: 'Patient', query: {name: 'maud'}).then (x)->
-      expect(x.url).toEqual('BASE/Patient?name=maud')
+      assert.equal(x.url, 'BASE/Patient?name=maud')
 
   it "conformance", ->
     subject.conformance({}).then (x)->
-      expect(x.url).toEqual('BASE/metadata')
+      assert.equal(x.url, 'BASE/metadata')
 
   it "profile", ->
     subject.profile(type: 'Patient').then (x)->
-      expect(x.url).toEqual('BASE/Profile/Patient')
+      assert.equal(x.url,'BASE/Profile/Patient')
 
 
   it "transaction", ->
     subject.transaction(bundle: {a: 1}).then (x)->
-      expect(x.url).toEqual('BASE')
-      expect(x.method).toEqual('POST')
-      expect(x.data).toEqual('{"a":1}')
-
+      assert.equal(x.url, 'BASE')
+      assert.equal(x.method, 'POST')
+      assert.equal(x.data, '{"a":1}')
 
   it "read", ->
     subject.read(type: 'Patient', id :'123').then (x)->
-      expect(x.url).toEqual('BASE/Patient/123')
+      assert.equal(x.url, 'BASE/Patient/123')

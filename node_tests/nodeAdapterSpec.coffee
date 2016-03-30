@@ -1,4 +1,3 @@
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
 fhir = require('../src/adapters/node')
 
 new_pt =
@@ -11,11 +10,16 @@ new_pt =
     birthDate: '1990-06-20'
 
 describe "nodejs adapter", ->
-  subject = fhir(baseUrl: 'https://ci-api.fhir.me', patient: '123', auth: {user: 'client', pass: 'secret'})
+
+  @timeout(10000);
+
+  subject = fhir(baseUrl: 'http://localhost:8976/node_test', patient: '123', auth: {user: 'client', pass: 'secret'})
 
   it "create", (done)->
     fail = (err)-> done(); throw new Error("Ups")
-    success = (res)-> done()
+    success = (res)->
+      console.log res.data
+      done()
     subject.create(new_pt).then(success, fail)
 
   it "search", (done)->

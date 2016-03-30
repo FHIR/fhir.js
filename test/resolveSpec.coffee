@@ -2,6 +2,8 @@ fhir = require('../src/fhir')
 resolve = require('../src/middlewares/references')
 rx = require('../fixtures/medicationPrescription.js')
 
+assert = require('assert')
+
 bpBundle = require('../fixtures/bpBundle.js')
 bp = bpBundle.entry[0]
 
@@ -25,7 +27,7 @@ describe "resolve resolveSynchronous", ->
       cache: cache
       reference: {reference: "#no-such-thing"}
       resource: rx
-    expect(resolved).toEqual(null)
+    assert.deepEqual(resolved, null)
 
   it "resolves a contained resource", ->
     resolved = resolve.sync
@@ -33,7 +35,7 @@ describe "resolve resolveSynchronous", ->
       cache: cache
       reference: rx.medication
       resource: rx
-    expect(resolved.content).toEqual(rx.contained[0])
+    assert.deepEqual(resolved.content, rx.contained[0])
 
   it "resolves a missing bundled resource as null", ->
     resolved = resolve.sync
@@ -41,7 +43,7 @@ describe "resolve resolveSynchronous", ->
       cache: cache,
       reference: {reference: "no-such-thing"}
       bundle: bpBundle
-    expect(resolved).toEqual(null)
+    assert.deepEqual(resolved, null)
 
   it "resolves a co-bundled resource", ->
     resolved = resolve.sync
@@ -49,7 +51,7 @@ describe "resolve resolveSynchronous", ->
       cache: cache
       reference: systolicRef
       bundle: bpBundle
-    expect(resolved).toEqual(systolic)
+    assert.deepEqual(resolved, systolic)
 
   it "resolves a cached resource", ->
     resolved = resolve.sync
@@ -57,7 +59,7 @@ describe "resolve resolveSynchronous", ->
       cache: {'BASE/Observation/9573':diastolic}
       reference: diastolicRef
 
-    expect(resolved).toEqual(diastolic)
+    assert.deepEqual(resolved, diastolic)
 
 describe "resolve resolve", ->
 
@@ -77,7 +79,7 @@ describe "resolve resolve", ->
   it "resolves a contained resource", (done)->
     http = (q)-> (throw "should not be called")
     cb = (r)->
-      expect(r.content).toEqual(rx.contained[0])
+      assert.deepEqual(r.content, rx.contained[0])
       done()
 
     subject.resolve(
@@ -92,7 +94,7 @@ describe "resolve resolve", ->
     http = (q)->(throw "should not be called")
 
     cb = (r)->
-      expect(r).toEqual(systolic)
+      assert.deepEqual(r, systolic)
       done()
 
     subject.resolve(
@@ -104,8 +106,8 @@ describe "resolve resolve", ->
 
   it "resolves a non-local resource via HTTP", (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Observation/9573')
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Observation/9573')
       done()
 
     subject.resolve(http: http, reference: diastolicRef)

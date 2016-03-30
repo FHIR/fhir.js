@@ -1,4 +1,5 @@
 subj = require('../src/middlewares/url')
+assert = require('assert')
 
 Path = subj.Path;
 
@@ -17,11 +18,11 @@ describe "Path",->
 
     p5 = p0.slash(":type || :resource.resourceType")
 
-    expect(apply(p0, {}).url).toEqual("BASE")
-    expect(apply(p1, {type: 'Patient'}).url).toEqual("BASE/Patient")
-    expect(apply(p2, {type: 'Patient',id: 5}).url).toEqual("BASE/Patient/5")
-    expect(apply(p3, {type: 'Patient',id: 5}).url).toEqual("BASE/Patient/5/_history")
-    expect(apply(p4, {type: 'Patient',id: 5, versionId: 6}).url).toEqual("BASE/Patient/5/_history/6")
+    assert.deepEqual(apply(p0, {}).url, "BASE")
+    assert.deepEqual(apply(p1, {type: 'Patient'}).url, "BASE/Patient")
+    assert.deepEqual(apply(p2, {type: 'Patient',id: 5}).url, "BASE/Patient/5")
+    assert.deepEqual(apply(p3, {type: 'Patient',id: 5}).url, "BASE/Patient/5/_history")
+    assert.deepEqual(apply(p4, {type: 'Patient',id: 5, versionId: 6}).url, "BASE/Patient/5/_history/6")
     
-    expect(apply(p5, {resource: {resourceType: 'Patient'}}).url).toEqual("BASE/Patient")
-    expect(apply(p5, {type: 'Patient'}).url).toEqual("BASE/Patient")
+    assert.deepEqual(apply(p5, {resource: {resourceType: 'Patient'}}).url, "BASE/Patient")
+    assert.deepEqual(apply(p5, {type: 'Patient'}).url, "BASE/Patient")

@@ -1,4 +1,5 @@
 fhir = require('../src/fhir')
+assert = require('assert')
 
 
 nop = ()->
@@ -14,11 +15,11 @@ res = fhir(cfg, {defer: require('../src/testUtils').defer})
 
 describe "search:", ->
   it "api", ->
-    expect(res.create).not.toBe(null)
-    expect(res.read).not.toBe(null)
-    expect(res.vread).not.toBe(null)
-    expect(res.update).not.toBe(null)
-    expect(res.delete).not.toBe(null)
+    assert.notEqual(res.create, null)
+    assert.notEqual(res.read, null)
+    assert.notEqual(res.vread, null)
+    assert.notEqual(res.update, null)
+    assert.notEqual(res.delete, null)
 
   headers = mockHeaders
     'Content-Location': 'BASE/Patient/5'
@@ -26,18 +27,18 @@ describe "search:", ->
   it "create", (done)->
     resource = {resourceType: 'Patient', meta: {tags: tags}}
     http = (req)->
-      expect(req.data).toEqual(JSON.stringify(resource))
-      expect(req.method).toBe('POST')
-      expect(req.url).toBe('BASE/Patient')
-      expect(req.data).toBe(JSON.stringify(resource))
+      assert.deepEqual(req.data, JSON.stringify(resource))
+      assert.deepEqual(req.method, 'POST')
+      assert.deepEqual(req.url, 'BASE/Patient')
+      assert.deepEqual(req.data, JSON.stringify(resource))
       done()
     res.create(http: http, resource: resource)
 
   simpleRead = (tp, id, done) ->
     resource = {id: '5', resourceType: 'Patient', meta: {tags: tags}}
     http = (req)->
-      expect(req.method).toBe('GET')
-      expect(req.url).toBe('BASE/Patient/5')
+      assert.deepEqual(req.method, 'GET')
+      assert.deepEqual(req.url, 'BASE/Patient/5')
       done()
 
     res.read(http: http, type: tp, id: id)
@@ -48,9 +49,9 @@ describe "search:", ->
   it "update", (done)->
     resource = {id: '5', resourceType: 'Patient'}
     http = (req)->
-      expect(req.method).toBe('PUT')
-      expect(req.url).toBe('BASE/Patient/5')
-      expect(req.data).toEqual(JSON.stringify(resource))
+      assert.deepEqual(req.method, 'PUT')
+      assert.deepEqual(req.url, 'BASE/Patient/5')
+      assert.deepEqual(req.data, JSON.stringify(resource))
       done()
 
     res.update(http: http, type: 'Patient', resource: resource)
@@ -58,7 +59,7 @@ describe "search:", ->
   it "delete", (done)->
     resource = {id: '5', resourceType: 'Patient'}
     http = (q)->
-      expect(q.method).toBe('DELETE')
-      expect(q.url).toBe('BASE/Patient/5')
+      assert.deepEqual(q.method, 'DELETE')
+      assert.deepEqual(q.url, 'BASE/Patient/5')
       done()
     res.delete(http: http, resource: resource)

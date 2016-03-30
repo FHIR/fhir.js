@@ -1,61 +1,58 @@
 utils = require('../src/utils')
+assert = require('assert')
 
 describe "utils", ->
   it "trim", ->
     subject = utils.trim
 
-    expect(subject("a    ")).toBe("a")
-    expect(subject("       a    ")).toBe("a")
-    expect(subject("     a")).toBe("a")
-    expect(subject(" \n\t    a\n\t")).toBe("a")
+    assert.deepEqual(subject("a    "), "a")
+    assert.deepEqual(subject("       a    "), "a")
+    assert.deepEqual(subject("     a"), "a")
+    assert.deepEqual(subject(" \n\t    a\n\t"), "a")
 
   it "utils", ->
-    expect(utils.identity(42)).toEqual(42)
+    assert.deepEqual(utils.identity(42), 42)
 
-    expect(utils.type(42)).toEqual('number')
-    expect(utils.type('str')).toEqual('string')
-    expect(utils.type([1,2,3])).toEqual('array')
-    expect(utils.type({a:1})).toEqual('object')
-    expect(utils.type(utils.identity)).toEqual('function')
+    assert.deepEqual(utils.type(42), 'number')
+    assert.deepEqual(utils.type('str'), 'string')
+    assert.deepEqual(utils.type([1,2,3]), 'array')
+    assert.deepEqual(utils.type({a:1}), 'object')
+    assert.deepEqual(utils.type(utils.identity), 'function')
 
   it "utils", ->
-    expect(utils.identity(42)).toEqual(42)
+    assert.deepEqual(utils.identity(42), 42)
 
-    expect(utils.type(42)).toEqual('number')
-    expect(utils.type('str')).toEqual('string')
-    expect(utils.type([1,2,3])).toEqual('array')
-    expect(utils.type({a:1})).toEqual('object')
-    expect(utils.type(utils.identity)).toEqual('function')
+    assert.deepEqual(utils.type(42), 'number')
+    assert.deepEqual(utils.type('str'), 'string')
+    assert.deepEqual(utils.type([1,2,3]), 'array')
+    assert.deepEqual(utils.type({a:1}), 'object')
+    assert.deepEqual(utils.type(utils.identity), 'function')
 
-    expect(utils.mergeLists({}, {})).toEqual({})
-    expect(utils.mergeLists({a:[1,2]}, {a:[3]})).toEqual({a:[1,2,3]})
+    assert.deepEqual(utils.mergeLists({}, {}), {})
+    assert.deepEqual(utils.mergeLists({a:[1,2]}, {a:[3]}), {a:[1,2,3]})
 
     testArgs = ()->
       utils.argsArray.apply(null, arguments)
-    expect(testArgs(1,2,3)).toEqual([1,2,3])
+    assert.deepEqual(testArgs(1,2,3), [1,2,3])
 
   it "url utils", ->
-    expect(utils.absoluteUrl("BASE", "Patient/123")).toEqual("BASE/Patient/123")
-    expect(utils.relativeUrl("BASE", "BASE/Patient/123")).toEqual("Patient/123")
-    expect(utils.absoluteUrl("BASE", "BASE/Patient/123")).toEqual("BASE/Patient/123")
-    expect(utils.relativeUrl("BASE", "Patient/123")).toEqual("Patient/123")
+    assert.deepEqual(utils.absoluteUrl("BASE", "Patient/123"), "BASE/Patient/123")
+    assert.deepEqual(utils.relativeUrl("BASE", "BASE/Patient/123"), "Patient/123")
+    assert.deepEqual(utils.absoluteUrl("BASE", "BASE/Patient/123"), "BASE/Patient/123")
+    assert.deepEqual(utils.relativeUrl("BASE", "Patient/123"), "Patient/123")
 
   it "resourceIdToUrl", ->
     subj = utils.resourceIdToUrl
-    expect(subj("BASE/Patient/123", "BASE", "Patient"))
-      .toEqual("BASE/Patient/123")
+    assert.deepEqual(subj("BASE/Patient/123", "BASE", "Patient"), "BASE/Patient/123")
 
-    expect(subj("Patient/123", "BASE", "Patient"))
-      .toEqual("BASE/Patient/123")
+    assert.deepEqual(subj("Patient/123", "BASE", "Patient"), "BASE/Patient/123")
 
-    expect(subj("/Patient/123", "BASE", "Patient"))
-      .toEqual("BASE/Patient/123")
+    assert.deepEqual(subj("/Patient/123", "BASE", "Patient"), "BASE/Patient/123")
 
-    expect(subj("123", "BASE", "Patient"))
-      .toEqual("BASE/Patient/123")
+    assert.deepEqual(subj("123", "BASE", "Patient"), "BASE/Patient/123")
 
   it "can postwalk walk a JSON structure", ->
     subj = utils.postwalk
     untrue = (v) -> if v == true then false else v
-    expect(subj(untrue, {a: [1, 2, true]}).a[2]).toEqual(false)
+    assert.deepEqual(subj(untrue, {a: [1, 2, true]}).a[2], false)
 

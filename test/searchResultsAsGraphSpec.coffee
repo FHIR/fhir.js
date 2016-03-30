@@ -2,6 +2,8 @@ searchResultsAsGraph = require('../src/middlewares/searchResultsAsGraph')
 bpBundle = require('../fixtures/bpBundle.js')
 medRx = require('../fixtures/medicationPrescription.js')
 
+assert = require("assert")
+
 describe "search results as graph", ()->
 
   it "can handle a feed with inter-linked objects", ()->
@@ -12,7 +14,7 @@ describe "search results as graph", ()->
       graph: true,
       success: (graph)->
         target = graph[0].related[0].target
-        expect(target.resourceType).toEqual('Observation')
+        assert.deepEqual(target.resourceType, 'Observation')
     })
 
   it "can handle a feed with contained objects", ()->
@@ -23,7 +25,7 @@ describe "search results as graph", ()->
       graph: true,
       success: (graph)->
         med = graph[0].medication
-        expect(med.resourceType).toEqual('Medication')
+        assert.deepEqual(med.resourceType, 'Medication')
     })
 
 

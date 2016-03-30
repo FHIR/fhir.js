@@ -1,6 +1,8 @@
 fhir = require('../src/fhir')
 patientBundle = require('../fixtures/patientBundle.js')
 
+assert = require('assert')
+
 nop = ()->
 cfg = {baseUrl: 'BASE'}
 res = true
@@ -10,8 +12,8 @@ subject = fhir(cfg, adapter)
 describe "search:", ->
   it "search success", (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Patient?name=maud')
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Patient?name=maud')
       done()
 
     subject.search(http: http, type: 'Patient', query: {name: 'maud'})
@@ -28,8 +30,8 @@ describe "search:", ->
 
   it "fetch next page suceeds", (done)->
     http = (q)->
-      expect(q.method).toBe('GET')
-      expect(q.url).toBe('BASE/Patient?_count=1&_skip=1')
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Patient?_count=1&_skip=1')
       done()
 
     subject.nextPage(http: http, bundle: patientBundle)
