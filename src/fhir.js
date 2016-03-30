@@ -10,6 +10,7 @@
     var pt = require('./middlewares/patient');
     var refs = require('./middlewares/references');
     var url = require('./middlewares/url');
+    var decorate = require('./decorate');
 
     var cache = {};
 
@@ -51,7 +52,7 @@
 
         var $Paging = Middleware(query.$Paging);
 
-        return {
+        return decorate({
             conformance: GET.and(BaseUrl.slash("metadata")).end(http),
             document: POST.and(BaseUrl.slash("Document")).end(http),
             profile:  GET.and(BaseUrl.slash("Profile").slash(":type")).end(http),
@@ -59,17 +60,17 @@
             history: GET.and(BaseUrl.slash("_history")).and($Paging).end(http),
             typeHistory: GET.and(resourceTypeHxPath).and($Paging).end(http),
             resourceHistory: GET.and(resourceHxPath).and($Paging).end(http),
-            read: GET.and(resourcePath).end(http),
+            read: GET.and(pt.$WithPatient).and(resourcePath).end(http),
             vread: GET.and(vreadPath).end(http),
             "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
             create: POST.and(resourceTypePath).and(ReturnHeader).end(http),
             validate: POST.and(resourceTypePath.slash("_validate")).end(http),
-            search: GET.and(searchPath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
+            search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
             resolve: GET.and(refs.resolve).end(http)
-        };
+        }, adapter);
 
     };
     module.exports = fhir;

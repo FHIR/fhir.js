@@ -11,7 +11,7 @@ new_pt =
 
 describe "nodejs adapter", ->
 
-  @timeout(10000);
+  @timeout(10000)
 
   subject = fhir(baseUrl: 'http://localhost:8976/node_test', patient: '123', auth: {user: 'client', pass: 'secret'})
 

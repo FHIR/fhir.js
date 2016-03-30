@@ -104,7 +104,8 @@
   exports.mergeLists = mergeLists;
 
   var absoluteUrl = function(baseUrl, ref) {
-    if (ref.slice(ref, baseUrl.length + 1) !== baseUrl + "/") {
+    console.log(baseUrl, ref)
+    if (!ref.match(/https?:\/\/./)) {
       return baseUrl + "/" + ref;
     } else {
       return ref;

@@ -37,8 +37,10 @@ describe "utils", ->
 
   it "url utils", ->
     assert.deepEqual(utils.absoluteUrl("BASE", "Patient/123"), "BASE/Patient/123")
+    assert.deepEqual(utils.absoluteUrl("BASE", "Patient/123"), "BASE/Patient/123")
+    assert.deepEqual(utils.absoluteUrl("BASE", "http://test/Patient/123"), "http://test/Patient/123")
+
     assert.deepEqual(utils.relativeUrl("BASE", "BASE/Patient/123"), "Patient/123")
-    assert.deepEqual(utils.absoluteUrl("BASE", "BASE/Patient/123"), "BASE/Patient/123")
     assert.deepEqual(utils.relativeUrl("BASE", "Patient/123"), "Patient/123")
 
   it "resourceIdToUrl", ->

@@ -7,17 +7,17 @@ describe "Search by patient:", ()->
 
   it  'Add pt param', (done)->
     http = (opt)->
-      assert.equal(opt.url, 'BASE/Observation?_id=5&subject:Patient._id=123')
+      assert.equal(opt.url, 'BASE/Observation?_id=5&patient=123')
       done()
 
     subject.search(type: 'Observation', query: {_id: 5}, http: http);
 
   it  'Add pt param', (done)->
     http = (opt)->
-      assert.equal(opt.url, 'BASE/MedicationPrescription?_id=5&patient:Patient._id=123')
+      assert.equal(opt.url, 'BASE/MedicationOrder?patient=123')
       done()
 
-    subject.search(type: 'MedicationPrescription', query: {_id: 5}, http: http);
+    subject.search(type: 'MedicationOrder', http: http);
 
   it 'Skip non relevant types', (done)->
     http = (opt)->
