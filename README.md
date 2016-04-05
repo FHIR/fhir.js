@@ -98,6 +98,7 @@ Here are implementations for:
 * [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.js)
 * [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.js)
 * [YUI adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/yui.js)
+* [Native adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/native.js)
 
 ### Conformance & Profiles
 
@@ -267,6 +268,32 @@ var fhir = jqFhir({
 fhir.search(type: 'Patient', query: {name: 'maud'}, success: function(bundle) {}, error: function() {})
 ```
 
+## Native adapter: `npm install fhir.js`
+
+The Native adapter is part of fhir.js npm module. The adapter can be consumed in a few ways, the simplest is documented below.
+
+### Usage
+This assumes use of browserify or similar bundler.
+
+1. `npm install fhir.js`
+2. In your js somewhere use the following snippet.
+
+
+```javascript
+// Include the adapter
+var nativeFhir = require('fhir.js/src/adapters/native');
+
+// Create fhir instance
+var fhir = nativeFhir({
+    baseUrl: 'https://ci-api.fhir.me',
+    auth: {user: 'client', pass: 'secret'}
+});
+
+// Execute the search
+fhir.search({type: 'Patient', query: {name: 'maud'}}).then(function(response){
+    //manipulate your data here.
+});
+```
 
 ## For Developers
 
