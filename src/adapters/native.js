@@ -41,8 +41,8 @@ var adapter = {
     // There are are few extra values, but fetch will ignore them.
     var fetchOptions = args;
 
-    // Pass along cookies, if we are calling the same domain that we loaded from.
-    fetchOptions.credentials = 'same-origin'; // TODO:
+    // Pass along cookies
+    fetchOptions.credentials = 'include';
 
     // data neeeds to map to body
     fetchOptions.body = fetchOptions.data;
