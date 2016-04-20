@@ -1,9 +1,12 @@
 fhir.js
 =======
 
+[![npm version](https://badge.fury.io/js/fhir.js.svg)](https://badge.fury.io/js/fhir.js)
+
 [![Build Status](https://travis-ci.org/FHIR/fhir.js.svg)](https://travis-ci.org/FHIR/fhir.js)
 
 [![Gitter chat](https://badges.gitter.im/FHIR/fhir.js.png)](https://gitter.im/FHIR/fhir.js)
+
 
 JavaScript client for FHIR
 
