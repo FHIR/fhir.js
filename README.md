@@ -55,7 +55,7 @@ configuration object & adapter object.  Adapters are
 implemented for concrete frameworks/libs (see below).
 
 ```
-var cfg = {
+var config = {
   // FHIR server base url
   baseUrl: 'http://myfhirserver.com',
   auth: {
@@ -66,9 +66,32 @@ var cfg = {
   }
 }
 
-myClient = fhir(cfg, adapter)
+myClient = fhir(config, adapter)
 ```
 
+#### Config Object
+The config object is an object that is passed through the middleware chain. Any values in the config object that are not mutated by middleware will be available to the adapter.
+
+Because middleware mutates the config, it is strongly recommended when implementing an adapter to not directly rely on config passed in.
+
+##### baseUrl
+This is the full url to your FHIR server. Resources will be appended to the end of it.
+
+##### auth
+This is an object representing your authentication requirements. Possible options include:
+
+###### bearer
+This is your Bearer token when provided, it will add an `Authorization: Bearer <token>` header to your requests.
+
+###### user
+This is your Basic auth Username.
+
+When you provide both user name and password, basic auth will be used.
+
+###### pass
+This is your basic auth password.
+
+When you provide both user name and password, basic auth will be used.
 ### Adapter implementation
 
 Currently each adapter must implement an
