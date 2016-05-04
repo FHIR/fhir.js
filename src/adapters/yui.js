@@ -29,6 +29,10 @@
                     deff.reject(null, args);
                 }
             };
+            args.xdr = {
+              use: "native",
+              credentials: args.credentials === 'include'
+            };
             io(args.url, args);
             return deff.promise;
         }

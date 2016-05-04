@@ -27,6 +27,7 @@
                 .and($Errors)
                 .and(auth.$Basic)
                 .and(auth.$Bearer)
+                .and(auth.$Credentials)
                 .and(transport.$JsonData)
                 .and($$Header('Accept', 'application/json'))
                 .and($$Header('Content-Type', 'application/json'));

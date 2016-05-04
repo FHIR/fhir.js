@@ -21,3 +21,36 @@ describe "authentication", ->
     authed = http(a:1, b:2, auth: { user: "test", pass: "123" })
 
     assert.deepEqual(authed.headers.Authorization, "Basic dGVzdDoxMjM=")
+
+  describe "credentials", ->
+    beforeEach ->
+      @http = auth.$Credentials identity
+
+    afterEach ->
+      delete @http
+
+    it "same-origin", ->
+      authed = @http a:1, b:2, credentials: "same-origin"
+      assert.equal authed.credentials, "same-origin"
+
+
+    it "include", ->
+      authed = @http a:1, b:2, credentials: "include"
+      assert.equal authed.credentials, "include"
+
+
+    it "invalid", ->
+      authed = @http a:1, b:2, credentials: "invalid"
+      assert.equal authed.credentials, ""
+
+    it "empty string", ->
+      authed = @http a:1, b:2, credentials: ""
+      assert.equal authed.credentials, ""
+
+    it "true", ->
+      authed = @http a:1, b:2, credentials: true
+      assert.equal authed.credentials, ""
+
+    it "false", ->
+      authed = @http a:1, b:2, credentials: false
+      assert.equal authed.credentials, ""

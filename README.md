@@ -15,7 +15,7 @@ JavaScript client for FHIR
  - Support FHIR CRUD operations
  - Friendly and expressive query syntax
  - Support for adapters that provide idiomatic interfaces in angular, jQuery, extjs, etc
- - Support for access control (HTTP basic, OAuth2)
+ - Support for access control (HTTP basic, OAuth2, Cookies)
  - ...
 
 ## Development
@@ -63,7 +63,9 @@ var config = {
      // OR for basic auth
      user: 'user',
      pass: 'secret'
-  }
+  },
+  // Valid Options are 'same-origin', 'include'
+  credentials: 'same-origin'
 }
 
 myClient = fhir(config, adapter)
@@ -92,6 +94,24 @@ When you provide both user name and password, basic auth will be used.
 This is your basic auth password.
 
 When you provide both user name and password, basic auth will be used.
+
+##### credentials
+This option controls the behaviour of sending cookies to the remote server. Refer to the table below for how to configure the option for your desired adapter.
+
+| Adapter  | credentials   | Result                    |
+|----------|---------------|---------------------------|
+| Native   | 'same-origin' | Cookies are sent to the server, if it is on the same host as the origin sender |
+| Native   | 'include'     | Send cookies to all hosts |
+| jQuery   | 'same-origin' | ignored                   |
+| jQuery   | 'include'     | Send cookies to all hosts |
+| yui      | 'same-origin' | ignored                   |
+| yui      | 'include'     | Send cookies to all hosts |
+| angular  | 'same-origin' | ignored                   |
+| angular  | 'include'     | ignored                   |
+| node     | 'same-origin' | ignored                   |
+| node     | 'include'     | ignored                   |
+
+
 ### Adapter implementation
 
 Currently each adapter must implement an
