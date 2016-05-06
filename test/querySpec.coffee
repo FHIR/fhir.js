@@ -11,7 +11,7 @@ describe "linearizeParams:", ->
     assert.deepEqual(subject(a: {$exact: 2}) , [{param: 'a', modifier: ':exact', value: [2]}])
 
   it "operator", ->
-    assert.deepEqual(subject(a: {$lt: 2}) , [{param: 'a', operator: '<', value: [2]}])
+    assert.deepEqual(subject(a: {$lt: 2}) , [{param: 'a', operator: 'lt', value: [2]}])
 
   it "and", ->
     assert.deepEqual(subject(a: {$and: [1, 2]}) , [{param: 'a', value: [1]}, {param: 'a',value: [2]}])
@@ -28,7 +28,7 @@ describe "linearizeParams:", ->
   it "chained params", ->
     assert.deepEqual(subject(subject: {name: {$exact: 'abu'}, birthDate: {$gt: '2000'}}), [
         {param: 'subject.name', modifier: ':exact', value: ['abu']}
-        {param: 'subject.birthDate', operator: '>', value: ['2000']}
+        {param: 'subject.birthDate', operator: 'gt', value: ['2000']}
       ])
 
 describe "test params builder", ->
@@ -39,15 +39,15 @@ describe "test params builder", ->
 
     assert.deepEqual(subject(name: {$exact: 'buka'}), 'name:exact=buka')
 
-    assert.deepEqual(subject(birthDate: {$gt: '2011'}), 'birthDate=>2011')
+    assert.deepEqual(subject(birthDate: {$gt: '2011'}), 'birthDate=gt2011')
 
-    assert.deepEqual(subject(birthDate: {$gt: '2011', $lt: '2014'}), 'birthDate=>2011&birthDate=<2014')
+    assert.deepEqual(subject(birthDate: {$gt: '2011', $lt: '2014'}), 'birthDate=gt2011&birthDate=lt2014')
 
 
     assert.deepEqual(subject('subject.name': {$exact: 'maud'}), 'subject.name:exact=maud')
 
     assert.deepEqual(subject(subject: {$type: 'Patient', name: 'maud',
-    birthDate: {$gt: '1970'}}), 'subject:Patient.name=maud&subject:Patient.birthDate=>1970')
+    birthDate: {$gt: '1970'}}), 'subject:Patient.name=maud&subject:Patient.birthDate=gt1970')
 
     assert.deepEqual(subject('uri': 'http://test'), 'uri=http%3A%2F%2Ftest')
 

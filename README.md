@@ -212,10 +212,10 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 //=> name=maud&name:exact=Dave
 
 {birthDate: {$gt: '1970', $lte: '1980'}}
-//=> birthDate=>1970&birthDate=<=1980
+//=> birthDate=gt1970&birthDate=lte1980
 
 {subject: {$type: 'Patient', name: 'maud', birthDate: {$gt: '1970'}}}
-//=> subject:Patient.name=maud&subject:Patient.birthDate=>1970
+//=> subject:Patient.name=maud&subject:Patient.birthDate=gt1970
 
 {'subject.name': {$exact: 'maud'}}
 //=> subject.name:exact=maud
