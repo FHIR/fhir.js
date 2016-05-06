@@ -1,6 +1,6 @@
 {
   "name": "fhir.js",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "devDependencies": {
     "angular": "~1.4.0",
     "babel-polyfill": "^6.7.4",
