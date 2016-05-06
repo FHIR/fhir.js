@@ -42,7 +42,7 @@ var adapter = {
     var fetchOptions = args;
 
     // Pass along cookies
-    fetchOptions.credentials = 'include';
+    fetchOptions.credentials = args.credentials || '';
 
     // data neeeds to map to body
     fetchOptions.body = fetchOptions.data;
