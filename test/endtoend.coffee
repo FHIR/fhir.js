@@ -1,0 +1,1 @@
+nock = require 'nock'
