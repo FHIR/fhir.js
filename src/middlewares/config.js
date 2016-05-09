@@ -14,6 +14,7 @@
                 copyAttr(cfg, args, 'patient');
                 copyAttr(cfg, args, 'debug');
                 copyAttr(cfg, args, 'credentials');
+                copyAttr(cfg, args, 'headers');
                 copyAttr(adapter, args, 'defer');
                 copyAttr(adapter, args, 'http');
                 return h(args);

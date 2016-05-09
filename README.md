@@ -65,7 +65,11 @@ var config = {
      pass: 'secret'
   },
   // Valid Options are 'same-origin', 'include'
-  credentials: 'same-origin'
+  credentials: 'same-origin',
+  headers: {
+    'X-Custom-Header': 'Custom Value',
+    'X-Another-Custom': 'Another Value',
+  }
 }
 
 myClient = fhir(config, adapter)
@@ -111,6 +115,18 @@ This option controls the behaviour of sending cookies to the remote server. Refe
 | node     | 'same-origin' | ignored                   |
 | node     | 'include'     | ignored                   |
 
+##### headers
+A key:value object that represents headers. This object is passed through to you configured adapter.
+
+If you choose to add custom headers to your requests, you should ensure that the server that you are talking to supplies the appropriate headers. Further reading on Allowed Headers: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
+```javascript
+const config = {
+  headers: {
+    'X-Custom-Header': 'Custom Value',
+    'X-Another-Custom': 'Another Value',
+  }
+}
+```
 
 ### Adapter implementation
 
