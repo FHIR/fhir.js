@@ -287,7 +287,7 @@ fhir.search({type: 'Patient', query: {name: 'maud'}})
 })
 ```
 
-## Node.js adapter: `npm install fhir.ns`
+## Node.js adapter: `npm install fhir.js`
 
 Via NPM you can `npm install fhir.js`. (If you want to work on the source code,
 you can compile coffee to js via `npm install`, and use `./lib/adapters/node`
