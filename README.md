@@ -199,16 +199,10 @@ myClient.create(entry,
 
 ```
 
-### Tags Operations
-
 ### Search
 
-`fhir.search('Patient', queryObject, callback, errback)` function is used
-for [FHIR resource's search](http://www.hl7.org/implement/standards/fhir/search.html).
-
-If success callback will be called with resulting [bundle](http://www.hl7.org/implement/standards/fhir/json.html#bundle).
-
-For queryObject syntax `fhir.js` adopts
+fhir.search({type: resourceType, query: queryObject}),
+where queryObject syntax `fhir.js` adopts
 mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-documents/)):
 
 ```javascript

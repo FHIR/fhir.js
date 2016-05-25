@@ -56,6 +56,11 @@ describe "test params builder", ->
       $sort: [['name','asc'],['birthDate','desc'], 'vip']),
       '_sort:asc=name&_sort:desc=birthDate&_sort=vip')
 
+    assert.deepEqual(
+      subject(subject: "id", questionnaire: "Allergies", _count: 1, $sort: [["authored", "desc"]]),
+      'subject=id&questionnaire=Allergies&_count=1&_sort:desc=authored')
+
+
   it "include", ->
     assert.deepEqual(subject($include: {Observation: "related.component", Patient: ["link.other", "careProvider"]}),
       '_include=Observation.related.component&_include=Patient.link.other&_include=Patient.careProvider')
@@ -63,5 +68,4 @@ describe "test params builder", ->
   it "or", ->
     assert.deepEqual(subject(name: {$or: ['bill', 'ted']}),
       'name=bill%2Cted')
-
 
