@@ -35,7 +35,7 @@ npm install
 npm run-script build
 
 # run all tests once
-npm run-script spec
+npm run-script all-testsx
 
 # watch tests while development
 npm run-script spec-watch
