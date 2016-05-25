@@ -34,13 +34,10 @@ npm install
 # buld fhir.js
 npm run-script build
 
-# run all tests once
-npm run-script spec
+# run tests in node
+npm run-script test
 
-# watch tests while development
-npm run-script spec-watch
-
-# run integration tests
+# run tests in phantomjs
 npm run-script integrate
 ```
 

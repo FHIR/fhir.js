@@ -1,5 +1,3 @@
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000
-
 fhir = require('../src/adapters/angularjs')
 spec = require('../src/spec.coffee')
 

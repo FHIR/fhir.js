@@ -9,7 +9,7 @@
     "karma": "latest",
     "karma-chrome-launcher": "latest",
     "karma-coffee-preprocessor": "latest",
-    "karma-jasmine": "latest",
+    "karma-mocha": "latest",
     "karma-phantomjs-launcher": "latest",
     "karma-webpack": "latest",
     "mocha": "latest",
@@ -25,14 +25,13 @@
     "url": "git@github.com:FHIR/fhir.js.git"
   },
   "scripts": {
-    "start": "webpack-dev-server --port $PORT --progress --colors",
-    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && `npm bin`/coffee --output lib --compile src",
-    "spec": "node_modules/karma/bin/karma start --single-run",
-    "integrate": "node_modules/karma/bin/karma start karma-itegration.conf.js --single-run",
-    "node-test": "node_modules/.bin/mocha --compilers mocha --compilers coffee:coffee-script/register node_tests",
-    "spec-node": " node_modules/.bin/mocha --compilers mocha --compilers coffee:coffee-script/register",
-    "spec-watch": "node_modules/karma/bin/karma start",
-    "all-tests": "npm run node-test && npm run spec && npm run spec-node && npm run integrate"
+    "test": " node_modules/.bin/mocha --compilers mocha --compilers coffee:coffee-script/register",
+
+    "integrate": "node_modules/karma/bin/karma start --single-run",
+
+    "all-tests": "npm run test  && npm run integrate",
+
+    "build": "rm -rf dist && `npm bin`/webpack --progress --colors && `npm bin`/coffee --output lib --compile src"
   },
   "keywords": [
     "fhir",

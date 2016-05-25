@@ -1,4 +1,5 @@
 tu = require('../src/testUtils')
+assert = require('assert')
 Chance = require('chance')
 
 exports.spec_for = (title, impl, baseUrl)->
@@ -19,6 +20,8 @@ exports.spec_for = (title, impl, baseUrl)->
     ]
 
   describe title, ->
+    @timeout(10000)
+
     q = {defer: impl.defer}
     buildStep =  tu.stepBuilder(q)
     checkStep =  tu.checkStep(q)
@@ -26,14 +29,12 @@ exports.spec_for = (title, impl, baseUrl)->
     subject = impl(baseUrl: baseUrl)
 
     it "search", (done) ->
-      subject.search(type: 'Patient', query: {name: 'maud'}).then(done)
+      subject.search(type: 'Patient', query: {name: 'maud'}).then((-> done()))
 
     it "CRUD", (done) ->
       console.log("#{title} SPEC")
 
-      fail = (err)->
-        console.error(err)
-        done()
+      fail = (err)-> done(new Error(JSON.stringify(err)))
 
       preparePt = buildStep 'pt', (next, st)-> next(genPatient())
 
@@ -47,15 +48,15 @@ exports.spec_for = (title, impl, baseUrl)->
 
       checkCreatePt = checkStep 'createPt', (st, resp)->
         cpt = resp.data
-        expect(cpt.id).not.toBe(null)
-        expect(cpt.name[0].family).toEqual(st.pt.name[0].family)
+        assert.notEqual(cpt.id, null)
+        assert.deepEqual(cpt.name[0].family, st.pt.name[0].family)
 
       readPt = buildStep 'readPt', (next, st)->
         subject.read(type: 'Patient', id: st.pid).then(next,fail)
 
       checkReadPt = checkStep 'readPt', (st, resp)->
         readPt = resp.data
-        expect(readPt.name[0].family[0]).toEqual(st.pt.name[0].family[0])
+        assert.deepEqual(readPt.name[0].family[0], st.pt.name[0].family[0])
 
       updatePt = buildStep 'updatePt', (next, st)->
         pt = st.createPt.data
@@ -65,7 +66,7 @@ exports.spec_for = (title, impl, baseUrl)->
       checkUpdatePt = checkStep 'updatePt', (st, resp)->
         updatePt = resp.data
         createPt = st.createPt.data
-        expect(updatePt.name[0].family[0]).toEqual(createPt.name[0].family[0])
+        assert.deepEqual(updatePt.name[0].family[0], createPt.name[0].family[0])
 
       deletePt = buildStep 'deletePt', (next, st)->
         createPt = st.createPt.data
@@ -79,4 +80,4 @@ exports.spec_for = (title, impl, baseUrl)->
         .then updatePt
         .then checkUpdatePt
         .then deletePt
-        .then done
+        .then (-> done())
