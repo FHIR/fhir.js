@@ -8,7 +8,6 @@ cache:
   directories:
   - node_modules
 before_script:
-- if [ -n "$TRAVIS_TAG" ]; then sed -i "s/"{{version}}"/$TRAVIS_TAG/g" package.json; else sed -i "s/"{{version}}"/0.0.0/g" package.json; fi
 - npm install
 script:
 - npm run test
@@ -17,6 +16,7 @@ after_success:
 - git config --global user.email "robot@health-samurai.io"
 - git config --global user.name "Travis CI Deployer"
 - if [ -n "$TRAVIS_TAG" ]; then ./script/bower-release.sh; fi
+- if [ -n "$TRAVIS_TAG" ]; then sed -i "s/0.0.0/$TRAVIS_TAG/g" package.json; fi
 deploy:
   provider: npm
   email: niquola@gmail.com
