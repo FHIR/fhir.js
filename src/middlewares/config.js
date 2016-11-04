@@ -15,6 +15,7 @@
                 copyAttr(cfg, args, 'debug');
                 copyAttr(cfg, args, 'credentials');
                 copyAttr(cfg, args, 'headers');
+                copyAttr(cfg, args, 'agentOptions');
                 copyAttr(adapter, args, 'defer');
                 copyAttr(adapter, args, 'http');
                 return h(args);
