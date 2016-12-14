@@ -238,16 +238,31 @@ AngularJS adapter after `npm run-script build` can be found at `dist/ngFhir.js`
 
 Usage:
 
-```coffeescript
+```javascript
 angular.module('app', ['ng-fhir'])
-  .config ($fhirProvider)->
-     $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com'
-  .controller 'mainCtrl', ($scope, $fhir)->
-     $fhir.search
-       type: 'Patient'
-       query: {name: {$exact: 'Maud'}}
-       error: (error)-> $scope.error = error
-       success: (bundle)-> $scope.patients = bundle.entry
+  .config(['$fhirProvider', function ($fhirProvider) {
+    $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com';
+    $fhirProvider.auth = {
+      user: 'user',
+      pass: 'secret'
+    };
+    $fhirProvider.credentials = 'same-origin'
+  }])
+  .controller('mainCtrl', ['$scope', '$fhir', function ($scope, $fhir) {
+    $fhir.search(
+      {
+        type: 'Patient',
+        query: {name: 'emerald'}
+      }).then(
+      function (successData) {
+        $scope.patients = successData.data.entry;
+
+      },
+      function (failData) {
+        $scope.error = failData;
+      }
+    );
+  }]);  
 ```
 
 ## jQuery adapter: `jqFhir`
