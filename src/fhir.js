@@ -29,8 +29,8 @@
                 .and(auth.$Bearer)
                 .and(auth.$Credentials)
                 .and(transport.$JsonData)
-                .and($$Header('Accept', 'application/json'))
-                .and($$Header('Content-Type', 'application/json'));
+                .and($$Header('Accept', (cfg.headers && cfg.headers['Accept']) ? cfg.headers['Accept'] : 'application/json'))
+                .and($$Header('Content-Type', (cfg.headers && cfg.headers['Content-Type']) ? cfg.headers['Content-Type'] : 'application/json'));
 
         var GET = Defaults.and($$Method('GET'));
         var POST = Defaults.and($$Method('POST'));
