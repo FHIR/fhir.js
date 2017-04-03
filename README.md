@@ -165,10 +165,10 @@ Here are implementations for:
 
 To create a FHIR resource, call
 `myClient.create(entry, callback, errback)`, passing
-an object that contains the following propperties:
+an object that contains the following properties:
 
-* `content` (required) - resource in FHIR json
-* `tags` (opttional) - list of categories (see below)
+* `resource` (required) - resource in FHIR json
+* `tags` (optional) - list of categories (see below)
 
 In case of success,the  callback function will be
 invoked with an object that contains the following
@@ -182,7 +182,7 @@ attributes:
 
 var entry = {
   category: [{term: 'TAG term', schema: 'TAG schema', label: 'TAG label'}, ...]
-  content: {
+  resource: {
     resourceType: 'Patient',
     //...
   }
