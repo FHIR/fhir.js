@@ -44,8 +44,10 @@ var adapter = {
     // Pass along cookies
     fetchOptions.credentials = args.credentials || '';
 
-    // data neeeds to map to body
-    fetchOptions.body = fetchOptions.data;
+    // data neeeds to map to body if data is populated and this is not a GET or HEAD request
+    if (!['GET', 'HEAD'].includes(fetchOptions.method) && fetchOptions.data) {
+      fetchOptions.body = fetchOptions.data;
+    }
 
     debug && console.log("DEBUG[native](fetchOptions)", fetchOptions);
 
