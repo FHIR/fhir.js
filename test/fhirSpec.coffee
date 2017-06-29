@@ -10,6 +10,7 @@ describe "fhir", ->
     assert.notEqual(subject.search, null)
     assert.notEqual(subject.profile, null)
     assert.notEqual(subject.transaction, null)
+    assert.notEqual(subject.patch, null)
 
   it "search", ->
     subject.search(type: 'Patient', query: {name: 'maud'}).then (x)->
@@ -33,3 +34,9 @@ describe "fhir", ->
   it "read", ->
     subject.read(type: 'Patient', id :'123').then (x)->
       assert.equal(x.url, 'BASE/Patient/123')
+
+  it "patch", ->
+    subject.patch(type: 'CommunicationRequest', id :'123', data: [ { op: 'replace', path: '/status', value: 'cancelled' } ]).then (x)->
+      assert.equal(x.url, 'BASE/CommunicationRequest/123')
+      assert.equal(x.method, 'PATCH')
+      assert.equal(x.data, '[{"op":"replace","path":"/status","value":"cancelled"}]')

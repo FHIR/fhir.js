@@ -36,6 +36,7 @@
         var POST = Defaults.and($$Method('POST'));
         var PUT = Defaults.and($$Method('PUT'));
         var DELETE = Defaults.and($$Method('DELETE'));
+        var PATCH = Defaults.and($$Method('PATCH'));
 
         var http = transport.Http(cfg, adapter);
 
@@ -70,9 +71,9 @@
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
-            resolve: GET.and(refs.resolve).end(http)
+            resolve: GET.and(refs.resolve).end(http),
+            patch: PATCH.and(resourcePath).and($$Header('Content-Type', 'application/json-patch+patch')).end(http)
         }, adapter);
-
     };
     module.exports = fhir;
 }).call(this);

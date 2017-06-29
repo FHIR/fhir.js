@@ -15,7 +15,7 @@
     };
 
     var toJson = function(x){
-        return (utils.type(x) == 'object') ? JSON.stringify(x) : x;
+        return (utils.type(x) == 'object' || utils.type(x) == 'array') ? JSON.stringify(x) : x;
     };
 
     exports.$JsonData = function(h){
