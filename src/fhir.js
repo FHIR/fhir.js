@@ -72,7 +72,7 @@
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
             resolve: GET.and(refs.resolve).end(http),
-            patch: PATCH.and(resourcePath).and($$Header('Content-Type', 'application/json-patch+patch')).end(http)
+            patch: PATCH.and(resourcePath).and($$Header('Content-Type', 'application/json-patch+json')).end(http)
         }, adapter);
     };
     module.exports = fhir;
