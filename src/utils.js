@@ -1,11 +1,11 @@
 (function() {
-  var merge = require('merge');
+  var merge = require('merge'),
 
-  var RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+      RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
-  var trim = function(text) {
-    return text ? text.toString().replace(RTRIM, "")  : "";
-  };
+      trim = function(text) {
+        return text ? text.toString().replace(RTRIM, "")  : "";
+      };
 
   exports.trim = trim;
 

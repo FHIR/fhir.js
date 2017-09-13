@@ -1,11 +1,11 @@
 (function() {
-    var fhirAPI;
-    var adapter;
+    var fhirAPI,
+        adapter;
 
     function getNext (bundle, process) {
-        var i;
-        var d = bundle.data.entry || [];
-        var entries = [];
+        var i,
+            d = bundle.data.entry || [],
+            entries = [];
         for (i = 0; i < d.length; i++) {
             entries.push(d[i].resource);
         }
@@ -34,8 +34,8 @@
     };
     
     function fetchAll (searchParams){
-        var ret = adapter.defer();
-        var results = [];
+        var ret = adapter.defer(),
+            results = [];
         
         drain(
             searchParams,
@@ -61,9 +61,9 @@
         fhirAPI.search(searchParams)  // TODO: THIS IS NOT CORRECT (need fetchAll, but it does not return a bundle yet)
             .then(function(results){
 
-                var resolvedReferences = {};
+                var resolvedReferences = {},
 
-                var queue = [function() {ret.resolve(results, resolvedReferences);}];
+                    queue = [function() {ret.resolve(results, resolvedReferences);}];
                 
                 function enqueue (bundle,resource,reference) {
                   queue.push(function() {resolveReference(bundle,resource,reference)});
@@ -85,13 +85,13 @@
                 var bundle = results.data;
 
                 bundle.entry && bundle.entry.forEach(function(element){
-                  var resource = element.resource;
-                  var type = resource.resourceType;
+                  var resource = element.resource,
+                      type = resource.resourceType;
                   resolveParams && resolveParams.forEach(function(resolveParam){
-                    var param = resolveParam.split('.');
-                    var targetType = param[0];
-                    var targetElement = param[1];
-                    var reference = resource[targetElement];
+                    var param = resolveParam.split('.'),
+                        targetType = param[0],
+                        targetElement = param[1],
+                        reference = resource[targetElement];
                     if (type === targetType && reference) {
                       var referenceID = reference.reference;
                       if (!resolvedReferences[referenceID]) {
