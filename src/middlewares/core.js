@@ -2,7 +2,7 @@
     var utils = require("../utils"),
 
      id = function(x){return x},
-     constantly = function(x){return function(){return x,};},
+     constantly = function(x){return function(){return x;};},
 
      mwComposition = function(mw1, mw2){
         return function(h){ return mw1(mw2(h)); };
