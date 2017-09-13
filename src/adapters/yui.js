@@ -1,9 +1,10 @@
 (function() {
-    var mkFhir = require('../fhir');
+    var mkFhir = require('../fhir'),
 
-    var yui = YUI();
+        yui = YUI(),
 
-    var io,Promise;
+        io,Promise;
+
     yui.use('io', function(Y) {io = Y.io;});
     yui.use('promise', function(Y) {Promise = Y.Promise;});
 
@@ -15,9 +16,9 @@
         });
         deff.promise = pr;
         return deff;
-    };
+    },
 
-    var adapter = {
+    adapter = {
         http: function(args) {
             var deff = defer();
             args.on = {
@@ -36,9 +37,9 @@
             io(args.url, args);
             return deff.promise;
         }
-    };
+    },
 
-    var fhir = function(config) { return mkFhir(config, adapter); };
+    fhir = function(config) { return mkFhir(config, adapter); };
     fhir.defer = defer;
     module.exports = fhir;
 

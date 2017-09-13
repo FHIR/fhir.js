@@ -1,8 +1,8 @@
 (function() {
-    var mw = require('./core');
+    var mw = require('./core'),
 
     // List of resources with 'patient' or 'subject' properties (as of FHIR DSTU2 1.0.0)
-    var targets = [
+        targets = [
         "Account",
         "AllergyIntolerance",
         "BodySite",
