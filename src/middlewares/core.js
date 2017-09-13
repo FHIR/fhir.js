@@ -1,14 +1,14 @@
 (function() {
-    var utils = require("../utils");
+    var utils = require("../utils"),
 
-    var id = function(x){return x;};
-    var constantly = function(x){return function(){return x;};};
+     id = function(x){return x},
+     constantly = function(x){return function(){return x,};},
 
-    var mwComposition = function(mw1, mw2){
+     mwComposition = function(mw1, mw2){
         return function(h){ return mw1(mw2(h)); };
-    };
+     },
 
-    var Middleware = function(mw){
+     Middleware = function(mw){
         mw.and = function(nmw){
             return Middleware(mwComposition(mw, nmw));
         };
@@ -16,7 +16,7 @@
             return mw(h);
         };
         return mw;
-    };
+    },
 
     // generate wm from function
     exports.$$Simple = function(f){
@@ -28,8 +28,8 @@
     };
 
     var setAttr = function(args, attr, value){
-        var path = attr.split('.');
-        var obj = args;
+        var path = attr.split('.'),
+            obj = args;
         for(var i = 0; i < (path.length - 1); i++){
             var k = path[i];
             obj = args[k];

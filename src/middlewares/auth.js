@@ -1,7 +1,7 @@
 (function() {
-    var mw = require('./core');
+    var mw = require('./core'),
 
-    var btoa = require('Base64').btoa;
+        btoa = require('Base64').btoa;
 
     exports.$Basic = mw.$$Attr('headers.Authorization', function(args){
         if(args.auth && args.auth.user && args.auth.pass){
