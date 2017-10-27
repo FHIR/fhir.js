@@ -22,7 +22,7 @@ JavaScript client for FHIR
 
 `Node.js` is required for build.
 
-We recommend installling Node.js using [nvm](https://github.com/creationix/nvm/blob/master/README.md#installation)
+We recommend installing Node.js using [nvm](https://github.com/creationix/nvm/blob/master/README.md#installation)
 
 Build & test:
 
