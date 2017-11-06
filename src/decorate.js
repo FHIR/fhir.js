@@ -109,10 +109,31 @@
           
         return ret.promise;
     };
-    
-    function decorate (client, newAdapter) {
+
+    function getRelation(bundle, rel) {
+      var ret = null;
+      var matched = function(x){return x.relation && x.relation === rel;};
+      var res = bundle && (bundle.link || []).filter(matched)[0];
+      if(res) {
+        ret = res.url;
+      }
+      return ret;
+    }
+
+  function prevPage (args){
+    var res =  getRelation(args.bundle, 'previous');
+    if(!res) {
+      res = getRelation(args.bundle, 'prev');
+    }
+
+    args.url = res;
+    return fhirAPI.getBundle(args);
+  }
+
+  function decorate (client, newAdapter) {
         fhirAPI = client;
         adapter = newAdapter;
+        client["prevPage"] = prevPage;
         client["drain"] = drain;
         client["fetchAll"] = fetchAll;
         client["fetchAllWithReferences"] = fetchAllWithReferences;
