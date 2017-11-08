@@ -39,14 +39,6 @@ describe "search:", ->
 
     subject.prevPage(http: http, bundle: bpBundle)
 
-  it "fetch bundle using url", (done)->
-    http = (q)->
-      assert.deepEqual(q.method, 'GET')
-      assert.deepEqual(q.url, 'BASE/Patient?_count=1&_skip=1')
-      done()
-
-    subject.getBundle(http: http, url: 'BASE/Patient?_count=1&_skip=1')
-
   it "fetch next page suceeds", (done)->
     http = (q)->
       assert.deepEqual(q.method, 'GET')
