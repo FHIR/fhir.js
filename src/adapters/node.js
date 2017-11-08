@@ -9,6 +9,10 @@
         http: function(args) {
             var deff = Q.defer();
             args.body = args.data;
+            // url should be relative to baseUrl.
+            if(args.url) {
+                args.url = args.url.replace(args.baseUrl, '');
+            }
             args.json = true;
             if(args.debug){
                 console.log('DEBUG[node]: (requrest)', args); 
