@@ -1,29 +1,28 @@
 (function() {
-    var utils = require("./utils");
-    var M = require('./middlewares/core');
-    var query = require('./middlewares/search');
-    var auth = require('./middlewares/auth');
-    var transport = require('./middlewares/http');
-    var errors = require('./middlewares/errors');
-    var config = require('./middlewares/config');
-    var bundle = require('./middlewares/bundle');
-    var pt = require('./middlewares/patient');
-    var refs = require('./middlewares/references');
-    var url = require('./middlewares/url');
-    var decorate = require('./decorate');
-
-    var cache = {};
+    var utils = require("./utils"),
+        M = require('./middlewares/core'),
+        query = require('./middlewares/search'),
+        auth = require('./middlewares/auth'),
+        transport = require('./middlewares/http'),
+        errors = require('./middlewares/errors'),
+        config = require('./middlewares/config'),
+        bundle = require('./middlewares/bundle'),
+        pt = require('./middlewares/patient'),
+        refs = require('./middlewares/references'),
+        url = require('./middlewares/url'),
+        decorate = require('./decorate'),
+        cache = {};
 
 
     var fhir = function(cfg, adapter){
-        var Middleware = M.Middleware;
-        var $$Attr = M.$$Attr;
+        var Middleware = M.Middleware,
+            $$Attr = M.$$Attr;
 
-        var $$Method = function(m){ return $$Attr('method', m);};
-        var $$Header = function(h,v) {return $$Attr('headers.' + h, v);};
+        var $$Method = function(m){ return $$Attr('method', m);},
+            $$Header = function(h,v) {return $$Attr('headers.' + h, v);};
 
-        var $Errors = Middleware(errors);
-        var Defaults = Middleware(config(cfg, adapter))
+        var  $Errors = Middleware(errors),
+             Defaults = Middleware(config(cfg, adapter))
                 .and($Errors)
                 .and(auth.$Basic)
                 .and(auth.$Bearer)
@@ -32,31 +31,31 @@
                 .and($$Header('Accept', (cfg.headers && cfg.headers['Accept']) ? cfg.headers['Accept'] : 'application/json'))
                 .and($$Header('Content-Type', (cfg.headers && cfg.headers['Content-Type']) ? cfg.headers['Content-Type'] : 'application/json'));
 
-        var GET = Defaults.and($$Method('GET'));
-        var POST = Defaults.and($$Method('POST'));
-        var PUT = Defaults.and($$Method('PUT'));
-        var DELETE = Defaults.and($$Method('DELETE'));
-        var PATCH = Defaults.and($$Method('PATCH'));
+        var GET = Defaults.and($$Method('GET')),
+            POST = Defaults.and($$Method('POST')),
+            PUT = Defaults.and($$Method('PUT')),
+            DELETE = Defaults.and($$Method('DELETE')),
+            PATCH = Defaults.and($$Method('PATCH'));
 
         var http = transport.Http(cfg, adapter);
 
-        var Path = url.Path;
-        var BaseUrl = Path(cfg.baseUrl);
-        var resourceTypePath = BaseUrl.slash(":type || :resource.resourceType");
-        var searchPath = resourceTypePath;
-        var resourceTypeHxPath = resourceTypePath.slash("_history");
-        var resourcePath = resourceTypePath.slash(":id || :resource.id");
-        var resourceHxPath = resourcePath.slash("_history");
-        var vreadPath =  resourceHxPath.slash(":versionId || :resource.meta.versionId");
-        var resourceVersionPath = resourceHxPath.slash(":versionId || :resource.meta.versionId");
+        var Path = url.Path,
+            BaseUrl = Path(cfg.baseUrl),
+            resourceTypePath = BaseUrl.slash(":type || :resource.resourceType"),
+            searchPath = resourceTypePath,
+            resourceTypeHxPath = resourceTypePath.slash("_history"),
+            resourcePath = resourceTypePath.slash(":id || :resource.id"),
+            resourceHxPath = resourcePath.slash("_history"),
+            vreadPath =  resourceHxPath.slash(":versionId || :resource.meta.versionId"),
+            resourceVersionPath = resourceHxPath.slash(":versionId || :resource.meta.versionId");
 
-        var ReturnHeader = $$Header('Prefer', 'return=representation');
+        var ReturnHeader = $$Header('Prefer', 'return=representation'),
 
-        var $Paging = Middleware(query.$Paging);
+            $Paging = Middleware(query.$Paging);
 
         return decorate({
             conformance: GET.and(BaseUrl.slash("metadata")).end(http),
-            document: POST.and(BaseUrl.slash("Document")).end(http),
+            "document": POST.and(BaseUrl.slash("Document")).end(http),
             profile:  GET.and(BaseUrl.slash("Profile").slash(":type")).end(http),
             transaction: POST.and(BaseUrl).end(http),
             history: GET.and(BaseUrl.slash("_history")).and($Paging).end(http),

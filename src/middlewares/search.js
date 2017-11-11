@@ -1,38 +1,38 @@
 (function() {
-    var utils = require('../utils');
+    var utils = require('../utils'),
 
-    var type = utils.type;
+        type = utils.type,
 
-    var assertArray = utils.assertArray;
+        assertArray = utils.assertArray,
 
-    var assertObject = utils.assertObject;
+        assertObject = utils.assertObject,
 
-    var reduceMap = utils.reduceMap;
+        reduceMap = utils.reduceMap,
 
-    var identity = utils.identity;
+        identity = utils.identity;
 
-    var OPERATORS = {
-        $gt: 'gt',
-        $lt: 'lt',
-        $lte: 'lte',
-        $gte: 'gte'
-    };
+        OPERATORS = {
+          $gt: 'gt',
+          $lt: 'lt',
+          $lte: 'lte',
+          $gte: 'gte'
+        },
 
-    var MODIFIERS = {
-        $asc: ':asc',
-        $desc: ':desc',
-        $exact: ':exact',
-        $missing: ':missing',
-        $null: ':missing',
-        $text: ':text'
-    };
+        MODIFIERS = {
+          $asc: ':asc',
+          $desc: ':desc',
+          $exact: ':exact',
+          $missing: ':missing',
+          $null: ':missing',
+          $text: ':text'
+        },
 
-    var isOperator = function(v) {
-        return v.indexOf('$') === 0;
-    };
+        isOperator = function(v) {
+          return v.indexOf('$') === 0;
+        },
 
-    var expandParam = function(k, v) {
-        return reduceMap(v, function(acc, arg) {
+        expandParam = function(k, v) {
+          return reduceMap(v, function(acc, arg) {
             var kk, o, res, vv;
             kk = arg[0], vv = arg[1];
             return acc.concat(kk === '$and' ? assertArray(vv).reduce((function(a, vvv) {
@@ -41,13 +41,13 @@
                 param: k
             }, kk === '$or' ? o.value = vv : (OPERATORS[kk] ? o.operator = OPERATORS[kk] : void 0, MODIFIERS[kk] ? o.modifier = MODIFIERS[kk] : void 0, type(vv) === 'object' && vv.$or ? o.value = vv.$or : o.value = [vv]), [o]) : (v.$type ? res = ":" + v.$type : void 0, linearizeOne("" + k + (res || '') + "." + kk, vv)));
         });
-    };
+       },
 
-    var handleSort = function(xs) {
-        var i, len, results, x;
-        assertArray(xs);
-        results = [];
-        for (i = 0, len = xs.length; i < len; i++) {
+        handleSort = function(xs) {
+          var i, len, results, x;
+          assertArray(xs);
+          results = [];
+          for (i = 0, len = xs.length; i < len; i++) {
             x = xs[i];
             switch (type(x)) {
             case 'array':
@@ -68,9 +68,9 @@
             }
         }
         return results;
-    };
+      },
 
-    var handleInclude = function(includes) {
+      handleInclude = function(includes) {
         return reduceMap(includes, function(acc, arg) {
             var k, v;
             k = arg[0], v = arg[1];
@@ -93,9 +93,9 @@
                 }
             })());
         });
-    };
+      },
 
-    var linearizeOne = function(k, v) {
+      linearizeOne = function(k, v) {
         if (k === '$sort') {
             return handleSort(v);
         } else if (k === '$include') {
@@ -129,17 +129,17 @@
                 throw "could not linearizeParams " + (type(v));
             }
         }
-    };
+      },
 
-    var linearizeParams = function(query) {
+       linearizeParams = function(query) {
         return reduceMap(query, function(acc, arg) {
             var k, v;
             k = arg[0], v = arg[1];
             return acc.concat(linearizeOne(k, v));
         });
-    };
+      },
 
-    var buildSearchParams = function(query) {
+       buildSearchParams = function(query) {
         var p, ps;
         ps = (function() {
             var i, len, ref, results;
