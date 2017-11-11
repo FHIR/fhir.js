@@ -70,7 +70,8 @@
             search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
-            prevPage: GET.and(bundle.$$BundleLinkUrl("prev")).end(http),
+            // For previous page, bundle.link.relation can either have 'previous' or 'prev' values
+            prevPage: GET.and(bundle.$$BundleLinkUrl("previous")).and(bundle.$$BundleLinkUrl("prev")).end(http),
             resolve: GET.and(refs.resolve).end(http),
             patch: PATCH.and(resourcePath).and($$Header('Content-Type', 'application/json-patch+json')).end(http)
         }, adapter);

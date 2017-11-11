@@ -10,6 +10,10 @@ module.exports = {
     {
       "relation": "next",
       "url": "BASE/Patient?_count=1&_skip=1"
+    },
+    {
+      "relation": "previous",
+      "url": "BASE/Patient?_count=1&_skip=1"
     }
   ],
   "totalResults": 58,
