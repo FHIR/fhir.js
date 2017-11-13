@@ -4,12 +4,16 @@ module.exports = {
     "id": "BASE/Observation?name=55284-4&_count=1&_include=Observation.related.target",
     "link": [
         {
-            "rel": "self",
-            "href": "BASE/Observation?name=55284-4&_count=1&_include=Observation.related.target"
+            "relation": "self",
+            "url": "BASE/Observation?name=55284-4&_count=1&_include=Observation.related.target"
         },
         {
-            "rel": "next",
-            "href": "BASE/Observation?name=55284-4&_include=Observation.related.target&_count=1&_skip=1"
+            "relation": "next",
+            "url": "BASE/Observation?name=55284-4&_include=Observation.related.target&_count=1&_skip=1"
+        },
+        {
+            "relation": "prev",
+            "url": "BASE/Observation?name=55284-4&_include=Observation.related.target&_count=1&_skip=1"
         }
     ],
     "totalResults": 925,
