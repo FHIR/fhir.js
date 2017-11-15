@@ -8,7 +8,10 @@
         defer: Q.defer,
         http: function(args) {
             var deff = Q.defer();
-            args.body = args.data;
+            if(args.data && typeof args.data === "string") {
+              // Setting args.json requires args.body to be a JSON as per request docs.
+              args.body = JSON.parse(args.data);
+            }
             // url should be relative to baseUrl.
             if(args.url) {
                 args.url = args.url.replace(args.baseUrl, '');
