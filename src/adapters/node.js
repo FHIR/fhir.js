@@ -8,9 +8,7 @@
         http: function (args) {
             var deff = Q.defer();
 
-            if (args.resource != undefined) {
-                args.body = args.resource
-            }
+            args.body = JSON.parse(args.data);
             // url should be relative to baseUrl.
             if (args.url) {
                 args.url = args.url.replace(args.baseUrl, '');
