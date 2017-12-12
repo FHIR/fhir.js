@@ -8,11 +8,13 @@
         http: function (args) {
             var deff = Q.defer();
 
-            args.body = JSON.parse(args.data);
+            if (args.data != undefined) {
+                args.body = JSON.parse(args.data);
+            }
             // url should be relative to baseUrl.
             if (args.url) {
                 args.url = args.url.replace(args.baseUrl, '');
-            } 
+            }
             // does not like that for a transaction
             if (args.url == "") {
                 args.url = "/";
