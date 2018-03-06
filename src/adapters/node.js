@@ -18,6 +18,9 @@
             if(args.url) {
                 args.url = args.url.replace(args.baseUrl, '');
             }
+            if(args.url === '') {
+              args.url = '/';
+            }
             args.json = true;
             if(args.debug){
                 console.log('DEBUG[node]: (requrest)', args); 
