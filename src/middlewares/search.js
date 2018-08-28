@@ -15,7 +15,9 @@
         $gt: 'gt',
         $lt: 'lt',
         $lte: 'lte',
-        $gte: 'gte'
+        $gte: 'gte',
+        $ge: 'ge',
+        $le: 'le'
     };
 
     var MODIFIERS = {
