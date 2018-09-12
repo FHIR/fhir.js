@@ -82,14 +82,14 @@
                     return v.map(function(x) {
                         return {
                             param: '_include',
-                            value: k + "." + x
+                            value: k + ":" + x
                         };
                     });
                 case 'string':
                     return [
                         {
                             param: '_include',
-                            value: k + "." + v
+                            value: k + ":" + v
                         }
                     ];
                 }
@@ -142,14 +142,15 @@
     };
 
     var buildSearchParams = function(query) {
-        var p, ps;
+        var p, ps, value;
         ps = (function() {
             var i, len, ref, results;
             ref = linearizeParams(query);
             results = [];
             for (i = 0, len = ref.length; i < len; i++) {
                 p = ref[i];
-                results.push([p.param, p.modifier, '=', p.operator, encodeURIComponent(p.value)].filter(identity).join(''));
+                value =  p.param === '_include' ? p.value : encodeURIComponent(p.value);
+                results.push([p.param, p.modifier, '=', p.operator, value].filter(identity).join(''));
             }
             return results;
         })();
