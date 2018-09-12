@@ -72,7 +72,7 @@
         return results;
     };
 
-    var handleInclude = function(includes) {
+    var handleInclude = function(includes, key) {
         return reduceMap(includes, function(acc, arg) {
             var k, v;
             k = arg[0], v = arg[1];
@@ -81,14 +81,14 @@
                 case 'array':
                     return v.map(function(x) {
                         return {
-                            param: '_include',
+                            param: key === '$include' ? '_include' : '_revinclude',
                             value: k + ":" + x
                         };
                     });
                 case 'string':
                     return [
                         {
-                            param: '_include',
+                            param: key === '$include' ? '_include' : '_revinclude',
                             value: k + ":" + v
                         }
                     ];
@@ -100,8 +100,8 @@
     var linearizeOne = function(k, v) {
         if (k === '$sort') {
             return handleSort(v);
-        } else if (k === '$include') {
-            return handleInclude(v);
+        } else if (k === '$include' || k === '$revInclude') {
+          return handleInclude(v, k);
         } else {
             switch (type(v)) {
             case 'object':
@@ -149,7 +149,7 @@
             results = [];
             for (i = 0, len = ref.length; i < len; i++) {
                 p = ref[i];
-                value =  p.param === '_include' ? p.value : encodeURIComponent(p.value);
+                value = (p.param === "_include" || p.param === '_revinclude') ? p.value : encodeURIComponent(p.value);
                 results.push([p.param, p.modifier, '=', p.operator, value].filter(identity).join(''));
             }
             return results;
