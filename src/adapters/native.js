@@ -33,6 +33,7 @@ var defer = function(){
 
 // Build Adapter Object
 var adapter = {
+  defer: defer,
   http: function (args) {
     var url = args.url;
     var debug = args.debug;
@@ -92,6 +93,4 @@ var buildfhir = function buildfhir(config) {
   // debugger;
   return mkFhir(config, adapter);
 };
-
-buildfhir.defer = defer;
 module.exports = buildfhir;
