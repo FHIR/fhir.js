@@ -43,6 +43,9 @@ var adapter = {
 
     // Pass along cookies
     fetchOptions.credentials = args.credentials || '';
+    if (fetchOptions.credentials === '') {
+      delete fetchOptions.credentials;
+    }
 
     // data neeeds to map to body if data is populated and this is not a GET or HEAD request
     if (!['GET', 'HEAD'].includes(fetchOptions.method) && fetchOptions.data) {
