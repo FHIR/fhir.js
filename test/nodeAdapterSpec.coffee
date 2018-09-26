@@ -63,7 +63,15 @@ describe "nodejs adapter", ->
   it "create", (done)->
     fail = (err)-> done(new Error(JSON.stringify(err)))
     success = (res)->
-      done()
+      try
+        assert(res)
+        assert(res.config.body.resourceType == 'Patient')
+        assert(res.config.body.name[0].family[0] == 'Fhirjs')
+        assert(res.config.body.name[0].given[0] == 'Node')
+        assert(res.config.body.birthDate == '1990-06-20')
+        done()
+      catch e
+        done(e)
 
     subject.create(new_pt).then(success, fail)
 
