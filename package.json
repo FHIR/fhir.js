@@ -28,7 +28,7 @@
     "url": "git@github.com:FHIR/fhir.js.git"
   },
   "scripts": {
-    "test": "mocha --exit --compilers mocha --compilers coffee:coffee-script/register",
+    "test": "mocha --compilers mocha --compilers coffee:coffee-script/register",
     "integrate": "karma start --single-run",
     "all-tests": "npm run test && npm run integrate",
     "webpack": "webpack --progress --colors",
