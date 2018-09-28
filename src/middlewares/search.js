@@ -15,7 +15,9 @@
         $gt: 'gt',
         $lt: 'lt',
         $lte: 'lte',
-        $gte: 'gte'
+        $gte: 'gte',
+        $ge: 'ge',
+        $le: 'le'
     };
 
     var MODIFIERS = {
@@ -70,7 +72,7 @@
         return results;
     };
 
-    var handleInclude = function(includes) {
+    var handleInclude = function(includes, key) {
         return reduceMap(includes, function(acc, arg) {
             var k, v;
             k = arg[0], v = arg[1];
@@ -79,15 +81,15 @@
                 case 'array':
                     return v.map(function(x) {
                         return {
-                            param: '_include',
-                            value: k + "." + x
+                            param: key === '$include' ? '_include' : '_revinclude',
+                            value: k + ":" + x
                         };
                     });
                 case 'string':
                     return [
                         {
-                            param: '_include',
-                            value: k + "." + v
+                            param: key === '$include' ? '_include' : '_revinclude',
+                            value: k + ":" + v
                         }
                     ];
                 }
@@ -98,8 +100,8 @@
     var linearizeOne = function(k, v) {
         if (k === '$sort') {
             return handleSort(v);
-        } else if (k === '$include') {
-            return handleInclude(v);
+        } else if (k === '$include' || k === '$revInclude') {
+          return handleInclude(v, k);
         } else {
             switch (type(v)) {
             case 'object':
@@ -140,14 +142,15 @@
     };
 
     var buildSearchParams = function(query) {
-        var p, ps;
+        var p, ps, value;
         ps = (function() {
             var i, len, ref, results;
             ref = linearizeParams(query);
             results = [];
             for (i = 0, len = ref.length; i < len; i++) {
                 p = ref[i];
-                results.push([p.param, p.modifier, '=', p.operator, encodeURIComponent(p.value)].filter(identity).join(''));
+                value = (p.param === "_include" || p.param === '_revinclude') ? p.value : encodeURIComponent(p.value);
+                results.push([p.param, p.modifier, '=', p.operator, value].filter(identity).join(''));
             }
             return results;
         })();
