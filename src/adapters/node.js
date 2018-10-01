@@ -9,7 +9,12 @@
             var deff = Q.defer();
             if(args.data && typeof args.data === "string") {
               // Setting args.json requires args.body to be a JSON as per request docs.
-              args.body = JSON.parse(args.data);
+              try {
+                args.body = JSON.parse(args.data);
+              }
+              catch (e) {
+                throw new Error('Failed to parse. Expected JSON data...');
+              }
             }
             else if (args.data) {
               args.body = args.data;
