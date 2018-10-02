@@ -93,4 +93,5 @@ var buildfhir = function buildfhir(config) {
   // debugger;
   return mkFhir(config, adapter);
 };
+buildfhir.defer = defer;
 module.exports = buildfhir;

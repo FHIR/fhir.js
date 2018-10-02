@@ -46,3 +46,12 @@ describe "search:", ->
       done()
 
     subject.nextPage(http: http, bundle: patientBundle)
+
+  it "fetch bundle using url", (done)->
+    http = (q)->
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Patient?_count=1&_skip=1')
+      done()
+
+    subject.getBundleByUrl(http: http, url: 'BASE/Patient?_count=1&_skip=1')
+
