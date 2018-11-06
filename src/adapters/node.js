@@ -27,16 +27,19 @@
               args.url = '/';
             }
             args.json = true;
-            if(args.debug){
-                console.log('DEBUG[node]: (requrest)', args); 
+            if(args.debug) {
+                console.log('DEBUG[node]: (request)', args);
             }
             request(args, function(err, response, body) {
                 var headers = function(x) {return response.headers[x.toLowerCase()];};
-                var resp = {data: body, status: response.statusCode, headers: headers, config: args};
+                var statusCode = response ? response.statusCode : 500; // in case host is unreachable
+
+                var resp = {data: body, status: statusCode, headers: headers, config: args};
+
                 if(args.debug){
-                    console.log('DEBUG[node]: (responce)', resp); 
+                    console.log('DEBUG[node]: (response)', resp);
                 }
-                if (err || response.statusCode > 399) {deff.reject(resp);} else {deff.resolve(resp);}
+                if (err || statusCode > 399) {deff.reject(resp);} else {deff.resolve(resp);}
             }) ;
             return deff.promise;
         }
