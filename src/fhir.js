@@ -49,7 +49,7 @@
         var resourceHxPath = resourcePath.slash("_history");
         var vreadPath =  resourceHxPath.slash(":versionId || :resource.meta.versionId");
         var resourceVersionPath = resourceHxPath.slash(":versionId || :resource.meta.versionId");
-        var metaTarget = BaseUrl.slash(":target.resourceType ").slash(":target.id")
+        var metaTarget = BaseUrl.slash(":target.resourceType || :target.type").slash(":target.id")
 
         var ReturnHeader = $$Header('Prefer', 'return=representation');
 
