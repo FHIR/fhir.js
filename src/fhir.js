@@ -49,6 +49,7 @@
         var resourceHxPath = resourcePath.slash("_history");
         var vreadPath =  resourceHxPath.slash(":versionId || :resource.meta.versionId");
         var resourceVersionPath = resourceHxPath.slash(":versionId || :resource.meta.versionId");
+        var metaTarget = BaseUrl.slash(":target.resourceType ").slash(":target.id")
 
         var ReturnHeader = $$Header('Prefer', 'return=representation');
 
@@ -67,6 +68,11 @@
             "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
             create: POST.and(resourceTypePath).and(ReturnHeader).end(http),
             validate: POST.and(resourceTypePath.slash("_validate")).end(http),
+            meta: {
+                add: POST.and(metaTarget.slash("$meta-add")).end(http),
+                delete: POST.and(metaTarget.slash("$meta-delete")).end(http),
+                read: GET.and(metaTarget.slash("$meta")).end(http)
+            },
             search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
