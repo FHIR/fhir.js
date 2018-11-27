@@ -47,9 +47,8 @@
         var resourceTypeHxPath = resourceTypePath.slash("_history");
         var resourcePath = resourceTypePath.slash(":id || :resource.id");
         var resourceHxPath = resourcePath.slash("_history");
-        var vreadPath =  resourceHxPath.slash(":versionId || :resource.meta.versionId");
-        var resourceVersionPath = resourceHxPath.slash(":versionId || :resource.meta.versionId");
-        var metaTarget = BaseUrl.slash(":target.resourceType || :target.type").slash(":target.id").slash('_history').slash(':target.versionId');
+        var vreadPath =  resourcePath.slash(":versionId || :resource.meta.versionId");
+        var metaTarget = BaseUrl.slash(":target.resourceType || :target.type").slash(":target.id").slash(':target.versionId');
         
         var ReturnHeader = $$Header('Prefer', 'return=representation');
 
