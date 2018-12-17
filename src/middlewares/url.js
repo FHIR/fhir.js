@@ -7,7 +7,7 @@
 
     var get_in = function(obj, path){
         return path.split('.').reduce(function(acc,x){
-            if(x === 'versionId' && acc[x]){ return `_history/${acc[x]}` }
+            if(x === 'versionId' && acc[x]){ return '_history/'+ acc[x] }
             if(acc == null || acc == undefined) { return null; }
             return acc[x];
         }, obj);
