@@ -69,6 +69,7 @@
             validate: POST.and(resourceTypePath.slash("_validate")).end(http),
             search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
+            conditionalUpdate: PUT.and(resourceTypePath).and(query.$SearchParams).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),
             // For previous page, bundle.link.relation can either have 'previous' or 'prev' values
             prevPage: GET.and(bundle.$$BundleLinkUrl("previous")).and(bundle.$$BundleLinkUrl("prev")).end(http),
