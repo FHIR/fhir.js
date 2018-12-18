@@ -17,6 +17,9 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['mocha'],
 
+    // plugins
+    plugins: ['karma-mocha', 'karma-webpack', 'karma-chrome-launcher'],
+
 
     // list of files / patterns to load in the browser
     //
@@ -94,6 +97,18 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     //browsers: ['PhantomJS'],
+    browsers: ['ChromeNoSecurity'],
+    customLaunchers: {
+      ChromeNoSecurity: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-extensions'
+        ]
+      }
+    },
+    /*
     browsers: ['PhantomJS_custom'],
     customLaunchers: {
       'PhantomJS_custom': {
@@ -106,7 +121,7 @@ module.exports = function(config) {
         }
       }
     },
-
+    */
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
