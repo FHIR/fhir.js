@@ -72,3 +72,7 @@ describe "test params builder", ->
   it "or", ->
     assert.deepEqual(subject(name: {$or: ['bill', 'ted']}),
       'name=bill%2Cted')
+
+  it "has", ->
+    assert.deepEqual(subject($has: {"Observation:patient:code": "1234-5"}),
+      '_has:Observation:patient:code=1234-5')
