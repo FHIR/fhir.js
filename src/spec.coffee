@@ -32,6 +32,7 @@ exports.spec_for = (title, impl, baseUrl)->
 
     it "search", (done) ->
       subject.search(type: 'Patient', query: {name: 'maud'}).then((-> done()))
+      null
 
     it "CRUD", (done) ->
       console.log("#{title} SPEC")
@@ -83,3 +84,4 @@ exports.spec_for = (title, impl, baseUrl)->
         .then checkUpdatePt
         .then deletePt
         .then (-> done())
+      null

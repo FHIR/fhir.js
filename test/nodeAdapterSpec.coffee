@@ -79,3 +79,18 @@ describe "nodejs adapter", ->
         throw e
 
     subject.search({type: 'Patient', query: {name: 'adams'}}).then(success, fail)
+   it "should return 500 if host unreachable", (done)->
+      subject = fhir(baseUrl: 'http://wwww.exampleinvalidqqq.com/', patient: '123', auth: {user: 'client', pass: 'secret'})
+
+      unexpectedSuccess = (res)-> done(new Error("Should fail, but got #{JSON.stringify(res)}"))
+
+      expectedFail =  (err)->
+        try
+          assert(err)
+          assert(err.status == 500)
+          done()
+        catch e
+          done(e)
+
+      subject.search({type: 'Patient', query: {name: 'adams'}}).then(unexpectedSuccess, expectedFail)
+      null
