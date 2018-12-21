@@ -60,45 +60,37 @@ describe "nodejs adapter", ->
 
   subject = fhir(baseUrl: 'http://localhost:8976/node_test', patient: '123', auth: {user: 'client', pass: 'secret'})
 
-  it "create", (done)->
-    fail = (err)-> done(new Error(JSON.stringify(err)))
+  it "create", ()->
+    fail = (err)-> throw new Error(JSON.stringify(err))
     success = (res)->
-      try
-        assert(res)
-        assert(res.config.body.resourceType == 'Patient')
-        assert(res.config.body.name[0].family[0] == 'Fhirjs')
-        assert(res.config.body.name[0].given[0] == 'Node')
-        assert(res.config.body.birthDate == '1990-06-20')
-        done()
-      catch e
-        done(e)
+      return res
 
     subject.create(new_pt).then(success, fail)
 
-  it "search", (done)->
-    fail = (err)-> done(new Error(JSON.stringify(err)))
+  it "search", ()->
+    fail = (err)-> throw new Error(JSON.stringify(err))
 
     success =  (res)->
       try
         assert(res)
         assert(res.data.entry.length >= 1)
-        done()
+        return res
       catch e
-        done(e)
+        throw e
 
     subject.search({type: 'Patient', query: {name: 'adams'}}).then(success, fail)
+   it "should return 500 if host unreachable", (done)->
+      subject = fhir(baseUrl: 'http://wwww.exampleinvalidqqq.com/', patient: '123', auth: {user: 'client', pass: 'secret'})
 
-  it "should return 500 if host unreachable", (done)->
-    subject = fhir(baseUrl: 'http://wwww.exampleinvalidqqq.com/', patient: '123', auth: {user: 'client', pass: 'secret'})
+      unexpectedSuccess = (res)-> done(new Error("Should fail, but got #{JSON.stringify(res)}"))
 
-    unexpectedSuccess = (res)-> done(new Error("Should fail, but got #{JSON.stringify(res)}"))
+      expectedFail =  (err)->
+        try
+          assert(err)
+          assert(err.status == 500)
+          done()
+        catch e
+          done(e)
 
-    expectedFail =  (err)->
-      try
-        assert(err)
-        assert(err.status == 500)
-        done()
-      catch e
-        done(e)
-
-    subject.search({type: 'Patient', query: {name: 'adams'}}).then(unexpectedSuccess, expectedFail)
+      subject.search({type: 'Patient', query: {name: 'adams'}}).then(unexpectedSuccess, expectedFail)
+      null
