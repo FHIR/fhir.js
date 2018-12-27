@@ -23,6 +23,5 @@ describe "Path",->
     assert.deepEqual(apply(p2, {type: 'Patient',id: 5}).url, "BASE/Patient/5")
     assert.deepEqual(apply(p3, {type: 'Patient',id: 5}).url, "BASE/Patient/5/_history")
     assert.deepEqual(apply(p4, {type: 'Patient',id: 5, versionId: 6}).url, "BASE/Patient/5/_history/6")
-    
     assert.deepEqual(apply(p5, {resource: {resourceType: 'Patient'}}).url, "BASE/Patient")
     assert.deepEqual(apply(p5, {type: 'Patient'}).url, "BASE/Patient")

@@ -12,6 +12,9 @@ async function getPatients(page = 1, limit = 5) {
       query: {
         _count: limit,
         _page: page,
+        $has: {
+          "Observation:patient:code": "1234-5",
+        },
         $revInclude: {
           RelatedPerson: "patient"
         }
