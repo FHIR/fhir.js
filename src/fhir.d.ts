@@ -22,7 +22,7 @@ declare namespace fhirClient {
 
   function Update<T extends fhir.DomainResource>(content: { resource: T }): Promise<{ data: T }>
 
-  function ConditionalUpdate(content: { type: ResourceName, count?: number, query?: QueryOptions, data?: QueryOptions }): Promise<{ data: T }>
+  function ConditionalUpdate<T extends fhir.DomainResource>(content: { type: ResourceName, count?: number, query?: QueryOptions, data?: QueryOptions }): Promise<{ data: T }>
 
   function Search(content: { type: ResourceName, count?: number, query?: QueryOptions }): Promise<{ data: fhir.Bundle }>
 
