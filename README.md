@@ -163,6 +163,8 @@ Here are implementations for:
 
 ### Resource's CRUD
 
+#### Create Resource
+
 To create a FHIR resource, call
 `myClient.create(entry, callback, errback)`, passing
 an object that contains the following properties:
@@ -199,9 +201,9 @@ myClient.create(entry,
 
 ```
 
-### Search
+#### Search Resource
 
-fhir.search({type: resourceType, query: queryObject}),
+To search a resource, call `fhir.search({type: resourceType, query: queryObject})`,
 where queryObject syntax `fhir.js` adopts
 mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-documents/)):
 
@@ -228,6 +230,32 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 //=> subject.name:exact=maud
 
 ```
+
+#### Update Resource
+
+To update a resource, call `fhir.update({type: resourceType, id: identifier, resource: resourceObject})`.
+In case of success,the  callback function will be invoked.
+
+Example: 
+```javascript
+ 	this.fhirClient.update({
+            type: "Patient",
+            id: 1,
+            resource: {
+		name: 'New Name'
+            }
+        }).catch(function(e){
+            console.log('An error happened while updating patient: \n' + JSON.stringify(e));
+            throw e;
+        }).then(function(bundle){
+            console.log('Updating patient successed');
+            return bundle;
+        });
+```
+
+#### Delete Resource
+
+To update a resource, call `fhir.delete({type: resourceType, id: identifier})`.
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
 
