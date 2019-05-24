@@ -14,7 +14,7 @@ describe "Path",->
     p1 = p0.slash(":type")
     p2 = p1.slash(":id")
     p3 = p2.slash("_history")
-    p4 = p3.slash(":versionId")
+    p4 = p2.slash(":versionId")
 
     p5 = p0.slash(":type || :resource.resourceType")
 
@@ -23,6 +23,23 @@ describe "Path",->
     assert.deepEqual(apply(p2, {type: 'Patient',id: 5}).url, "BASE/Patient/5")
     assert.deepEqual(apply(p3, {type: 'Patient',id: 5}).url, "BASE/Patient/5/_history")
     assert.deepEqual(apply(p4, {type: 'Patient',id: 5, versionId: 6}).url, "BASE/Patient/5/_history/6")
-    
     assert.deepEqual(apply(p5, {resource: {resourceType: 'Patient'}}).url, "BASE/Patient")
     assert.deepEqual(apply(p5, {type: 'Patient'}).url, "BASE/Patient")
+
+  it "build path & combine for $meta",->
+
+    p0 = Path("BASE")
+    p1 = p0.slash(":target.type || :target.resourceType")
+    p2 = p1.slash(":target.id")
+    p3 = p2.slash(":target.versionId")
+    p4 = p3.slash("$meta")
+
+    assert.deepEqual(apply(p0, {}).url, "BASE")
+    assert.deepEqual(apply(p1, {target: {type: 'Patient'}}).url, "BASE/Patient")
+    assert.deepEqual(apply(p1, {target: {resourceType: 'Patient'}}).url, "BASE/Patient")
+    assert.deepEqual(apply(p2, {target: {type: 'Patient',id: 5}}).url, "BASE/Patient/5")
+    assert.deepEqual(apply(p3, {target: {type: 'Patient',id: 5, versionId: 6}}).url, "BASE/Patient/5/_history/6")
+    assert.deepEqual(apply(p4, {target: {type: 'Patient',id: 5, versionId: 6}}).url, "BASE/Patient/5/_history/6/$meta")
+
+    assert.deepEqual(apply(p3, {target: {type: 'Patient',id: 5}}).url, "BASE/Patient/5")
+    assert.deepEqual(apply(p4, {target: {type: 'Patient',id: 5}}).url, "BASE/Patient/5/$meta")

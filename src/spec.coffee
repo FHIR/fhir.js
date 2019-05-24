@@ -2,6 +2,8 @@ tu = require('../src/testUtils')
 assert = require('assert')
 Chance = require('chance')
 
+exports.baseUrl = 'http://hapi.fhir.org/baseDstu3'
+
 exports.spec_for = (title, impl, baseUrl)->
   chance = new Chance()
   genPatient = ()->
@@ -16,7 +18,7 @@ exports.spec_for = (title, impl, baseUrl)->
       assigner: { display: "Acme Healthcare"}
     ]
     name: [
-      {use: "official", family: [chance.last()], given: [chance.first(), chance.first()]}
+      {use: "official", family: chance.last(), given: [chance.first(), chance.first()]}
     ]
 
   describe title, ->
@@ -30,6 +32,7 @@ exports.spec_for = (title, impl, baseUrl)->
 
     it "search", (done) ->
       subject.search(type: 'Patient', query: {name: 'maud'}).then((-> done()))
+      null
 
     it "CRUD", (done) ->
       console.log("#{title} SPEC")
@@ -81,3 +84,4 @@ exports.spec_for = (title, impl, baseUrl)->
         .then checkUpdatePt
         .then deletePt
         .then (-> done())
+      null

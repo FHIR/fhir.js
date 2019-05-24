@@ -16,6 +16,11 @@ describe "fhir", ->
     subject.search(type: 'Patient', query: {name: 'maud'}).then (x)->
       assert.equal(x.url, 'BASE/Patient?name=maud')
 
+  it "conditionalUpdate", ->
+    subject.conditionalUpdate(type: 'Patient', query: {name: 'maud'}).then (x)->
+      assert.equal(x.url, 'BASE/Patient?name=maud')
+      assert.equal(x.method, 'PUT')
+
   it "conformance", ->
     subject.conformance({}).then (x)->
       assert.equal(x.url, 'BASE/metadata')
@@ -23,7 +28,6 @@ describe "fhir", ->
   it "profile", ->
     subject.profile(type: 'Patient').then (x)->
       assert.equal(x.url,'BASE/Profile/Patient')
-
 
   it "transaction", ->
     subject.transaction(bundle: {a: 1}).then (x)->

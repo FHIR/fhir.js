@@ -1,7 +1,7 @@
 http = require("http");
 assert = require('assert')
 
-responces =
+responses =
   '_defaults':
     'status': 200
     'headers': 'Content-Type': 'application/json'
@@ -32,9 +32,9 @@ responces =
 
 
 server = http.createServer (request, response) ->
-  defaults = responces._defaults
+  defaults = responses._defaults
   key = "#{request.method} #{request.url}"
-  resp = responces[key] || {
+  resp = responses[key] || {
     body: "#{key} not found"
     status: 404
   }
@@ -60,22 +60,37 @@ describe "nodejs adapter", ->
 
   subject = fhir(baseUrl: 'http://localhost:8976/node_test', patient: '123', auth: {user: 'client', pass: 'secret'})
 
-  it "create", (done)->
-    fail = (err)-> done(new Error(JSON.stringify(err)))
+  it "create", ()->
+    fail = (err)-> throw new Error(JSON.stringify(err))
     success = (res)->
-      done()
+      return res
 
     subject.create(new_pt).then(success, fail)
 
-  it "search", (done)->
-    fail = (err)-> done(new Error(JSON.stringify(err)))
+  it "search", ()->
+    fail = (err)-> throw new Error(JSON.stringify(err))
 
     success =  (res)->
       try
         assert(res)
         assert(res.data.entry.length >= 1)
-        done()
+        return res
       catch e
-        done(e)
+        throw e
 
     subject.search({type: 'Patient', query: {name: 'adams'}}).then(success, fail)
+   it "should return 500 if host unreachable", (done)->
+      subject = fhir(baseUrl: 'http://wwww.exampleinvalidqqq.com/', patient: '123', auth: {user: 'client', pass: 'secret'})
+
+      unexpectedSuccess = (res)-> done(new Error("Should fail, but got #{JSON.stringify(res)}"))
+
+      expectedFail =  (err)->
+        try
+          assert(err)
+          assert(err.status == 500)
+          done()
+        catch e
+          done(e)
+
+      subject.search({type: 'Patient', query: {name: 'adams'}}).then(unexpectedSuccess, expectedFail)
+      null

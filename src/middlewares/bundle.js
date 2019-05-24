@@ -6,11 +6,8 @@ exports.$$BundleLinkUrl =  function(rel){
             if(res && res.url){
                 args.url = res.url;
                 args.data = null;
-                return h(args);
             }
-            else{
-                throw new Error("No " + rel + " link found in bundle");
-            }
+            return h(args);
         };
     };
 };
