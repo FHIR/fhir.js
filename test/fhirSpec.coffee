@@ -21,6 +21,11 @@ describe "fhir", ->
       assert.equal(x.url, 'BASE/Patient?name=maud')
       assert.equal(x.method, 'PUT')
 
+  it "conditionalDelete", ->
+    subject.conditionalDelete(type: 'Observation', query: {_id: 10}).then (x)->
+      assert.equal(x.url, 'BASE/Observation?_id=10')
+      assert.equal(x.method, 'DELETE')
+
   it "conformance", ->
     subject.conformance({}).then (x)->
       assert.equal(x.url, 'BASE/metadata')
