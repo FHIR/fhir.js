@@ -16,7 +16,7 @@ declare namespace fhirClient {
   function Create(content: { type: 'Binary', data: Buffer }): Promise<{ data: fhir.Binary }>
   function Create<T extends fhir.DomainResource>(content: { type: ResourceName, data: T }): Promise<{ data: T }>
 
-  function Read(content: { type: ResourceName, id: string }): Promise<{ data: fhir.DomainResource }>
+  function Read<T extends fhir.DomainResource>(content: { type: ResourceName, id: string }): Promise<{ data: T }>
 
   function Patch(content: { type: ResourceName, id: string, data: Array<{ op: 'replace' | 'add' | 'remove', path: string, value: string | object }> }): Promise<{ data: fhir.OperationOutcome }>
 
@@ -24,7 +24,7 @@ declare namespace fhirClient {
 
   function ConditionalUpdate<T extends fhir.DomainResource>(content: { type: ResourceName, count?: number, query?: QueryOptions, data?: QueryOptions }): Promise<{ data: T }>
 
-  function Search(content: { type: ResourceName, count?: number, query?: QueryOptions }): Promise<{ data: fhir.Bundle }>
+  function Search<T extends fhir.DomainResource>(content: { type: ResourceName, count?: number, query?: QueryOptions }): Promise<{ data: fhir.Bundle }>
 
   function NextPage(content: { type: ResourceName, bundle: fhir.Bundle }): Promise<{ data: fhir.Bundle }>;
 
