@@ -13,7 +13,7 @@ declare namespace fhirClient {
   }
 
   function Create<T extends fhir.DomainResource>(content: { resource: T }): Promise<{ data: T }>
-  function Create(content: { type: 'Binary', data: Buffer }): Promise<{ data: fhir.Binary }>
+  function Create(content: { type: 'Binary', data: any }): Promise<{ data: fhir.Binary }>
   function Create<T extends fhir.DomainResource>(content: { type: ResourceName, data: T }): Promise<{ data: T }>
 
   function Read(content: { type: ResourceName, id: string }): Promise<{ data: fhir.DomainResource }>
