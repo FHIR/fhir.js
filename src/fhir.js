@@ -72,7 +72,7 @@
                 delete: POST.and(metaTarget.slash("$meta-delete")).end(http),
                 read: GET.and(metaTarget.slash("$meta")).end(http)
             },
-            search: GET.and(resourceTypePath).and(pt.$WithPatient).and(query.$SearchParams).and($Paging).end(http),
+            search: GET.and(resourceTypePath).and(pt.$WithPatient).and($Paging).and(query.$SearchParams).end(http),
             update: PUT.and(resourcePath).and(ReturnHeader).end(http),
             conditionalUpdate: PUT.and(resourceTypePath).and(query.$SearchParams).and(ReturnHeader).end(http),
             nextPage: GET.and(bundle.$$BundleLinkUrl("next")).end(http),

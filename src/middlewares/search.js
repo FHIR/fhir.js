@@ -204,10 +204,10 @@
 
   exports.$Paging = function(h){
     return function(args){
-      var params = args.params || {};
-      if(args.since){params._since = args.since;}
-      if(args.count){params._count = args.count;}
-      args.params = params;
+      var query = args.query || {};
+      if(args.since){query._since = args.since;}
+      if(args.count){query._count = args.count;}
+      args.query = query;
       return h(args);
     };
   };
