@@ -12,8 +12,8 @@ describe 'history', ->
     http = (q)->
       assert.equal(q.method, 'GET')
       assert.equal(q.url, 'BASE/Alert/test-id/_history')
-      assert.equal(q.params._count, 10)
-      assert.equal(q.params._since, '2000-01-01')
+      assert.equal(q.query._count, 10)
+      assert.equal(q.query._since, '2000-01-01')
       done()
 
     subject.resourceHistory
