@@ -201,6 +201,16 @@ myClient.create(entry,
 
 ```
 
+#### Get resource
+
+To get one specific object from a resource (usually by id), call `fhir.read({type: resourceType})`. To specify the patient identifier, call `fhir.read({type: resourceType, patient: patientIdentifier})`
+
+Examples:
+
+```js
+fhir.read({type: 'Patient', patient: '8673ee4f-e2ab-4077-ba55-4980f408773e'})
+```
+
 #### Search Resource
 
 To search a resource, call `fhir.search({type: resourceType, query: queryObject})`,
