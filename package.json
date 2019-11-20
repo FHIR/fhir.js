@@ -2,7 +2,7 @@
   "name": "fhir.js",
   "version": "0.0.0",
   "devDependencies": {
-    "angular": "~1.4.0",
+    "angular": "~1.7.9",
     "babel-polyfill": "^6.7.4",
     "bower": "latest",
     "chance": "^1.0.4",
