@@ -31,7 +31,7 @@ git clone https://github.com/FHIR/fhir.js
 cd fhir.js
 npm install
 
-# buld fhir.js
+# build fhir.js
 npm run-script build
 
 # run tests in node
