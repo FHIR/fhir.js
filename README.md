@@ -1,4 +1,4 @@
-fhir.js
+Amazing fhir.js
 =======
 
 [![npm version](https://badge.fury.io/js/fhir.js.svg)](https://badge.fury.io/js/fhir.js)
