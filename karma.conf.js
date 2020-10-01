@@ -6,7 +6,7 @@ wp.externals = {
 delete wp.entry;
 delete wp.context;
 delete wp.output;
-
+var x = [1,2,3]
 module.exports = function(config) {
   config.set({
 
