@@ -55,3 +55,13 @@ describe "search:", ->
 
     subject.getBundleByUrl(http: http, url: 'BASE/Patient?_count=1&_skip=1')
 
+describe "conditional create", ->
+  it "aaaaa", (done)->
+    http = (q) ->
+      console.log(q);
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Patient')
+      assert.deepEqual(q.headers['if-none-exist'], 'name=maud&given=alice')
+    done()
+
+    subject.conditionalCreate(http: http, type: 'Patient', query: {name: 'maud', given: 'alice'})

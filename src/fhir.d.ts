@@ -24,6 +24,8 @@ declare namespace fhirClient {
 
   function ConditionalUpdate<T extends fhir.DomainResource>(content: { type: ResourceName, count?: number, query?: QueryOptions, data?: QueryOptions }): Promise<{ data: T }>
 
+  function ConditionalCreate<T extends fhir.DomainResource>(content: { type: ResourceName, query?: QueryOptions }): Promise<{ data: T }>
+
   function Search(content: { type: ResourceName, count?: number, query?: QueryOptions }): Promise<{ data: fhir.Bundle }>
 
   function NextPage(content: { type: ResourceName, bundle: fhir.Bundle }): Promise<{ data: fhir.Bundle }>;
@@ -48,5 +50,6 @@ declare namespace fhirClient {
     resolve: ClientFn
     patch: typeof Patch
     conditionalUpdate: typeof ConditionalUpdate
+    conditionalCreate: typeof ConditionalCreate
   }
 }
