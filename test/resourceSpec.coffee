@@ -20,6 +20,9 @@ describe "search:", ->
     assert.notEqual(res.vread, null)
     assert.notEqual(res.update, null)
     assert.notEqual(res.delete, null)
+    assert.notEqual(res.meta.add, null)
+    assert.notEqual(res.meta.delete, null)
+    assert.notEqual(res.meta.read, null)
 
   headers = mockHeaders
     'Content-Location': 'BASE/Patient/5'
@@ -63,3 +66,30 @@ describe "search:", ->
       assert.deepEqual(q.url, 'BASE/Patient/5')
       done()
     res.delete(http: http, resource: resource)
+
+  it "meta.add", (done)->
+    target = { id: '5', type: 'Patient', versionId: 1}
+    resource = { resourceType: 'Parameters'}
+    http = (q)->
+      assert.deepEqual(q.data, JSON.stringify(resource))
+      assert.deepEqual(q.method, 'POST')
+      assert.deepEqual(q.url, 'BASE/Patient/5/_history/1/$meta-add')
+      done()
+    res.meta.add(http: http, resource: resource, target: target);
+
+  it "meta.delete", (done)->
+    target = { id: '5', resourceType: 'Patient', versionId: 4}
+    resource = { resourceType: 'Parameters'}
+    http = (q)->
+      assert.deepEqual(q.method, 'POST')
+      assert.deepEqual(q.url, 'BASE/Patient/5/_history/4/$meta-delete')
+      done()
+    res.meta.delete(http: http, resource: resource, target: target)
+
+  it "meta.read", (done)->
+    target = { id: '5', resourceType: 'Patient', versionId: 2}
+    http = (q)->
+      assert.deepEqual(q.method, 'GET')
+      assert.deepEqual(q.url, 'BASE/Patient/5/_history/2/$meta')
+      done()
+    res.meta.read(http: http, target: target)

@@ -31,7 +31,7 @@ git clone https://github.com/FHIR/fhir.js
 cd fhir.js
 npm install
 
-# buld fhir.js
+# build fhir.js
 npm run-script build
 
 # run tests in node
@@ -163,6 +163,8 @@ Here are implementations for:
 
 ### Resource's CRUD
 
+#### Create Resource
+
 To create a FHIR resource, call
 `myClient.create(entry, callback, errback)`, passing
 an object that contains the following properties:
@@ -199,9 +201,19 @@ myClient.create(entry,
 
 ```
 
-### Search
+#### Get resource
 
-fhir.search({type: resourceType, query: queryObject}),
+To get one specific object from a resource (usually by id), call `fhir.read({type: resourceType})`. To specify the patient identifier, call `fhir.read({type: resourceType, patient: patientIdentifier})`
+
+Examples:
+
+```js
+fhir.read({type: 'Patient', patient: '8673ee4f-e2ab-4077-ba55-4980f408773e'})
+```
+
+#### Search Resource
+
+To search a resource, call `fhir.search({type: resourceType, query: queryObject})`,
 where queryObject syntax `fhir.js` adopts
 mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-documents/)):
 
@@ -228,6 +240,32 @@ mongodb-like query syntax ([see](http://docs.mongodb.org/manual/tutorial/query-d
 //=> subject.name:exact=maud
 
 ```
+
+#### Update Resource
+
+To update a resource, call `fhir.update({type: resourceType, id: identifier, resource: resourceObject})`.
+In case of success,the  callback function will be invoked.
+
+Example: 
+```javascript
+ 	this.fhirClient.update({
+            type: "Patient",
+            id: 1,
+            resource: {
+		name: 'New Name'
+            }
+        }).catch(function(e){
+            console.log('An error happened while updating patient: \n' + JSON.stringify(e));
+            throw e;
+        }).then(function(bundle){
+            console.log('Updating patient successed');
+            return bundle;
+        });
+```
+
+#### Delete Resource
+
+To update a resource, call `fhir.delete({type: resourceType, id: identifier})`.
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
 
