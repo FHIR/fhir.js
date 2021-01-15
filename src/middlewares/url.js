@@ -7,6 +7,7 @@
 
     var get_in = function(obj, path){
         return path.split('.').reduce(function(acc,x){
+            if(x === 'versionId' && acc[x]){ return '_history/'+ acc[x] }
             if(acc == null || acc == undefined) { return null; }
             return acc[x];
         }, obj);
@@ -31,7 +32,7 @@
 
     var buildPathPart = function(pth, args){
         var k = evalExpr(pth.trim(), args);
-        if(k==null || k === undefined){ throw new Error("Parameter "+pth+" is required: " + JSON.stringify(args)); }
+        if((k==null || k === undefined) && pth.includes('target.versionId') == false){ throw new Error("Parameter "+pth+" is required: " + JSON.stringify(args)); }
         return k;
     };
 
@@ -42,6 +43,9 @@
     var Path = function(tkn, chain){
         //Chainable
         var new_chain = function(args){
+            if(chain && tkn.includes('target.versionId') && !args.target.versionId){
+                return chain(args);
+            }
             return ((chain && (chain(args) + "/")) || "") +  buildPathPart(tkn, args);
         };
         var ch = core.Attribute('url', new_chain);
