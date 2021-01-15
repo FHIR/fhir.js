@@ -55,3 +55,12 @@ describe "search:", ->
 
     subject.getBundleByUrl(http: http, url: 'BASE/Patient?_count=1&_skip=1')
 
+describe "conditional create:", ->
+  it "construct the query on header instead of url", (done)->
+    http = (q)->
+      assert.deepEqual(q.method, 'POST')
+      assert.deepEqual(q.url, 'BASE/Patient')
+      assert.deepEqual(q.headers['IF-NONE-EXIST'], 'name=maud&given=alice')
+      done()
+
+    subject.conditionalCreate(http: http, type: 'Patient', query: {name: 'maud', given: 'alice'})

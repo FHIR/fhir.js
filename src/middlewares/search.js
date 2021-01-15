@@ -201,6 +201,13 @@
     return url;
   });
 
+  exports.$SearchParamsIfNoneExist = mw.$$Attr('headers.IF-NONE-EXIST', function (args) {
+    if (args.query) {
+      var queryStr = buildSearchParams(args.query);
+      return queryStr;
+    }
+    throw new Error("Query parameter is mandatory for conditionalCreate request")
+  });
 
   exports.$Paging = function(h){
     return function(args){
