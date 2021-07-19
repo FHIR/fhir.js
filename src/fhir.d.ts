@@ -41,6 +41,7 @@ declare namespace fhirClient {
     read: typeof Read
     vread: ClientFn
     delete: ClientFn
+    expunge: ClientFn
     create: typeof Create
     validate: ClientFn
     search: typeof Search
