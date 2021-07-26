@@ -49,3 +49,9 @@ describe "fhir", ->
       assert.equal(x.url, 'BASE/CommunicationRequest/123')
       assert.equal(x.method, 'PATCH')
       assert.equal(x.data, '[{"op":"replace","path":"/status","value":"cancelled"}]')
+
+  it "expunge", ->
+    subject.expunge(type: 'Patient', data: { a: 1 }).then (x)->
+      assert.equal(x.url, 'BASE/Patient/$expunge')
+      assert.equal(x.method, 'POST')
+      assert.equal(x.data, '{"a":1}')
