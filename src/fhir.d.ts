@@ -42,6 +42,7 @@ declare namespace fhirClient {
     vread: ClientFn
     delete: ClientFn
     expunge: ClientFn
+    serverExpunge: ClientFn
     create: typeof Create
     validate: ClientFn
     search: typeof Search
