@@ -66,6 +66,7 @@
             vread: GET.and(vreadPath).end(http),
             "delete": DELETE.and(resourcePath).and(ReturnHeader).end(http),
             expunge: POST.and(resourceTypePath.slash("$expunge")).and(ReturnHeader).end(http),
+            serverExpunge: POST.and(BaseUrl.slash("$expunge")).and(ReturnHeader).end(http),
             create: POST.and(resourceTypePath).and(ReturnHeader).end(http),
             validate: POST.and(resourceTypePath.slash("_validate")).end(http),
             meta: {
