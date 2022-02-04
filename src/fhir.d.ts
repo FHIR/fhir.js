@@ -18,7 +18,9 @@ declare namespace fhirClient {
 
   function Read<T extends fhir.DomainResource>(content: { type: ResourceName, id: string }): Promise<{ data: T }>
 
-  function Patch(content: { type: ResourceName, id: string, data: Array<{ op: 'replace' | 'add' | 'remove', path: string, value: string | object }> }): Promise<{ data: fhir.OperationOutcome }>
+  type Operation = { op: 'replace' | 'add' , path: string, value: string | object } | { op : 'remove', path: string }
+
+  function Patch(content: { type: ResourceName, id: string, data: Array<Operation> }): Promise<{ data: fhir.OperationOutcome }>
 
   function Update<T extends fhir.DomainResource>(content: { resource: T }): Promise<{ data: T }>
 
