@@ -2,13 +2,11 @@
   "name": "fhir.js",
   "version": "0.0.0",
   "devDependencies": {
-    "angular": "~1.4.0",
     "babel-polyfill": "^6.7.4",
     "bower": "latest",
     "chance": "^1.1.8",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.10.0",
-    "jquery": "~2.1.1",
     "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coffee-preprocessor": "^1.0.1",
@@ -18,12 +16,9 @@
     "rimraf": "^2.7.1",
     "typescript": "^3.9.10",
     "webpack": "^1.13.2",
-    "webpack-dev-server": "1.0",
-    "whatwg-fetch": "^0.11.0",
-    "yui": "^3.18.1"
+    "webpack-dev-server": "1.0"
   },
   "description": "FHIR javascript client",
-  "main": "src/adapters/node",
   "repository": {
     "type": "git",
     "url": "git@github.com:FHIR/fhir.js.git"
@@ -55,8 +50,7 @@
     "@types/fhir": "0.0.30",
     "Base64": "~0.3.0",
     "merge": "^1.2.1",
-    "q": "^1.4.1",
-    "request": "^2.88.2"
+    "q": "^1.4.1"
   },
   "files": [
     "bin",
