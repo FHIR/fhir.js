@@ -14,7 +14,6 @@ JavaScript client for FHIR
 
  - Support FHIR CRUD operations
  - Friendly and expressive query syntax
- - Support for adapters that provide idiomatic interfaces in angular, jQuery, extjs, etc
  - Support for access control (HTTP basic, OAuth2, Cookies)
  - ...
 
@@ -48,8 +47,8 @@ npm run-script integrate
 
 To communicate with concrete FHIR server, you can
 create instance of the FHIR client, passing a
-configuration object & adapter object.  Adapters are
-implemented for concrete frameworks/libs (see below).
+configuration object & adapter object.  Adapters must be provided by the
+client.
 
 ```
 var config = {
@@ -99,19 +98,6 @@ When you provide both user name and password, basic auth will be used.
 ##### credentials
 This option controls the behaviour of sending cookies to the remote server. Refer to the table below for how to configure the option for your desired adapter.
 
-| Adapter  | credentials   | Result                    |
-|----------|---------------|---------------------------|
-| Native   | 'same-origin' | Cookies are sent to the server, if it is on the same host as the origin sender |
-| Native   | 'include'     | Send cookies to all hosts |
-| jQuery   | 'same-origin' | ignored                   |
-| jQuery   | 'include'     | Send cookies to all hosts |
-| yui      | 'same-origin' | ignored                   |
-| yui      | 'include'     | Send cookies to all hosts |
-| angular  | 'same-origin' | ignored                   |
-| angular  | 'include'     | ignored                   |
-| node     | 'same-origin' | ignored                   |
-| node     | 'include'     | ignored                   |
-
 ##### headers
 A key:value object that represents headers. This object is passed through to you configured adapter.
 
@@ -152,12 +138,6 @@ where:
 
 
 Here are implementations for:
-
-* [AngularJS adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/angularjs.js)
-* [jQuery adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/jquery.js)
-* [Node adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/node.js)
-* [YUI adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/yui.js)
-* [Native adapter](https://github.com/FHIR/fhir.js/blob/master/src/adapters/native.js)
 
 ### Conformance & Profiles
 
@@ -268,152 +248,6 @@ Example:
 To update a resource, call `fhir.delete({type: resourceType, id: identifier})`.
 
 For more information see [tests](https://github.com/FHIR/fhir.js/blob/master/test/querySpec.coffee)
-
-## AngularJS adapter: `ng-fhir`
-
-AngularJS adapter after `npm run-script build` can be found at `dist/ngFhir.js`
-
-
-Usage:
-
-```javascript
-angular.module('app', ['ng-fhir'])
-  .config(['$fhirProvider', function ($fhirProvider) {
-    $fhirProvider.baseUrl = 'http://try-fhirplace.hospital-systems.com';
-    $fhirProvider.auth = {
-      user: 'user',
-      pass: 'secret'
-    };
-    $fhirProvider.credentials = 'same-origin'
-  }])
-  .controller('mainCtrl', ['$scope', '$fhir', function ($scope, $fhir) {
-    $fhir.search(
-      {
-        type: 'Patient',
-        query: {name: 'emerald'}
-      }).then(
-      function (successData) {
-        $scope.patients = successData.data.entry;
-
-      },
-      function (failData) {
-        $scope.error = failData;
-      }
-    );
-  }]);  
-```
-
-## jQuery adapter: `jqFhir`
-
-jQuery build can be found at `dist/jqFhir.js`
-
-[Example app](http://embed.plnkr.co/e4BKr0M07q4FVVQeP6f4/)
-
-
-Usage:
-
-```html
-<script src="./jquery-???.min.js"> </script>
-<script src="./jqFhir.js"> </script>
-```
-
-
-```javascript
-// create fhir instance
-var fhir = jqFhir({
-    baseUrl: 'https://ci-api.fhir.me',
-    auth: {user: 'client', pass: 'secret'}
-})
-
-fhir.search({type: 'Patient', query: {name: 'maud'}})
-.then(function(bundle){
-  console.log('Search patients', bundle)
-})
-```
-
-## Node.js adapter: `npm install fhir.js`
-
-Via NPM you can `npm install fhir.js`. (If you want to work on the source code,
-you can compile coffee to js via `npm install`, and use `./lib/adapters/node`
-as an entrypoint.)
-
-```
-var mkFhir = require('fhir.js');
-
-var client = mkFhir({
-    baseUrl: 'http://try-fhirplace.hospital-systems.com'
-});
-
-client
-    .search( {type: 'Patient', query: { 'birthdate': '1974' }})
-    .then(function(res){
-        var bundle = res.data;
-        var count = (bundle.entry && bundle.entry.length) || 0;
-        console.log("# Patients born in 1974: ", count);
-    })
-    .catch(function(res){
-        //Error responses
-        if (res.status){
-            console.log('Error', res.status);
-        }
-
-        //Errors
-        if (res.message){
-            console.log('Error', res.message);
-        }
-    });
-
-```
-
-## YUI adapter: `yuiFhir`
-
-YUI build can be found at `dist/yuiFhir.js`
-
-NOTE: The current implementation creates a YUI sandbox per request which is expensive.
-
-Usage:
-
-```html
-<script src="./yui-???.min.js"> </script>
-<script src="./yuiFhir.js"> </script>
-```
-
-```javascript
-// create fhir instance
-var fhir = jqFhir({
-    baseUrl: 'https://ci-api.fhir.me',
-    auth: {user: 'client', pass: 'secret'}
-})
-
-fhir.search(type: 'Patient', query: {name: 'maud'}, success: function(bundle) {}, error: function() {})
-```
-
-## Native adapter: `npm install fhir.js`
-
-The Native adapter is part of fhir.js npm module. The adapter can be consumed in a few ways, the simplest is documented below.
-
-### Usage
-This assumes use of browserify or similar bundler.
-
-1. `npm install fhir.js`
-2. In your js somewhere use the following snippet.
-
-
-```javascript
-// Include the adapter
-var nativeFhir = require('fhir.js/src/adapters/native');
-
-// Create fhir instance
-var fhir = nativeFhir({
-    baseUrl: 'https://ci-api.fhir.me',
-    auth: {user: 'client', pass: 'secret'}
-});
-
-// Execute the search
-fhir.search({type: 'Patient', query: {name: 'maud'}}).then(function(response){
-    //manipulate your data here.
-});
-```
 
 ## For Developers
 
