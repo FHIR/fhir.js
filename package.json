@@ -47,8 +47,7 @@
   },
   "homepage": "https://github.com/FHIR/fhir.js",
   "dependencies": {
-    "@types/fhir": "0.0.30",
-    "merge": "^1.2.1"
+    "@types/fhir": "0.0.30"
   },
   "files": [
     "bin",

@@ -1,6 +1,4 @@
 (function() {
-  var merge = require('merge');
-
   var RTRIM = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
   var trim = function(text) {
@@ -86,6 +84,13 @@
   };
 
   exports.argsArray = argsArray;
+  
+  var merge = function() {
+    const args = [{}].concat(Array.from(arguments));
+    return Object.assign.apply(null, args);
+  };
+  
+  exports.merge = merge;
 
   var mergeLists = function() {
     var reduce;

@@ -4,8 +4,6 @@
 
   var resolve = require('./references');
 
-  merge = require('merge');
-
   utils = require('../utils');
 
   ltype = utils.type;
@@ -27,7 +25,7 @@
         resolveRefs = function(value, context) {
           var mapto, ref;
           if (value.reference) {
-            mapto = resolve.sync(merge(true, params, {
+            mapto = resolve.sync(utils.merge(true, params, {
               reference: value,
               bundle: bundle,
               resource: resourceBoundary(context)
@@ -46,7 +44,7 @@
         });
         return success(graphify(bundle, entries));
       } : success;
-      return search(merge(true, params, {
+      return search(utils.merge(true, params, {
         success: graphCb
       }));
     };
