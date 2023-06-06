@@ -79,7 +79,7 @@ describe "nodejs adapter", ->
         throw e
 
     subject.search({type: 'Patient', query: {name: 'adams'}}).then(success, fail)
-   it "should return 500 if host unreachable", (done)->
+   it "should throw a ENOTFOUND error when host is unreachable", (done)->
       subject = fhir(baseUrl: 'http://wwww.exampleinvalidqqq.com/', patient: '123', auth: {user: 'client', pass: 'secret'})
 
       unexpectedSuccess = (res)-> done(new Error("Should fail, but got #{JSON.stringify(res)}"))
@@ -87,7 +87,7 @@ describe "nodejs adapter", ->
       expectedFail =  (err)->
         try
           assert(err)
-          assert(err.status == 500)
+          assert(err.code == 'ENOTFOUND')
           done()
         catch e
           done(e)

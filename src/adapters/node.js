@@ -1,12 +1,20 @@
 (function() {
-    var request = require('request');
+    var fetch = require('node-fetch');
     var mkFhir = require('../fhir');
-    var Q = require('q');
+    
+    // Build a backwards compatiable defer object
+    var defer = function(){
+      var def = {};
+      def.promise = new Promise(function (resolve, reject) {
+        def.resolve = resolve;
+        def.reject = reject;
+      });
+      return def;
+    };
 
     var adapter = {
-        defer: Q.defer,
+        defer: defer,
         http: function(args) {
-            var deff = Q.defer();
             if(args.data && typeof args.data === "string") {
               // Setting args.json requires args.body to be a JSON as per request docs.
               try {
@@ -26,22 +34,29 @@
             if(args.url === '') {
               args.url = '/';
             }
-            args.json = true;
             if(args.debug) {
                 console.log('DEBUG[node]: (request)', args);
             }
-            request(args, function(err, response, body) {
-                var headers = function(x) {return response.headers[x.toLowerCase()];};
-                var statusCode = response ? response.statusCode : 500; // in case host is unreachable
-
-                var resp = {data: body, status: statusCode, headers: headers, config: args};
-
+            return fetch(`${args.baseUrl}${args.url}`, {
+              method: args.method,
+              body: args.body ? JSON.stringify(args.body) : undefined,
+              headers: args.headers,
+            }).then(function (response) {
+              return response.json().then(function (body) {
+                var resp = {
+                  data: body,
+                  status: response.status,
+                  headers: response.headers.get,
+                  config: args
+                };
+  
                 if(args.debug){
                     console.log('DEBUG[node]: (response)', resp);
                 }
-                if (err || statusCode > 399) {deff.reject(resp);} else {deff.resolve(resp);}
-            }) ;
-            return deff.promise;
+                
+                return resp;
+              });
+            })
         }
     };
 
