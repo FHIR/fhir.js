@@ -1,5 +1,5 @@
 all: clean build
 clean:
-	rm -f dist.js
+	rm -f -m dist.js
 build:
 	../../node_modules/.bin/webpack --process --colors
